@@ -11,6 +11,8 @@ import javax.swing.*;
 //import javax.sql.*;
 //import oracle.jdbc.*;
 
+
+
 class Conexiune extends JFrame {
 
 	private static final long serialVersionUID = 1L;
