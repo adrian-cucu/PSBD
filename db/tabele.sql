@@ -310,7 +310,7 @@ SELECT * FROM bursa;
 DROP TABLE elev_bursa;
 DROP TABLE elev_clasa;
 DROP TABLE profil_materie;
-DROP TABLE elev;
+--DROP TABLE elev;
 DROP TABLE clasa;
 DROP TABLE profil;
 DROP TABLE materie;

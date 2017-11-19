@@ -7,6 +7,10 @@ class DataModel {
 	private String etnie;
 	private String nationalitate;
 
+	private static final Object[] columnNames = {
+		"ID ELEV", "NUME", "PRENUME", "ADRESA", "CNP", "ETNIE", "NATIONALITATE"
+	}; 
+
 	DataModel (java.sql.ResultSet set) throws java.sql.SQLException {
 
 		this.id_elev = set.getInt ("id_elev");
@@ -16,8 +20,9 @@ class DataModel {
 		this.cnp = set.getString ("cnp");
 		this.etnie = set.getString ("etnie");
 		this.nationalitate = set.getString ("nationalitate");
-	}
-	
+	}	
+
+
 	// Getters 
 	public int getId () {
 		return this.id_elev;
@@ -50,5 +55,4 @@ class DataModel {
 			this.getEtnie () + " " + 
 			this.getNat ();
 	}
-
 }
