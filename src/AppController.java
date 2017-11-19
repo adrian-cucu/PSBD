@@ -1,7 +1,8 @@
 import java.awt.event.*;
 import javax.swing.*;
+import java.awt.Dimension;
 
-class AppController {
+class AppController implements ActionListener {
 
 	private LoginView login_view = null;
 	private AppView app_view = null;
@@ -15,14 +16,17 @@ class AppController {
 		/*
 		this.model = model;
 		*/
-		this.login_view.addLoginListener (new LoginListener ());
+		this.login_view.addLoginListener (this);
 		this.login_view.setVisible (true);
 	}  
 
-	class LoginListener implements ActionListener {
-	
-		public void actionPerformed (ActionEvent e)
-		{
+
+	/*
+	 *@Override
+	 */	
+	public void actionPerformed (ActionEvent e)
+	{
+		if (e.getSource () == login_view.getObs ()) {
 			String host = login_view.getHost ();	
 			String user = login_view.getUsername ();
 			int portno = login_view.getPort ();
@@ -40,15 +44,73 @@ class AppController {
 
 					login_view.dispose ();
 					app_view = new AppView (user + "@" + host + ":" + portno + ":" + sid);
-					app_view.setVisible (true);		
-					con.query ("SELECT * FROM elev");
 
+					app_view.setVisible (true);		
+					app_view.executeAddActionListener (this);
 				} 
 
-			} else {
+			} else 
 				login_view.displayError ("Invalid input field !");
-			}	
-		}	
-	}
+		}
+		else if (e.getSource() == app_view.getObs()) {
+			app_view.updateStatus (".....");
+			String query = app_view.getQueryText ();	
+			query = query.trim ().replaceAll ("\n", " ").replace (";", "");
 
-}
+			System.out.println ("Query to be executed: " + query);
+
+			long start, stop;
+			java.sql.Statement statement = null;
+			java.sql.ResultSet result_set = null;
+
+			java.util.Vector<String> columns; 
+			java.util.Vector<java.util.Vector<Object>> values;	
+
+     		try {
+            	statement = con.getConnection().createStatement ();
+				start = System.currentTimeMillis ();	
+            	result_set = statement.executeQuery (query);
+				stop = System.currentTimeMillis ();	
+				stop -= start;		
+				app_view.updateStatus ("query took: " + 
+								(stop / 1000) + "." + 
+								(stop % 1000) + " s", AppView.SUCCESS);		
+
+            	java.sql.ResultSetMetaData rsmd = result_set.getMetaData ();
+            	int m = rsmd.getColumnCount ();
+				
+				columns = new java.util.Vector<>(m);
+
+           		for (int i=1; i<=m; ++i) {
+                	columns.add (rsmd.getColumnLabel (i));
+            	}
+
+				values = new java.util.Vector<>();	
+
+            	while (result_set.next ()) {
+					java.util.Vector<Object> row_values = new java.util.Vector<>(m);	
+                	for (int i=1; i<=m; ++i) {
+                    	row_values.add (result_set.getObject (i));
+                	}
+                	values.add(row_values);
+            	}
+			
+        		JTable table = new JTable (values, columns);
+				table.setPreferredScrollableViewportSize (new Dimension (700, 70));
+    	    	table.setFillsViewportHeight (true);	
+	 		   	app_view.addQueryResult (table);
+
+            	if (statement != null) 
+                	statement.close ();
+       
+        	} catch (java.sql.SQLException sqlex) {
+            	sqlex.printStackTrace ();
+        	} finally {}
+			
+		}
+			else {
+				app_view.updateStatus ("query error!", AppView.ERROR);			
+			}	
+		}
+
+}	

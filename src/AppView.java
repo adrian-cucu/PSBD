@@ -9,10 +9,17 @@ class AppView extends JFrame {
 
 	private JTabbedPane tabbed_pane = null;
 
-	private JPanel query_panel, info_panel; 
+	private JPanel query_panel, info_panel, query_result_panel; 
+	private JScrollPane scroll_pane;
+	private JTextArea query_text;
+	private JButton execute;
 
 	private final JPanel status_panel;
 	private final JLabel status_label;	
+
+	private JMenu option_menu ;
+	private JMenuItem exit;
+	private JMenuBar menu_bar;
 
 	public static final int SUCCESS = 1;
 	public static final int ERROR = 0;
@@ -26,7 +33,6 @@ class AppView extends JFrame {
 		setTheme ();		
 		setJMenuBar (menuBar ());		
 		setLayout (new BorderLayout ());
-
 	
 		tabbed_pane = new JTabbedPane ();
 		tabbed_pane.add ("Run query", createQueryPanel ());			
@@ -34,7 +40,6 @@ class AppView extends JFrame {
 		
 		add (tabbed_pane, BorderLayout.CENTER);
 		
-
 		status_panel = new JPanel ();
 		status_panel.setBorder (new BevelBorder (BevelBorder.LOWERED));
 		add (status_panel, BorderLayout.SOUTH);
@@ -42,58 +47,7 @@ class AppView extends JFrame {
 		status_panel.setLayout (new BoxLayout (status_panel, BoxLayout.X_AXIS));
 		status_label = new JLabel (" -- ");	
 		status_label.setHorizontalAlignment (SwingConstants.LEFT);
-		status_panel.add (status_label);
-
-		/*		
-		JPanel panel = new JPanel ();
-
-		String[] column = {
-			"First name", "Last name", "Sport", "# of years", "Vegeta"
-		};	
-		
-		Object[][] data = {
-			{"Adrian", "Cucu", "Laba", "21 + ", "true"},
-			{"Adrian", "Cucu", "Laba", "21 + ", "true"},
-			{"Adrian", "Cucu", "Laba", "21 + ", "true"},
-			{"Adrian", "Cucu", "Laba", "21 + ", "true"},
-			{"Adrian", "Cucu", "Laba", "21 + ", "true"},
-			{"Adrian", "Cucu", "Laba", "21 + ", "true"},
-			{"Adrian", "Cucu", "Laba", "21 + ", "true"},
-			{"Adrian", "Cucu", "Laba", "21 + ", "true"},
-			{"Adrian", "Cucu", "Laba", "21 + ", "true"},
-			{"Adrian", "Cucu", "Laba", "21 + ", "true"}
-		};		
-
-		final JTable table = new JTable (data, column);
-//		table.setPreferredScrollableViewportSize (new Dimension (500, 70));
-		table.setFillsViewportHeight (true);
-		
-		java.util.Vector <Integer> v = new java.util.Vector<>();
-
-		for (int i=1; i<100; ++i)
-			v.add (i);
-		
-		for (int i : v)		
-			System.out.println (i);	
-		
-
-		if (DEBUG) {
-			table.addMouseListener (new MouseAdapter () {
-				public void mouseClicked (MouseEvent e) {
-					System.out.println (table.getSelectedRow ());
-
-					//printDebugData (table);
-				}
-			});
-		}
-
-		JScrollPane scroll_pane = new JScrollPane (table);
-
-		panel.add (scroll_pane);
-		
-		setLayout (new BorderLayout ());
-		add (panel, BorderLayout.CENTER);	
-		*/
+		status_panel.add (status_label);		
 	}	
 	
 	public void updateStatus (String status, int sts)
@@ -119,28 +73,51 @@ class AppView extends JFrame {
 
 	private JPanel createQueryPanel ()
 	{
-		query_panel = new JPanel ();
-		/*
-		JButton b1 = new JButton ("SUCCESS");
-		JButton b2 = new JButton ("FAILD");
-		JButton b3 = new JButton ("NORMAL");
+		query_panel = new JPanel (new BorderLayout ()); 	
+		query_panel.setBorder (new TitledBorder (new EtchedBorder (), "Execute a query"));	
+	
+		query_text = new JTextArea (6, 60);
+		query_text.setWrapStyleWord (true);					
+		query_text.setEditable (true);
+		
+		JScrollPane scroll = new JScrollPane (query_text);
+		scroll.setVerticalScrollBarPolicy (ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+	
+		execute = new JButton ("Go");				
 
-		b1.addActionListener (e -> { updateStatus ("heeeeey", AppView.ERROR);});
-		b2.addActionListener (e -> { updateStatus ("heeeeey", AppView.SUCCESS);});
-		b3.addActionListener (e -> { updateStatus ("heeeeey");});
-		*/
+		JPanel north_wrapper = new JPanel ();
 
-		query_panel.add (b1);
-		query_panel.add (b2);
-		query_panel.add (b3);
-		return query_panel;
+		north_wrapper.add (scroll);
+		north_wrapper.add (execute);
+
+		query_result_panel = new JPanel ();
+
+		query_panel.add (north_wrapper, BorderLayout.NORTH);
+		query_panel.add (query_result_panel, BorderLayout.CENTER);	
+  		return query_panel;
 	}
+
+
+	public void addQueryResult (JTable table)
+	{	
+		query_result_panel.removeAll ();	
+		query_result_panel.revalidate ();
+		query_result_panel.repaint ();
+  		scroll_pane = new JScrollPane (table);
+        query_result_panel.add (scroll_pane);
+	}	
+
 
 	private JPanel createInfoPanel ()
 	{
 		info_panel = new JPanel ();
 		info_panel.add (new JLabel ("Info panel"));
 		return info_panel;
+	}
+	
+	public String getQueryText ()
+	{
+		return query_text.getText ();
 	}
 	
 	
@@ -161,8 +138,6 @@ class AppView extends JFrame {
 			System.out.println ();
 		}
 		System.out.println ("--------------------------");
-			
-
 	}
 
     private void setTheme ()
@@ -178,17 +153,15 @@ class AppView extends JFrame {
 
 	private JMenuBar menuBar ()
 	{
-		JMenu option_menu = new JMenu ("Options");
+		option_menu = new JMenu ("Options");
 		option_menu.setForeground (Color.BLUE);
 
-		JMenuItem exit = new JMenuItem ("Exit");
+		exit = new JMenuItem ("Exit");
 		exit.setIcon (new ImageIcon ("../img/close.jpg"));			
-		exit.addActionListener (e -> {
-			System.exit (0);
-		});
+
 		option_menu.add (exit);		
 	
-		JMenuBar menu_bar = new JMenuBar ();
+		menu_bar = new JMenuBar ();
 		menu_bar.add (option_menu);
 		return menu_bar;
 	}
@@ -205,16 +178,19 @@ class AppView extends JFrame {
 	{
 		showMessageDialog (this, errorMsg, "Error", ERROR_MESSAGE);
 	}	
-	
-	/*	
-	public void addLoginListener (ActionListener loginListener)
+
+	public void addExitListener (ActionListener lsnr)
 	{
-		login.addActionListener (loginListener);
+		exit.addActionListener (lsnr);
 	} 
 
-	public void addExitListener (ActionListener loginListener)
+	public void executeAddActionListener (ActionListener lsnr) 
 	{
-		login.addActionListener (loginListener);
-	} 	
-	*/
+		execute.addActionListener (lsnr);
+	}
+
+	public Object getObs ()
+	{
+		return execute;
+	}	
 }

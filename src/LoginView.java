@@ -66,8 +66,6 @@ class LoginView extends JFrame {
 				System.exit (0);	
 			}
 		});
-
-
 	
 		JSeparator sep = new JSeparator();
 		sep.setBounds (50, 170, 360, 22);
@@ -142,8 +140,14 @@ class LoginView extends JFrame {
 		showMessageDialog (this, errorMsg, "Error", ERROR_MESSAGE);
 	}	
 	
-	public void addLoginListener (ActionListener loginListener)
+	public void addLoginListener (ActionListener lsnr)
 	{
-		login.addActionListener (loginListener);
+		login.addActionListener (lsnr);
 	}  	
+	
+	public Object getObs ()
+	{
+		return login;
+	}   
+
 }
