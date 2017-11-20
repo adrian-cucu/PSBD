@@ -107,6 +107,14 @@ class AppView extends JFrame {
         query_result_panel.add (scroll_pane);
 	}	
 
+	public void addQueryResult (String text)
+	{
+		query_result_panel.removeAll ();	
+		query_result_panel.revalidate ();
+		query_result_panel.repaint ();
+        query_result_panel.add (new JTextArea (text, 3, 40));
+	}
+
 
 	private JPanel createInfoPanel ()
 	{
