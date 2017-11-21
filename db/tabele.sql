@@ -13,10 +13,8 @@ CREATE TABLE elev (
 );
 
 ALTER TABLE elev 
-ADD CONSTRAINT 
-	elev_pk 
-		PRIMARY KEY (id_elev);
-
+ADD CONSTRAINT elev_pk 
+PRIMARY KEY (id_elev);
 
 --------------------------------------------------------
 CREATE TABLE profil (
@@ -24,11 +22,9 @@ CREATE TABLE profil (
 	nume_profil		VARCHAR(50) NOT NULL
 );
 
-ALTER TABLE profil
-ADD CONSTRAINT 
-	profil_pk 
-		PRIMARY KEY (id_profil);
-
+ALTER TABLE profil 
+ADD CONSTRAINT profil_pk 
+PRIMARY KEY (id_profil);
 
 --------------------------------------------------------
 CREATE TABLE clasa (
@@ -39,17 +35,13 @@ CREATE TABLE clasa (
 	clasa			NUMBER(3)  NOT NULL
 );
 
-ALTER TABLE clasa
-ADD CONSTRAINT 
-	clasa_pk 
-		PRIMARY KEY (id_clasa);
+ALTER TABLE clasa 
+ADD CONSTRAINT clasa_pk 
+PRIMARY KEY (id_clasa);
 
-ALTER TABLE clasa
-ADD CONSTRAINT 
-	clsa_fk_profil 
-		FOREIGN KEY (id_profil) 
-		REFERENCES profil (id_profil); 
-
+ALTER TABLE clasa 
+ADD CONSTRAINT clsa_fk_profil 
+FOREIGN KEY (id_profil) REFERENCES profil (id_profil); 
 
 --------------------------------------------------------
 CREATE TABLE elev_clasa (
@@ -59,17 +51,12 @@ CREATE TABLE elev_clasa (
 
 
 ALTER TABLE elev_clasa 
-ADD CONSTRAINT 
-	elev_clasa_fk_elev 
-		FOREIGN KEY (id_elev) 
-		REFERENCES elev(id_elev);
+ADD CONSTRAINT elev_clasa_fk_elev 
+FOREIGN KEY (id_elev) REFERENCES elev(id_elev);
 
 ALTER TABLE elev_clasa
-ADD CONSTRAINT 
-	elev_clasa_fk_clasa 
-		FOREIGN KEY (id_clasa) 
-		REFERENCES clasa(id_clasa);
-
+ADD CONSTRAINT elev_clasa_fk_clasa 
+FOREIGN KEY (id_clasa) REFERENCES clasa(id_clasa);
 
 --------------------------------------------------------
 CREATE TABLE materie (
@@ -78,10 +65,8 @@ CREATE TABLE materie (
 );
 
 ALTER TABLE materie
-ADD CONSTRAINT 
-	materie_pk 
-		PRIMARY KEY (id_materie);
-
+ADD CONSTRAINT materie_pk 
+PRIMARY KEY (id_materie);
 
 ---------------------------------------------------------------
 CREATE TABLE profil_materie (
@@ -91,16 +76,12 @@ CREATE TABLE profil_materie (
 );
 
 ALTER TABLE profil_materie
-ADD CONSTRAINT 
-	profil_materie_fk_profil 
-		FOREIGN KEY (id_profil) 
-		REFERENCES profil(id_profil);
+ADD CONSTRAINT profil_materie_fk_profil 
+FOREIGN KEY (id_profil) REFERENCES profil(id_profil);
 
 ALTER TABLE profil_materie
-ADD CONSTRAINT 
-	profil_materie_fk_materie 
-		FOREIGN KEY (id_materie) 
-		REFERENCES materie(id_materie);
+ADD CONSTRAINT profil_materie_fk_materie 
+FOREIGN KEY (id_materie) REFERENCES materie(id_materie);
 ---------------------------------------------------------------
 
 /*
@@ -121,9 +102,8 @@ CREATE TABLE bursa (
 );
 
 ALTER TABLE bursa
-ADD CONSTRAINT 
-	bursa_pk 
-		PRIMARY KEY (id_bursa);
+ADD CONSTRAINT bursa_pk 
+PRIMARY KEY (id_bursa);
 
 
 CREATE TABLE elev_bursa (
@@ -134,16 +114,12 @@ CREATE TABLE elev_bursa (
 
  
 ALTER TABLE elev_bursa 
-ADD CONSTRAINT 
-	elev_bursa_fk_elev  
-		FOREIGN KEY (id_elev)  
-		REFERENCES elev  (id_elev);
+ADD CONSTRAINT elev_bursa_fk_elev
+FOREIGN KEY (id_elev) REFERENCES elev (id_elev);
 
 ALTER TABLE elev_bursa 
-ADD CONSTRAINT 
-	elev_bursa_fk_bursa 
-		FOREIGN KEY (id_bursa) 
-		REFERENCES bursa (id_bursa);
+ADD CONSTRAINT elev_bursa_fk_bursa 
+FOREIGN KEY (id_bursa) REFERENCES bursa (id_bursa);
 
 -----------------------------------------------------------------------------------
 INSERT INTO bursa (id_bursa, tip_bursa, valoare) VALUES ('1', 'performanta', '1000');
@@ -237,7 +213,6 @@ INSERT INTO clasa (id_clasa, id_profil, an_scolar, cod, clasa) VALUES (12, 3, 20
 
 
 
-
 -----------------------------------------------------------------------------------
 INSERT INTO elev_clasa (id_elev, id_clasa) VALUES ('1', '1');
 INSERT INTO elev_clasa (id_elev, id_clasa) VALUES ('2', '1');
@@ -316,9 +291,6 @@ DROP TABLE profil;
 DROP TABLE materie;
 --DROP TABLE medie;
 DROP TABLE bursa;
-
---DROP SEQUENCE elev_seq;
-
 -----------------------------------
 
 DECLARE

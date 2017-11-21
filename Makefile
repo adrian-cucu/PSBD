@@ -7,7 +7,7 @@ all:
 	${JCOMPILE} ${OPTIONS} ${SOURCES2}
 
 run:
-	@${JAVA} -classpath ${CLASSES_DIR}:${CLASSPATH} ${JSOURCE}
+	@${JAVA} -classpath ${CLASSES_DIR}:${CLASSPATH} ${MAIN}
 
 clean:
 	rm -I ${CLASSES_DIR}/*.class 	

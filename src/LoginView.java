@@ -6,11 +6,10 @@ import java.awt.*;
 class LoginView extends JFrame {	
 	private JTextField hostname, username, port, sid, password;
 	private JButton login, reset, exit;
-	private JLabel status;
 
 	LoginView () 
 	{
-		super ("Oracle login -- Login view");	
+		super ("Oracle login");	
 		setDefaultCloseOperation (EXIT_ON_CLOSE);
 		setBounds (450, 250, 450, 300);	
 		setResizable (false);
@@ -69,9 +68,6 @@ class LoginView extends JFrame {
 	
 		JSeparator sep = new JSeparator();
 		sep.setBounds (50, 170, 360, 22);
-	
-		status = new JLabel ("Not connected");	
-		status.setBounds (0, 0, 150, 10);
 
 		add (hostname_label);
 		add (hostname);
@@ -86,28 +82,8 @@ class LoginView extends JFrame {
 		add (reset);
 		add (login);
 		add (exit);
-
 		add (sep);
-		add (status);
-		setTheme ();
 	}	
-
- 	private void setTheme () 
-    {
-		setDefaultLookAndFeelDecorated (true);
-        try {
-            
-
-           //UIManager.setLookAndFeel ("javax.swing.plaf.metal.MetalLookAndFeel");
-    //       UIManager.setLookAndFeel ("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
-
-           UIManager.setLookAndFeel ("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
-            //UIManager.setLookAndFeel (UIManager.getCrossPlatformLookAndFeelClassName ());
-        }
-        catch (Exception e) {
-        }
-
-    }
 
 
 	public String getHost ()

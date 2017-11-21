@@ -1,7 +1,7 @@
-import java.awt.event.*;
 import static javax.swing.JOptionPane.*;
-import javax.swing.*;
 import javax.swing.border.*;
+import java.awt.event.*;
+import javax.swing.*;
 import java.awt.*;
 
 class AppView extends JFrame {	
@@ -30,7 +30,6 @@ class AppView extends JFrame {
 		setDefaultCloseOperation (EXIT_ON_CLOSE);
 		setBounds (250, 150, 800, 500);	
 		setResizable (true);
-		setTheme ();		
 		setJMenuBar (menuBar ());		
 		setLayout (new BorderLayout ());
 	
@@ -40,13 +39,14 @@ class AppView extends JFrame {
 		
 		add (tabbed_pane, BorderLayout.CENTER);
 		
-		status_panel = new JPanel ();
+		status_panel = new JPanel (null);
 		status_panel.setBorder (new BevelBorder (BevelBorder.LOWERED));
 		add (status_panel, BorderLayout.SOUTH);
 
 		status_panel.setLayout (new BoxLayout (status_panel, BoxLayout.X_AXIS));
-		status_label = new JLabel (" -- ");	
-		status_label.setHorizontalAlignment (SwingConstants.LEFT);
+		status_label = new JLabel ("...");	
+		status_label.setHorizontalAlignment (SwingConstants.RIGHT);
+		status_label.setFont (new Font ("Serif", Font.PLAIN, 11));
 		status_panel.add (status_label);		
 	}	
 	
@@ -122,42 +122,13 @@ class AppView extends JFrame {
 		info_panel.add (new JLabel ("Info panel"));
 		return info_panel;
 	}
+
 	
 	public String getQueryText ()
 	{
 		return query_text.getText ();
 	}
 	
-	
-	private void printDebugData (JTable table)
-	{
-		int n = table.getRowCount ();
-		int m = table.getColumnCount ();
-		javax.swing.table.TableModel model = 
-			table.getModel ();
-
-		System.out.println ("Value of data: ");
-
-		for (int i=0; i<n; ++i) {
-			System.out.println (" row " + i + ":");
-			for (int j=0; j<m; ++j) {
-				System.out.println (" " + model.getValueAt (i, j));
-			}
-			System.out.println ();
-		}
-		System.out.println ("--------------------------");
-	}
-
-    private void setTheme ()
-    {
-        setDefaultLookAndFeelDecorated (true);
-        try {
-           UIManager.setLookAndFeel ("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
-        }
-        catch (Exception e) {
-        }
-    }
-
 
 	private JMenuBar menuBar ()
 	{
@@ -165,7 +136,6 @@ class AppView extends JFrame {
 		option_menu.setForeground (Color.BLUE);
 
 		exit = new JMenuItem ("Exit");
-		exit.setIcon (new ImageIcon ("../img/close.jpg"));			
 
 		option_menu.add (exit);		
 	
@@ -174,27 +144,27 @@ class AppView extends JFrame {
 		return menu_bar;
 	}
 
-	/*
-	private Image getImage (String path)
-	{
-		return Toolkit.getDefaultTolkit ()
-					  .getImage (AppView.class.getResource (path));
-	}
-	*/
 
 	public void displayError (String errorMsg)
 	{
 		showMessageDialog (this, errorMsg, "Error", ERROR_MESSAGE);
 	}	
 
+
 	public void addExitListener (ActionListener lsnr)
 	{
 		exit.addActionListener (lsnr);
 	} 
 
+
 	public void executeAddActionListener (ActionListener lsnr) 
 	{
 		execute.addActionListener (lsnr);
+	}
+
+	public void windowCloseListener (WindowListener lsnr)
+	{
+		addWindowListener (lsnr);
 	}
 
 	public Object getObs ()

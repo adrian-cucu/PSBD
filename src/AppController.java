@@ -2,7 +2,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import java.awt.Dimension;
 
-class AppController implements ActionListener {
+class AppController implements ActionListener, WindowListener {
 
 	private LoginView login_view = null;
 	private AppView app_view = null;
@@ -19,6 +19,55 @@ class AppController implements ActionListener {
 		this.login_view.addLoginListener (this);
 		this.login_view.setVisible (true);
 	}  
+
+		
+	public void windowActivated (WindowEvent e) 
+	{
+		System.out.println (Thread.currentThread ().getStackTrace ()[1].getMethodName ());
+	}
+
+
+	public void windowClosed (WindowEvent e) 
+	{
+		System.out.println (Thread.currentThread ().getStackTrace ()[1].getMethodName ());
+	}
+
+
+	public void windowClosing (WindowEvent e) 
+	{
+		System.out.println (Thread.currentThread ().getStackTrace ()[1].getMethodName ());
+		try {
+			con.getConnection().close ();
+			System.out.println ("Connection succefully closed! :)");
+		}
+		catch (java.sql.SQLException eee) {	
+			System.out.println ("Connection wasn/t closed closed! :<");
+		}		
+	}
+
+
+	public void windowDeactivated (WindowEvent e) 
+	{
+		System.out.println (Thread.currentThread ().getStackTrace ()[1].getMethodName ());
+	}
+
+
+	public void windowDeiconified (WindowEvent e) 
+	{
+		System.out.println (Thread.currentThread ().getStackTrace ()[1].getMethodName ());
+	}
+
+
+	public void windowIconified (WindowEvent e) 
+	{
+		System.out.println (Thread.currentThread ().getStackTrace ()[1].getMethodName ());
+	}
+
+
+	public void windowOpened (WindowEvent e) 
+	{
+		System.out.println (Thread.currentThread ().getStackTrace ()[1].getMethodName ());
+	}
 
 
 	/*
@@ -44,10 +93,13 @@ class AppController implements ActionListener {
 
 					login_view.dispose ();
 					app_view = new AppView (user + "@" + host + ":" + portno + ":" + sid);
-
-					app_view.setVisible (true);		
 					app_view.executeAddActionListener (this);
-				} 
+ 					app_view.windowCloseListener (this);
+					app_view.setVisible (true);		
+				
+				} else {
+					login_view.displayError ("Connection failed!");
+				}
 
 			} 
 			else { 
@@ -162,7 +214,8 @@ class AppController implements ActionListener {
 						}
 						break;
 					default:
-							System.out.println ("------ ERROR");
+							app_view.addQueryResult ("Unknown statement");	
+							app_view.updateStatus ("Error!", AppView.ERROR);
 			}		
 
 		}
@@ -170,5 +223,4 @@ class AppController implements ActionListener {
 				app_view.updateStatus ("query error!", AppView.ERROR);			
 			}	
 		}
-
 }	

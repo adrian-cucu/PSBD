@@ -1,6 +1,7 @@
 JCOMPILE := javac
 JAVA := java
 JSOURCE := Conexiune  DataModel
+MAIN := Main
 
 ifndef ORACLE_HOME
 	$(error ORACLE_HOME is not set)
