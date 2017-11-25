@@ -2,14 +2,22 @@ import static java.lang.System.*;
 
 class Main {
 
-	private static final boolean DEBUG = true;
 
 	public static void main (String[] args)
-	{
-		AppController controller = new AppController (new LoginView ());
-		
-		if (DEBUG) {
-			out.println ("Started...");
-		}		
+	{		
+		try {
+			java.awt.EventQueue.invokeAndWait (new Runnable () {
+				public void run () {
+					AppController controller = 
+						new AppController (new LoginView ());
+				}
+			});
+		}
+		catch (InterruptedException e) {
+		}	
+		catch (java.lang.reflect.InvocationTargetException e) {
+
+		}
 	}
+
 }

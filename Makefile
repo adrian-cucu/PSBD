@@ -10,5 +10,5 @@ run:
 	@${JAVA} -classpath ${CLASSES_DIR}:${CLASSPATH} ${MAIN}
 
 clean:
-	rm -I ${CLASSES_DIR}/*.class 	
+	rm ${CLASSES_DIR}/*.class 	
 	@echo Clean!

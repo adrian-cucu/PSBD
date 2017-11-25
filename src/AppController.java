@@ -2,72 +2,21 @@ import java.awt.event.*;
 import javax.swing.*;
 import java.awt.Dimension;
 
-class AppController implements ActionListener, WindowListener {
+class AppController 
+	implements ActionListener, WindowListener {
+
 
 	private LoginView login_view = null;
 	private AppView app_view = null;
-//	private DataModel model = null;	
-	
-	private Connection con;
+	private MyConnection con = null;
+
 
 	public AppController (LoginView login_view)
 	{
 		this.login_view = login_view;
-		/*
-		this.model = model;
-		*/
 		this.login_view.addLoginListener (this);
 		this.login_view.setVisible (true);
 	}  
-
-		
-	public void windowActivated (WindowEvent e) 
-	{
-		System.out.println (Thread.currentThread ().getStackTrace ()[1].getMethodName ());
-	}
-
-
-	public void windowClosed (WindowEvent e) 
-	{
-		System.out.println (Thread.currentThread ().getStackTrace ()[1].getMethodName ());
-	}
-
-
-	public void windowClosing (WindowEvent e) 
-	{
-		System.out.println (Thread.currentThread ().getStackTrace ()[1].getMethodName ());
-		try {
-			con.getConnection().close ();
-			System.out.println ("Connection succefully closed! :)");
-		}
-		catch (java.sql.SQLException eee) {	
-			System.out.println ("Connection wasn/t closed closed! :<");
-		}		
-	}
-
-
-	public void windowDeactivated (WindowEvent e) 
-	{
-		System.out.println (Thread.currentThread ().getStackTrace ()[1].getMethodName ());
-	}
-
-
-	public void windowDeiconified (WindowEvent e) 
-	{
-		System.out.println (Thread.currentThread ().getStackTrace ()[1].getMethodName ());
-	}
-
-
-	public void windowIconified (WindowEvent e) 
-	{
-		System.out.println (Thread.currentThread ().getStackTrace ()[1].getMethodName ());
-	}
-
-
-	public void windowOpened (WindowEvent e) 
-	{
-		System.out.println (Thread.currentThread ().getStackTrace ()[1].getMethodName ());
-	}
 
 
 	/*
@@ -85,22 +34,23 @@ class AppController implements ActionListener, WindowListener {
 				InputCheck.check (login_view.getPass ()) &&
 				portno > 0 && portno < (1 << 16) && InputCheck.check (sid)) {
 
-				String url = String.format ("jdbc:oracle:thin:@%s:%d:%s", host, portno, sid);
+				String url = String.format ("jdbc:oracle:thin:@%s:%d:%s", 
+											host, portno, sid);
 		
-				con = new Connection (url, user, login_view.getPass ());					
-
-				if (con != null && con.isConnected ()) {
-
+				try {
+					con = new MyConnection (url, user, login_view.getPass ());
 					login_view.dispose ();
-					app_view = new AppView (user + "@" + host + ":" + portno + ":" + sid);
+					app_view = new AppView (user+"@"+host+":"+portno+":"+sid);
 					app_view.executeAddActionListener (this);
- 					app_view.windowCloseListener (this);
+					app_view.windowCloseListener (this);
 					app_view.setVisible (true);		
-				
-				} else {
-					login_view.displayError ("Connection failed!");
+				} 
+				catch (ConnectionErrorException ce) {
+					login_view.displayError (ce.getMessage ());
 				}
-
+				catch (DriverNotFoundException dnfe) {
+					login_view.displayError (dnfe.getMessage ());
+				} 			
 			} 
 			else { 
 				login_view.displayError ("Invalid input field !");
@@ -222,5 +172,84 @@ class AppController implements ActionListener, WindowListener {
 			else {
 				app_view.updateStatus ("query error!", AppView.ERROR);			
 			}	
+	}
+
+
+	/*
+	 *@Override
+	 */			
+	public void windowActivated (WindowEvent e) 
+	{
+		System.out.println (
+			Thread.currentThread ().getStackTrace ()[1].getMethodName ());
+	}
+
+
+	/*
+	 *@Override
+	 */	
+	public void windowClosed (WindowEvent e) 
+	{
+		System.out.println (
+		Thread.currentThread ().getStackTrace ()[1].getMethodName ());
+	}
+
+
+	/*
+	 *@Override
+	 */	
+	public void windowClosing (WindowEvent e) 
+	{
+		System.out.println (
+			Thread.currentThread ().getStackTrace ()[1].getMethodName ());
+
+		try {
+			con.getConnection ().close ();
+			System.out.println ("Connection succefully closed! :)");
 		}
+		catch (java.sql.SQLException sqlex) {	
+			System.out.println ("Connection wasn't closed closed! :<");
+		}		
+	}
+
+
+	/*
+	 *@Override
+	 */	
+	public void windowDeactivated (WindowEvent e) 
+	{
+		System.out.println (
+			Thread.currentThread ().getStackTrace ()[1].getMethodName ());
+	}
+
+
+	/*
+	 *@Override
+	 */	
+	public void windowDeiconified (WindowEvent e) 
+	{
+		System.out.println (
+			Thread.currentThread ().getStackTrace ()[1].getMethodName ());
+	}
+
+
+	/*
+	 *@Override
+	 */		
+	public void windowIconified (WindowEvent e) 
+	{
+		System.out.println (
+			Thread.currentThread ().getStackTrace ()[1].getMethodName ());
+	}
+
+
+	/*
+	 *@Override
+	 */	
+	public void windowOpened (WindowEvent e) 
+	{
+		System.out.println (
+			Thread.currentThread ().getStackTrace ()[1].getMethodName ());
+	}
+
 }	

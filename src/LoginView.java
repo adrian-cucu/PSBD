@@ -4,12 +4,18 @@ import javax.swing.*;
 import java.awt.*;
 
 class LoginView extends JFrame {	
+
+
+	static final long serialVersionUID = 100L;
+
 	private JTextField hostname, username, port, sid, password;
 	private JButton login, reset, exit;
+
 
 	LoginView () 
 	{
 		super ("Oracle login");	
+
 		setDefaultCloseOperation (EXIT_ON_CLOSE);
 		setBounds (450, 250, 450, 300);	
 		setResizable (false);
@@ -91,35 +97,42 @@ class LoginView extends JFrame {
 		return hostname.getText ().trim ();
 	}
 
+
 	public String getUsername ()
 	{
 		return username.getText ().trim ();
 	}
+
 
 	public String getSID ()
 	{
 		return sid.getText ().trim ();
 	}
 
+
 	public int getPort ()
 	{
 		return Integer.parseInt (port.getText ().trim ());		
 	}
+
 
 	public String getPass ()
 	{
 		return password.getText ().trim ();
 	}	
 
+
 	public void displayError (String errorMsg)
 	{
 		showMessageDialog (this, errorMsg, "Error", ERROR_MESSAGE);
 	}	
+
 	
 	public void addLoginListener (ActionListener lsnr)
 	{
 		login.addActionListener (lsnr);
 	}  	
+
 	
 	public Object getObs ()
 	{

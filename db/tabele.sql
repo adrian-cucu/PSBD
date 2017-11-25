@@ -84,16 +84,17 @@ ADD CONSTRAINT profil_materie_fk_materie
 FOREIGN KEY (id_materie) REFERENCES materie(id_materie);
 ---------------------------------------------------------------
 
-/*
 CREATE TABLE medie (
 	id_elev 		NUMBER(10) NOT NULL,	
-	id_clasa		NUMBER(10) NOT NULL,
-	id_materie		NUMBER(10) NOT NULL,
 	medie			NUMBER(2)  NOT NULL,
+	an_scolar		NUMBER(2)  NOT NULL,
 	semestru		NUMBER(2)  NOT NULL
 );
-*/
 
+ALTER TABLE medie
+ADD CONSTRAINT medie_fk_elev
+FOREIGN KEY (id_elev) REFERENCES elev (id_elev);
+---------------------------------------------------------------
 
 CREATE TABLE bursa (
 	id_bursa		NUMBER(10) NOT NULL,
@@ -136,13 +137,6 @@ INSERT INTO  profil VALUES (3, 'Filologie');
 
 
 -----------------------------------------------------------------------------------
-
-
-
------------------------------------------------------------------------------------
-
-
------------------------------------------------------------------------------------
 INSERT INTO materie (id_materie, nume_materie) VALUES (1, 'Limba si literatura romana');
 INSERT INTO materie (id_materie, nume_materie) VALUES (2, 'Matematica');
 INSERT INTO materie (id_materie, nume_materie) VALUES (3, 'Informatica');
@@ -156,6 +150,176 @@ INSERT INTO materie (id_materie, nume_materie) VALUES (10, 'Religie');
 INSERT INTO materie (id_materie, nume_materie) VALUES (11, 'Tehnologia informatiei');
 INSERT INTO materie (id_materie, nume_materie) VALUES (12, 'Fizica');
 INSERT INTO materie (id_materie, nume_materie) VALUES (13, 'Stiinte politice');
+------------------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------------------
+INSERT INTO profil_materie VALUES (1, 1, 9);
+INSERT INTO profil_materie VALUES (1, 1, 10);
+INSERT INTO profil_materie VALUES (1, 1, 11);
+INSERT INTO profil_materie VALUES (1, 1, 12);
+
+INSERT INTO profil_materie VALUES (1, 2, 9);
+INSERT INTO profil_materie VALUES (1, 2, 10);
+INSERT INTO profil_materie VALUES (1, 2, 11);
+INSERT INTO profil_materie VALUES (1, 2, 12);
+
+INSERT INTO profil_materie VALUES (1, 3, 9);
+INSERT INTO profil_materie VALUES (1, 3, 10);
+INSERT INTO profil_materie VALUES (1, 3, 11);
+INSERT INTO profil_materie VALUES (1, 3, 12);
+
+INSERT INTO profil_materie VALUES (1, 7, 9);
+INSERT INTO profil_materie VALUES (1, 7, 10);
+INSERT INTO profil_materie VALUES (1, 7, 11);
+INSERT INTO profil_materie VALUES (1, 7, 12);
+
+INSERT INTO profil_materie VALUES (1, 8, 9);
+INSERT INTO profil_materie VALUES (1, 8, 10);
+INSERT INTO profil_materie VALUES (1, 8, 11);
+INSERT INTO profil_materie VALUES (1, 8, 12);
+
+INSERT INTO profil_materie VALUES (1, 9, 9);
+INSERT INTO profil_materie VALUES (1, 9, 10);
+INSERT INTO profil_materie VALUES (1, 9, 11);
+INSERT INTO profil_materie VALUES (1, 9, 12);
+
+INSERT INTO profil_materie VALUES (1, 6, 9);
+INSERT INTO profil_materie VALUES (1, 6, 10);
+INSERT INTO profil_materie VALUES (1, 6, 11);
+INSERT INTO profil_materie VALUES (1, 6, 12);
+
+INSERT INTO profil_materie VALUES (1, 5, 10);
+
+INSERT INTO profil_materie VALUES (1, 4, 12);
+
+INSERT INTO profil_materie VALUES (1, 10, 9);
+INSERT INTO profil_materie VALUES (1, 10, 10);
+INSERT INTO profil_materie VALUES (1, 10, 11);
+INSERT INTO profil_materie VALUES (1, 10, 12);
+
+INSERT INTO profil_materie VALUES (1, 11, 9);
+INSERT INTO profil_materie VALUES (1, 11, 10);
+INSERT INTO profil_materie VALUES (1, 11, 11);
+INSERT INTO profil_materie VALUES (1, 11, 12);
+
+INSERT INTO profil_materie VALUES (1, 12, 9);
+INSERT INTO profil_materie VALUES (1, 12, 10);
+INSERT INTO profil_materie VALUES (1, 12, 11);
+INSERT INTO profil_materie VALUES (1, 12, 12);
+
+
+INSERT INTO profil_materie VALUES (2, 1, 9);
+INSERT INTO profil_materie VALUES (2, 1, 10);
+INSERT INTO profil_materie VALUES (2, 1, 11);
+INSERT INTO profil_materie VALUES (2, 1, 12);
+
+INSERT INTO profil_materie VALUES (2, 2, 9);
+INSERT INTO profil_materie VALUES (2, 2, 10);
+INSERT INTO profil_materie VALUES (2, 2, 11);
+INSERT INTO profil_materie VALUES (2, 2, 12);
+
+INSERT INTO profil_materie VALUES (2, 3, 9);
+INSERT INTO profil_materie VALUES (2, 3, 10);
+INSERT INTO profil_materie VALUES (2, 3, 11);
+INSERT INTO profil_materie VALUES (2, 3, 12);
+
+INSERT INTO profil_materie VALUES (2, 7, 9);
+INSERT INTO profil_materie VALUES (2, 7, 10);
+INSERT INTO profil_materie VALUES (2, 7, 11);
+INSERT INTO profil_materie VALUES (2, 7, 12);
+
+INSERT INTO profil_materie VALUES (2, 8, 9);
+
+INSERT INTO profil_materie VALUES (2, 8, 10);
+INSERT INTO profil_materie VALUES (2, 8, 11);
+INSERT INTO profil_materie VALUES (2, 8, 12);
+
+INSERT INTO profil_materie VALUES (2, 9, 9);
+INSERT INTO profil_materie VALUES (2, 9, 10);
+INSERT INTO profil_materie VALUES (2, 9, 11);
+INSERT INTO profil_materie VALUES (2, 9, 12);
+
+INSERT INTO profil_materie VALUES (2, 6, 9);
+INSERT INTO profil_materie VALUES (2, 6, 10);
+INSERT INTO profil_materie VALUES (2, 6, 11);
+INSERT INTO profil_materie VALUES (2, 6, 12);
+
+INSERT INTO profil_materie VALUES (2, 5, 10);
+
+INSERT INTO profil_materie VALUES (2, 4, 12);
+
+INSERT INTO profil_materie VALUES (2, 10, 9);
+INSERT INTO profil_materie VALUES (2, 10, 10);
+INSERT INTO profil_materie VALUES (2, 10, 11);
+INSERT INTO profil_materie VALUES (2, 10, 12);
+
+INSERT INTO profil_materie VALUES (2, 11, 9);
+INSERT INTO profil_materie VALUES (2, 11, 10);
+
+INSERT INTO profil_materie VALUES (2, 12, 9);
+INSERT INTO profil_materie VALUES (2, 12, 10);
+INSERT INTO profil_materie VALUES (2, 12, 11);
+INSERT INTO profil_materie VALUES (2, 12, 12);
+
+
+INSERT INTO profil_materie VALUES (3, 1, 9);
+INSERT INTO profil_materie VALUES (3, 1, 10);
+INSERT INTO profil_materie VALUES (3, 1, 11);
+INSERT INTO profil_materie VALUES (3, 1, 12);
+
+INSERT INTO profil_materie VALUES (3, 2, 9);
+INSERT INTO profil_materie VALUES (3, 2, 10);
+
+INSERT INTO profil_materie VALUES (3, 3, 9);
+
+INSERT INTO profil_materie VALUES (3, 7, 9);
+INSERT INTO profil_materie VALUES (3, 7, 10);
+INSERT INTO profil_materie VALUES (3, 7, 11);
+INSERT INTO profil_materie VALUES (3, 7, 12);
+
+INSERT INTO profil_materie VALUES (3, 8, 9);
+INSERT INTO profil_materie VALUES (3, 8, 10);
+INSERT INTO profil_materie VALUES (3, 8, 11);
+INSERT INTO profil_materie VALUES (3, 8, 12);
+
+INSERT INTO profil_materie VALUES (3, 9, 9);
+INSERT INTO profil_materie VALUES (3, 9, 10);
+INSERT INTO profil_materie VALUES (3, 9, 11);
+INSERT INTO profil_materie VALUES (3, 9, 12);
+
+INSERT INTO profil_materie VALUES (3, 6, 9);
+INSERT INTO profil_materie VALUES (3, 6, 10);
+INSERT INTO profil_materie VALUES (3, 6, 11);
+INSERT INTO profil_materie VALUES (3, 6, 12);
+
+INSERT INTO profil_materie VALUES (3, 5, 9);
+INSERT INTO profil_materie VALUES (3, 5, 10);
+INSERT INTO profil_materie VALUES (3, 5, 11);
+INSERT INTO profil_materie VALUES (3, 5, 12);
+
+INSERT INTO profil_materie VALUES (3, 4, 11);
+INSERT INTO profil_materie VALUES (3, 4, 12);
+
+INSERT INTO profil_materie VALUES (3, 10, 9);
+INSERT INTO profil_materie VALUES (3, 10, 10);
+INSERT INTO profil_materie VALUES (3, 10, 11);
+INSERT INTO profil_materie VALUES (3, 10, 12);
+
+INSERT INTO profil_materie VALUES (3, 12, 9);
+
+INSERT INTO profil_materie VALUES (3, 13, 9);
+INSERT INTO profil_materie VALUES (3, 13, 10);
+INSERT INTO profil_materie VALUES (3, 13, 11);
+INSERT INTO profil_materie VALUES (3, 13, 12);
+
+/*
+SELECT p.*, m.nume_materie, pm.an_clasa 
+FROM profil p
+INNER JOIN profil_materie pm ON p.id_profil = pm.id_profil
+INNER JOIN materie m ON pm.id_materie = m.id_materie
+ORDER BY pm.an_clasa;
+*/
 -----------------------------------------------------------------------------------
 
 
@@ -212,7 +376,6 @@ INSERT INTO clasa (id_clasa, id_profil, an_scolar, cod, clasa) VALUES (12, 3, 20
 -----------------------------------------------------------------------------------
 
 
-
 -----------------------------------------------------------------------------------
 INSERT INTO elev_clasa (id_elev, id_clasa) VALUES ('1', '1');
 INSERT INTO elev_clasa (id_elev, id_clasa) VALUES ('2', '1');
@@ -262,17 +425,27 @@ COLUMN nationalitate format a15;
 SET PAGESIZE 10000;
 SET LINESIZE 200;
 
-SELECT * FROM elev;
+SELECT e.id_elev, e.nume, e.prenume , c.clasa, c.cod, p.nume_profil
+FROM elev e
+INNER JOIN elev_clasa ec 
+	ON ec.id_elev = e.id_elev
+INNER JOIN clasa c 
+	ON ec.id_clasa = c.id_clasa
+INNER JOIN profil p
+	ON p.id_profil = c.id_profil;
 
+/*
 SELECT e.id_elev, e.nume, e.prenume, c.an_scolar, c.cod, c.clasa
 FROM elev e
 INNER JOIN elev_clasa ec ON e.id_elev = ec.id_elev
 INNER JOIN clasa c ON ec.id_clasa = c.id_clasa; 
+*/
 
+/*
 SELECT * FROM profil;
 SELECT * FROM clasa;
-
 SELECT * FROM bursa;
+*/
 
 --SELECT e.nume, e.prenume, e.etnie, 
 --	c.id_clasa, c.an_scolar, c.cod, c.clasa, p.nume_profil
@@ -282,22 +455,19 @@ SELECT * FROM bursa;
 --INNER JOIN profil p ON c.id_profil = p.id_profil;
 
 -----------------------------------
+DROP TABLE medie;
 DROP TABLE elev_bursa;
 DROP TABLE elev_clasa;
 DROP TABLE profil_materie;
---DROP TABLE elev;
+DROP TABLE elev;
 DROP TABLE clasa;
 DROP TABLE profil;
 DROP TABLE materie;
---DROP TABLE medie;
 DROP TABLE bursa;
 -----------------------------------
 
-DECLARE
 
-BEGIN
-	
+BEGIN	
 	dbms_output.put_line ('Salut');
-	
 END;
 /

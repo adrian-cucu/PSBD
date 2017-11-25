@@ -1,6 +1,8 @@
 JCOMPILE := javac
 JAVA := java
-JSOURCE := Conexiune  DataModel
+JSOURCE := DataModel Main AppController AppView \
+			LoginView InputCheck MyConnection \
+			DriverNotFoundException ConnectionErrorException
 MAIN := Main
 
 ifndef ORACLE_HOME

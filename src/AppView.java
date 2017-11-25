@@ -5,6 +5,8 @@ import javax.swing.*;
 import java.awt.*;
 
 class AppView extends JFrame {	
+	static final long serialVersionUID = 0xfL;
+
 	private final boolean DEBUG = true;
 
 	private JTabbedPane tabbed_pane = null;
@@ -50,12 +52,12 @@ class AppView extends JFrame {
 		status_panel.add (status_label);		
 	}	
 	
+
 	public void updateStatus (String status, int sts)
 	{
 		switch (sts) {
 			case AppView.SUCCESS:
-					status_label.setForeground (new Color (0x05, 0x63, 0x0c));		
-				break;
+					status_label.setForeground (new Color (0x05, 0x63, 0x0c));						break;
 			case AppView.ERROR:
 					status_label.setForeground (new Color (0xdf, 0x06, 0x06));
 				break;
@@ -65,11 +67,13 @@ class AppView extends JFrame {
 		status_label.setText (status);
 	}
 
+
 	public void updateStatus (String status)
 	{
 		status_label.setForeground (Color.BLACK);		
 		status_label.setText (status);
 	}
+
 
 	private JPanel createQueryPanel ()
 	{
@@ -106,6 +110,7 @@ class AppView extends JFrame {
   		scroll_pane = new JScrollPane (table);
         query_result_panel.add (scroll_pane);
 	}	
+
 
 	public void addQueryResult (String text)
 	{
@@ -162,13 +167,16 @@ class AppView extends JFrame {
 		execute.addActionListener (lsnr);
 	}
 
+
 	public void windowCloseListener (WindowListener lsnr)
 	{
 		addWindowListener (lsnr);
 	}
 
+
 	public Object getObs ()
 	{
 		return execute;
 	}	
+
 }
