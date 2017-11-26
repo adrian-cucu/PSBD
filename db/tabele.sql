@@ -7,7 +7,7 @@ CREATE TABLE elev (
 	nume 			VARCHAR2(50) NOT NULL,
 	prenume 		VARCHAR2(50) NOT NULL,
 	adresa 			VARCHAR2(256) NOT NULL,
-	cnp				CHAR(13) NOT NULL,
+	cnp				VARCHAR2(13) NOT NULL,
 	etnie 			VARCHAR2(30) NOT NULL,
 	nationalitate 	VARCHAR2(30) NOT NULL
 );
@@ -16,6 +16,17 @@ ALTER TABLE elev
 ADD CONSTRAINT elev_pk 
 PRIMARY KEY (id_elev);
 
+CREATE SEQUENCE elev_seq;
+
+CREATE OR REPLACE TRIGGER elev_on_insert
+	BEFORE INSERT ON elev
+	FOR EACH ROW 
+BEGIN	
+	SELECT elev_seq.nextval
+	INTO :new.id_elev
+	FROM dual;
+END;
+/
 --------------------------------------------------------
 CREATE TABLE profil (
 	id_profil		NUMBER(10) NOT NULL,
@@ -26,6 +37,17 @@ ALTER TABLE profil
 ADD CONSTRAINT profil_pk 
 PRIMARY KEY (id_profil);
 
+CREATE SEQUENCE profil_seq;
+
+CREATE OR REPLACE TRIGGER profil_on_insert
+	BEFORE INSERT ON profil
+	FOR EACH ROW 
+BEGIN	
+	SELECT profil_seq.nextval
+	INTO :new.id_profil
+	FROM dual;
+END;
+/
 --------------------------------------------------------
 CREATE TABLE clasa (
 	id_clasa 		NUMBER(10) NOT NULL,
@@ -41,14 +63,23 @@ PRIMARY KEY (id_clasa);
 
 ALTER TABLE clasa 
 ADD CONSTRAINT clsa_fk_profil 
-FOREIGN KEY (id_profil) REFERENCES profil (id_profil); 
 
+CREATE SEQUENCE clasa_seq;
+
+CREATE OR REPLACE TRIGGER clasa_on_insert
+	BEFORE INSERT ON clasa
+	FOR EACH ROW 
+BEGIN	
+	SELECT clasa_seq.nextval
+	INTO :new.id_clasa
+	FROM dual;
+END;
+/
 --------------------------------------------------------
 CREATE TABLE elev_clasa (
 	id_elev			NUMBER(10) NOT NULL,
 	id_clasa		NUMBER(10) NOT NULL
 );
-
 
 ALTER TABLE elev_clasa 
 ADD CONSTRAINT elev_clasa_fk_elev 
@@ -57,7 +88,6 @@ FOREIGN KEY (id_elev) REFERENCES elev(id_elev);
 ALTER TABLE elev_clasa
 ADD CONSTRAINT elev_clasa_fk_clasa 
 FOREIGN KEY (id_clasa) REFERENCES clasa(id_clasa);
-
 --------------------------------------------------------
 CREATE TABLE materie (
 	id_materie		NUMBER(10) NOT NULL,
@@ -67,7 +97,6 @@ CREATE TABLE materie (
 ALTER TABLE materie
 ADD CONSTRAINT materie_pk 
 PRIMARY KEY (id_materie);
-
 ---------------------------------------------------------------
 CREATE TABLE profil_materie (
 	id_profil		NUMBER(10) NOT NULL,
@@ -83,7 +112,6 @@ ALTER TABLE profil_materie
 ADD CONSTRAINT profil_materie_fk_materie 
 FOREIGN KEY (id_materie) REFERENCES materie(id_materie);
 ---------------------------------------------------------------
-
 CREATE TABLE medie (
 	id_elev 		NUMBER(10) NOT NULL,	
 	medie			NUMBER(2)  NOT NULL,
@@ -95,7 +123,6 @@ ALTER TABLE medie
 ADD CONSTRAINT medie_fk_elev
 FOREIGN KEY (id_elev) REFERENCES elev (id_elev);
 ---------------------------------------------------------------
-
 CREATE TABLE bursa (
 	id_bursa		NUMBER(10) NOT NULL,
 	tip_bursa		VARCHAR(30) NOT NULL,
@@ -112,7 +139,6 @@ CREATE TABLE elev_bursa (
 	id_bursa		NUMBER(10) NOT NULL,
 	an				NUMBER(10) NOT NULL
 );
-
  
 ALTER TABLE elev_bursa 
 ADD CONSTRAINT elev_bursa_fk_elev
@@ -130,9 +156,9 @@ INSERT INTO bursa (id_bursa, tip_bursa, valoare) VALUES ('3', 'ajutor social', '
 
 
 -----------------------------------------------------------------------------------
-INSERT INTO  profil VALUES (1, 'Matematica-Informatica');
-INSERT INTO  profil VALUES (2, 'Matematica-Informatica intensiv informatica');
-INSERT INTO  profil VALUES (3, 'Filologie');
+INSERT INTO  profil (nume_profil) VALUES ('Matematica-Informatica');
+INSERT INTO  profil (nume_profil) VALUES ('Matematica-Informatica intensiv informatica');
+INSERT INTO  profil (nume_profil) VALUES ('Filologie');
 -----------------------------------------------------------------------------------
 
 
@@ -324,6 +350,7 @@ ORDER BY pm.an_clasa;
 
 
 -----------------------------------------------------------------------------------
+/*
 INSERT INTO elev VALUES ('1', 'Cucu', 'Adrian', 'Str. Lalelelor nr. 1 bl. AK47, et -1', '1960212170071', 'romana','romana');	
 INSERT INTO elev VALUES ('2', 'Timofte', 'Marinel', 'Str. Dealului nr. 69 sat malu', '1900112170071', 'romana', 'romana');	
 INSERT INTO elev VALUES ('3', 'Poteras', 'Bianca', 'Str. Dilimanilor nr. 3 Fantanele', '2960513170030', 'romana', 'romana');	
@@ -354,6 +381,7 @@ INSERT INTO elev VALUES ('27', 'Vlase', 'Bogdan', 'Str. Victor Vilcovici nr. 44 
 INSERT INTO elev VALUES ('28', 'Ghisman', 'Irinel', 'Str. Saturn  nr. 13 Galati', '1960719170000', 'romana', 'romana');	
 INSERT INTO elev VALUES ('29', 'Vivianu', 'Marius', 'Str. Schela Galati', '1960123170099', 'romana', 'romana');	
 INSERT INTO elev VALUES ('30', 'Vianu', 'Tudor', 'Str. Furnalului Galati', '1960910170044', 'romana', 'romana');	
+*/
 -----------------------------------------------------------------------------------
 
 
@@ -425,6 +453,9 @@ COLUMN nationalitate format a15;
 SET PAGESIZE 10000;
 SET LINESIZE 200;
 
+SELECT * FROM elev;
+
+
 SELECT e.id_elev, e.nume, e.prenume , c.clasa, c.cod, p.nume_profil
 FROM elev e
 INNER JOIN elev_clasa ec 
@@ -455,15 +486,23 @@ SELECT * FROM bursa;
 --INNER JOIN profil p ON c.id_profil = p.id_profil;
 
 -----------------------------------
+/*
+DROP SEQUENCE profil_seq;
+DROP SEQUENCE clasa_seq;
+
 DROP TABLE medie;
 DROP TABLE elev_bursa;
 DROP TABLE elev_clasa;
 DROP TABLE profil_materie;
+
 DROP TABLE elev;
+DROP SEQUENCE elev_seq;
+
 DROP TABLE clasa;
 DROP TABLE profil;
 DROP TABLE materie;
 DROP TABLE bursa;
+*/
 -----------------------------------
 
 

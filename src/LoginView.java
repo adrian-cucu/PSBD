@@ -3,8 +3,8 @@ import static javax.swing.JOptionPane.*;
 import javax.swing.*;
 import java.awt.*;
 
-class LoginView extends JFrame {	
 
+class LoginView extends JFrame {	
 
 	static final long serialVersionUID = 100L;
 
@@ -19,9 +19,8 @@ class LoginView extends JFrame {
 		setDefaultCloseOperation (EXIT_ON_CLOSE);
 		setBounds (450, 250, 450, 300);	
 		setResizable (false);
-		
 		getContentPane ().setLayout (null);
-	
+		
 		JLabel hostname_label = new JLabel ("Hostname: ");  
 		hostname = new JTextField (30);
 		hostname_label.setBounds (50, 30, 100, 20);

@@ -1,8 +1,9 @@
 JCOMPILE := javac
 JAVA := java
-JSOURCE := DataModel Main AppController AppView \
+JSOURCE := Main AppController AppView \
 			LoginView InputCheck MyConnection \
-			DriverNotFoundException ConnectionErrorException
+			DriverNotFoundException ConnectionErrorException ElevDataModel \
+			ClasaDataModel ProfilDataModel
 MAIN := Main
 
 ifndef ORACLE_HOME
@@ -10,8 +11,9 @@ ifndef ORACLE_HOME
 endif
 
 JAR_LIB := ${ORACLE_HOME}/jdbc/lib/ojdbc5.jar
+CAL_LIB := lib/jcalendar-1.4.jar
 
-CLASSPATH := .:${JAR_LIB}
+CLASSPATH := .:${JAR_LIB}:${CAL_LIB}
 CLASSES_DIR := class
 SOURCES_DIR := src
 
