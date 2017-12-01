@@ -1,5 +1,16 @@
+import java.awt.*;
+import javax.swing.*;
+import javax.swing.table.*;
+import java.sql.*;
+import java.util.*;
 
 class ElevDataModel {
+
+	private static DefaultTableModel dTableModel = null;
+
+	private static Object[] columns = new Object[]{
+		"id_elev", "nume", "prenume", "adresa", "cnp", "etnie", "nationalitate"
+	};
 
 	private int id_elev;
 	private String nume;
@@ -22,10 +33,9 @@ class ElevDataModel {
 	}
 
 
-	public ElevDataModel (java.sql.ResultSet set) 
-		throws java.sql.SQLException 
+	public ElevDataModel (ResultSet set) 
+		throws SQLException 
 	{
-
 		id_elev = set.getInt ("id_elev");
 		nume = set.getString ("nume");
 		prenume = set.getString ("prenume");
@@ -34,6 +44,50 @@ class ElevDataModel {
 		etnie = set.getString ("etnie");
 		nationalitate = set.getString ("nationalitate");
 	}	
+
+	
+	public Object[] get ()
+	{
+		return new Object[]{
+			id_elev, nume, prenume, adresa, cnp, etnie, nationalitate
+		};
+	}
+
+
+    public static DefaultTableModel getTableModel ()
+    {
+        if (dTableModel == null) {
+            dTableModel = new DefaultTableModel () {
+                public static final long serialVersionUID = 1L;
+
+                public Class<?> getColumnClass (int column)
+                {
+                    Class<?> returnValue;
+                    if ((column >= 0) && (column < getColumnCount ())) {
+                        returnValue  = getValueAt (0, column).getClass ();
+                    } else {
+                        returnValue = Object.class;
+                    }
+                    return returnValue;
+                }
+                public boolean isCellEditable (int row, int column) {
+                    return false;
+                }
+            };
+							
+            dTableModel.addTableModelListener (
+                new javax.swing.event.TableModelListener () {
+                public void tableChanged (javax.swing.event.TableModelEvent e) {
+                    System.out.println ("Modificare !!");
+                }
+            });
+
+            for (Object columnName : columns) {
+                dTableModel.addColumn (columnName);
+            }
+        }
+        return dTableModel;
+    }
 
 
 	public int getID () 
@@ -88,4 +142,38 @@ class ElevDataModel {
 			this.getNat ();
 	}
 
+
+	public static void main (String[] args)
+		throws DriverNotFoundException, ConnectionErrorException
+	{
+		MyConnection con = 
+			new MyConnection ("jdbc:oracle:thin:@localhost:1521:XE", "adrian", "biblioteca");
+
+		DefaultTableModel dtm = ElevDataModel.getTableModel ();
+
+		Vector <ElevDataModel> data = con.getAllElevi ();
+
+		for (ElevDataModel o : data) {
+			dtm.addRow (o.get ());
+		}			
+		
+		JFrame frame = new JFrame ("Data Table Demo");
+		frame.setSize (800, 800);
+		frame.setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
+	
+		JTable table = new JTable (dtm);
+		table.setRowHeight (table.getRowHeight () + 10);
+		table.setFont (new Font ("Serif", Font.PLAIN, 20));
+		table.setAutoCreateRowSorter (true);
+//		table.setAutoResizeMode (JTable.AUTO_RESIZE_ON);
+
+		JScrollPane scrollPane = new JScrollPane (table);
+		JPanel panel = new JPanel ();
+		panel.setLayout (new BorderLayout ());	
+		panel.add (scrollPane, BorderLayout.CENTER);
+
+		frame.add (panel);
+		frame.setVisible (true);
+		
+	}
 }

@@ -350,38 +350,96 @@ ORDER BY pm.an_clasa;
 
 
 -----------------------------------------------------------------------------------
-/*
-INSERT INTO elev VALUES ('1', 'Cucu', 'Adrian', 'Str. Lalelelor nr. 1 bl. AK47, et -1', '1960212170071', 'romana','romana');	
-INSERT INTO elev VALUES ('2', 'Timofte', 'Marinel', 'Str. Dealului nr. 69 sat malu', '1900112170071', 'romana', 'romana');	
-INSERT INTO elev VALUES ('3', 'Poteras', 'Bianca', 'Str. Dilimanilor nr. 3 Fantanele', '2960513170030', 'romana', 'romana');	
-INSERT INTO elev VALUES ('4', 'Popovici', 'Paula', 'Str. Tiglina 1. Galati', '2970429170029', 'romana', 'romana');	
-INSERT INTO elev VALUES ('5', 'Pecheanu', 'Margareta Bianca', 'Str. Voievozinor nr. 69', '2960308170055', 'romana', 'romana');	
-INSERT INTO elev VALUES ('6', 'Ungureanu', 'Irinel', 'Str. Strazilor nr. 111 Hunedoara', '1980319170072', 'romana', 'romana');	
-INSERT INTO elev VALUES ('7', 'Iftode', 'Andrei', 'Str. Principala nr. 1 Smardan Galati', '1970110170071', 'romana', 'romana');	
-INSERT INTO elev VALUES ('8', 'Crihana', 'Cosmin', 'Str. Erorilor nr. 4 Galati', '1960522170031', 'romana', 'romana');	
-INSERT INTO elev VALUES ('9', 'Constantin', 'Catalin', 'Str. Ororilor nr. 78 sat Costi Galati', '1961129170021', 'romana', 'romana');	
-INSERT INTO elev VALUES ('10', 'Muratu', 'Viorica Daniela', 'Str. Aoleu nr. 999999', '2950421170042', 'romana', 'romana');	
-INSERT INTO elev VALUES ('11', 'Albu', 'Mihai', 'Str. Alba-Ca-Zapada nr. 12 Galati', '1961204170031', 'romana', 'romana');	
-INSERT INTO elev VALUES ('12', 'Aurica', 'Florin', 'Str. nr. 2 Liesti', '1960601170075', 'romana', 'romana');	
-INSERT INTO elev VALUES ('13', 'Leni', 'Petru', 'Str. Cahul Moldova', '1960414000', 'moldova', 'moldova');	
-INSERT INTO elev VALUES ('14', 'Cernov', 'Constantin', 'Str. Cahul Moldova', '1960522001', 'moldova', 'moldova');	
-INSERT INTO elev VALUES ('15', 'Cernobal', 'Tortosi', 'Str. Zorillor ce au apus', '1960112170', 'moldova', 'moldova');	
-INSERT INTO elev VALUES ('16', 'Odobasian', 'Romeo', 'Str. Vitei de vie nr. 1 Moldova', '1950213298', 'moldova', 'moldova');	
-INSERT INTO elev VALUES ('17', 'Camenschi', 'Stela', 'Str. Dinamitei nr. 12 Moldova',   '2980134569', 'moldova', 'moldova');	
-INSERT INTO elev VALUES ('18', 'Leni', 'Felicia', 'Str. nr. 1 Cahul Moldova', '2960112170', 'moldova', 'moldova');
-INSERT INTO elev VALUES ('19', 'Leni', 'Lucia', 'Str. nr. 1 Cahul Moldova', '2990707456', 'moldova', 'moldova');	
-INSERT INTO elev VALUES ('20', 'Garajiu', 'Cruela', 'Str. nr. 1 Cahul Moldova', '2971122176', 'moldova', 'moldova');	
-INSERT INTO elev VALUES ('21', 'Zubucu', 'Janea', 'Str. nr. 44 Nisiporeni', '2941130000', 'moldova', 'moldova');	
-INSERT INTO elev VALUES ('22', 'Suca', 'Bleat', 'Str. Mihai Viteazu nr. 3 Nisiporeni Moldova', '2960212888', 'moldova', 'moldova');	
-INSERT INTO elev VALUES ('23', 'Salamandra', 'Catalin', 'Str. nr. 2 Zarafet Moldova', '1960214888', 'moldova', 'moldova');	
-INSERT INTO elev VALUES ('24', 'Maftei', 'Radu', 'Str. Carbidului Galati', '1960515170045', 'romana', 'romana');	
-INSERT INTO elev VALUES ('25', 'Maglavait', 'Catalin', 'Str. Exploziei nr. 4 Galati', '197060617967', 'romana', 'romana');	
-INSERT INTO elev VALUES ('26', 'Zaiafet', 'Dumitru', 'Str. Super-Super Galati', '1960515170045', 'romana', 'romana');	
-INSERT INTO elev VALUES ('27', 'Vlase', 'Bogdan', 'Str. Victor Vilcovici nr. 44 Galati', '1970515170045', 'romana', 'romana');	
-INSERT INTO elev VALUES ('28', 'Ghisman', 'Irinel', 'Str. Saturn  nr. 13 Galati', '1960719170000', 'romana', 'romana');	
-INSERT INTO elev VALUES ('29', 'Vivianu', 'Marius', 'Str. Schela Galati', '1960123170099', 'romana', 'romana');	
-INSERT INTO elev VALUES ('30', 'Vianu', 'Tudor', 'Str. Furnalului Galati', '1960910170044', 'romana', 'romana');	
-*/
+INSERT INTO elev(nume, prenume, adresa, cnp, etnie, nationalitate) 
+VALUES ('Cucu', 'Adrian', 'Str. Lalelelor nr. 1 bl. AK47, et -1', '1960212170071', 'romana','romana');	
+
+INSERT INTO elev(nume, prenume, adresa, cnp, etnie, nationalitate) 
+VALUES ('Timofte', 'Marinel', 'Str. Dealului nr. 69 sat malu', '1900112170071', 'romana', 'romana');	
+
+INSERT INTO elev(nume, prenume, adresa, cnp, etnie, nationalitate)  
+VALUES ('Poteras', 'Bianca', 'Str. Dilimanilor nr. 3 Fantanele', '2960513170030', 'romana', 'romana');	
+
+INSERT INTO elev (nume, prenume, adresa, cnp, etnie, nationalitate) 
+VALUES ('Popovici', 'Paula', 'Str. Tiglina 1. Galati', '2970429170029', 'romana', 'romana');	
+
+INSERT INTO elev(nume, prenume, adresa, cnp, etnie, nationalitate)  
+VALUES ('Pecheanu', 'Margareta Bianca', 'Str. Voievozinor nr. 69', '2960308170055', 'romana', 'romana');	
+
+INSERT INTO elev(nume, prenume, adresa, cnp, etnie, nationalitate) 
+VALUES ('Ungureanu', 'Irinel', 'Str. Strazilor nr. 111 Hunedoara', '1980319170072', 'romana', 'romana');	
+
+INSERT INTO elev(nume, prenume, adresa, cnp, etnie, nationalitate)
+VALUES ('Iftode', 'Andrei', 'Str. Principala nr. 1 Smardan Galati', '1970110170071', 'romana', 'romana');	
+
+INSERT INTO elev (nume, prenume, adresa, cnp, etnie, nationalitate)
+VALUES ('Crihana', 'Cosmin', 'Str. Erorilor nr. 4 Galati', '1960522170031', 'romana', 'romana');	
+
+INSERT INTO elev(nume, prenume, adresa, cnp, etnie, nationalitate)  
+VALUES ('Constantin', 'Catalin', 'Str. Ororilor nr. 78 sat Costi Galati', '1961129170021', 'romana', 'romana');	
+
+INSERT INTO elev(nume, prenume, adresa, cnp, etnie, nationalitate)  
+VALUES ('Muratu', 'Viorica Daniela', 'Str. Aoleu nr. 999999', '2950421170042', 'romana', 'romana');	
+
+INSERT INTO elev (nume, prenume, adresa, cnp, etnie, nationalitate) 
+VALUES ('Albu', 'Mihai', 'Str. Alba-Ca-Zapada nr. 12 Galati', '1961204170031', 'romana', 'romana');	
+
+INSERT INTO elev (nume, prenume, adresa, cnp, etnie, nationalitate) 
+VALUES ('Aurica', 'Florin', 'Str. nr. 2 Liesti', '1960601170075', 'romana', 'romana');	
+
+INSERT INTO elev (nume, prenume, adresa, cnp, etnie, nationalitate)
+VALUES ('Leni', 'Petru', 'Str. Cahul Moldova', '1960414000', 'moldova', 'moldova');	
+
+INSERT INTO elev (nume, prenume, adresa, cnp, etnie, nationalitate)
+VALUES ('Cernov', 'Constantin', 'Str. Cahul Moldova', '1960522001', 'moldova', 'moldova');	
+
+INSERT INTO elev (nume, prenume, adresa, cnp, etnie, nationalitate) 
+VALUES ('Cernobal', 'Tortosi', 'Str. Zorillor ce au apus', '1960112170', 'moldova', 'moldova');	
+
+INSERT INTO elev (nume, prenume, adresa, cnp, etnie, nationalitate) 
+VALUES ('Odobasian', 'Romeo', 'Str. Vitei de vie nr. 1 Moldova', '1950213298', 'moldova', 'moldova');	
+
+INSERT INTO elev (nume, prenume, adresa, cnp, etnie, nationalitate)
+VALUES ('Camenschi', 'Stela', 'Str. Dinamitei nr. 12 Moldova',   '2980134569', 'moldova', 'moldova');	
+
+INSERT INTO elev (nume, prenume, adresa, cnp, etnie, nationalitate)
+VALUES ('Leni', 'Felicia', 'Str. nr. 1 Cahul Moldova', '2960112170', 'moldova', 'moldova');
+
+INSERT INTO elev (nume, prenume, adresa, cnp, etnie, nationalitate)
+VALUES ('Leni', 'Lucia', 'Str. nr. 1 Cahul Moldova', '2990707456', 'moldova', 'moldova');	
+
+INSERT INTO elev (nume, prenume, adresa, cnp, etnie, nationalitate) 
+VALUES ('Garajiu', 'Cruela', 'Str. nr. 1 Cahul Moldova', '2971122176', 'moldova', 'moldova');	
+
+INSERT INTO elev (nume, prenume, adresa, cnp, etnie, nationalitate)
+VALUES ('Zubucu', 'Janea', 'Str. nr. 44 Nisiporeni', '2941130000', 'moldova', 'moldova');	
+
+INSERT INTO elev (nume, prenume, adresa, cnp, etnie, nationalitate) 
+VALUES ('Suca', 'Bleat', 'Str. Mihai Viteazu nr. 3 Nisiporeni Moldova', '2960212888', 'moldova', 'moldova');	
+
+INSERT INTO elev (nume, prenume, adresa, cnp, etnie, nationalitate) 
+VALUES ('Salamandra', 'Catalin', 'Str. nr. 2 Zarafet Moldova', '1960214888', 'moldova', 'moldova');	
+
+INSERT INTO elev (nume, prenume, adresa, cnp, etnie, nationalitate) 
+VALUES ('Maftei', 'Radu', 'Str. Carbidului Galati', '1960515170045', 'romana', 'romana');	
+
+INSERT INTO elev (nume, prenume, adresa, cnp, etnie, nationalitate) 
+VALUES ('Maglavait', 'Catalin', 'Str. Exploziei nr. 4 Galati', '197060617967', 'romana', 'romana');	
+
+INSERT INTO elev (nume, prenume, adresa, cnp, etnie, nationalitate) 
+VALUES ('Zaiafet', 'Dumitru', 'Str. Super-Super Galati', '1960515170045', 'romana', 'romana');	
+
+INSERT INTO elev (nume, prenume, adresa, cnp, etnie, nationalitate)  
+VALUES ('Vlase', 'Bogdan', 'Str. Victor Vilcovici nr. 44 Galati', '1970515170045', 'romana', 'romana');	
+
+INSERT INTO elev (nume, prenume, adresa, cnp, etnie, nationalitate)  
+VALUES ('Ghisman', 'Irinel', 'Str. Saturn  nr. 13 Galati', '1960719170000', 'romana', 'romana');	
+
+INSERT INTO elev (nume, prenume, adresa, cnp, etnie, nationalitate) 
+VALUES ('Vivianu', 'Marius', 'Str. Schela Galati', '1960123170099', 'romana', 'romana');	
+
+INSERT INTO elev (nume, prenume, adresa, cnp, etnie, nationalitate) 
+VALUES ('Vianu', 'Tudor', 'Str. Furnalului Galati', '1960910170044', 'romana', 'romana');	
+
 -----------------------------------------------------------------------------------
 
 

@@ -3,7 +3,9 @@ JAVA := java
 JSOURCE := Main AppController AppView \
 			LoginView InputCheck MyConnection \
 			DriverNotFoundException ConnectionErrorException ElevDataModel \
-			ClasaDataModel ProfilDataModel
+			ClasaDataModel ProfilDataModel ProfilTableModel \
+			MaterieDataModel MaterieTableModel
+
 MAIN := Main
 
 ifndef ORACLE_HOME

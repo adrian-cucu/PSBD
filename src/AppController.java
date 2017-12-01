@@ -16,14 +16,6 @@ class AppController
 		this.login_view = login_view;
 		this.login_view.addLoginListener (this);
 		this.login_view.setVisible (true);
-	
-		/*
-		this.app_view = new AppView ("--");
-		this.app_view.adaugaElevAddActionListener (this);
-		this.app_view.setVisible (true);				
-		this.app_view.executeAddActionListener (this);
-		this.app_view.windowCloseListener (this);
-		*/
 	}  
 
 
@@ -78,14 +70,14 @@ class AppController
 			switch (op) {
 				case "SELECT":	
 					long start, stop;
-					java.sql.Statement statement = null;
-					java.sql.ResultSet result_set = null;
+					Statement statement = null;
+					ResultSet result_set = null;
 
 					java.util.Vector<String> columns; 
 					java.util.Vector<java.util.Vector<Object>> values;	
 
      				try {
-            			statement = con.getConnection().createStatement ();
+            			statement = con.getStatement ();
 						start = System.currentTimeMillis ();	
             			result_set = statement.executeQuery (query);
 						stop = System.currentTimeMillis ();	
@@ -94,8 +86,7 @@ class AppController
 							(stop / 1000) + "." + 
 							(stop % 1000) + " s", AppView.SUCCESS);		
 
-            			java.sql.ResultSetMetaData rsmd = 
-							result_set.getMetaData ();
+            			ResultSetMetaData rsmd = result_set.getMetaData ();
             			int m = rsmd.getColumnCount ();
 						columns = new java.util.Vector<>(m);
 
@@ -121,7 +112,7 @@ class AppController
             			if (statement != null) 
                 			statement.close ();
        
-        			} catch (java.sql.SQLException sqlex) {
+        			} catch (SQLException sqlex) {
             			sqlex.printStackTrace ();
 						app_view.addQueryResult (sqlex.getMessage ());
 						app_view.updateStatus ("query error!", AppView.ERROR);			
@@ -131,7 +122,7 @@ class AppController
 				case "UPDATE":
 				case "DELETE":
 					try {
-            			statement = con.getConnection().createStatement ();
+            			statement = con.getStatement ();
 						start = System.currentTimeMillis ();	
             					
 						rr = statement.executeUpdate (query);
@@ -157,7 +148,7 @@ class AppController
 
 						app_view.refresh ();
         			} 
-					catch (java.sql.SQLException sqlex) {
+					catch (SQLException sqlex) {
             			sqlex.printStackTrace ();
 						String err_msg = sqlex.getMessage ();
 						err_msg = err_msg.substring (err_msg.indexOf (":") + 2);
@@ -170,19 +161,20 @@ class AppController
 					app_view.updateStatus ("Error!", AppView.ERROR);
 			}		
 
-		} else if (app_view != null &&
+		} 
+		else if (app_view != null &&
 					e.getSource () == app_view.getObs ().get ("adauga elev") ) {
 	
 			ElevDataModel p = app_view.getElevData ();
 			if (p != null) {
 				System.out.println (p);	
 				
-				try {		
+				try {	
 	
-					java.sql.PreparedStatement ps = 
-						con.getConnection ()
-					   		.prepareStatement ("INSERT INTO elev (nume, prenume, adresa, cnp, etnie, nationalitate) VALUES (?, ?, ?, ?, ?, ?)"); 
-				
+					String prepared = "INSERT INTO elev (nume, prenume, adresa, cnp, etnie, nationalitate) VALUES (?, ?, ?, ?, ?, ?)";
+
+					PreparedStatement ps = con.getPreparedStatement (prepared); 
+
 					ps.setString (1, p.getNume ());	
 					ps.setString (2, p.getPren ());	
 					ps.setString (3, p.getCnp ());	
@@ -190,15 +182,15 @@ class AppController
 					ps.setString (5, p.getEtnie ());	
 					ps.setString (6, p.getNat ());	
 	
-					int r = ps.executeUpdate ();											
-					
+					int r = ps.executeUpdate ();										
 					if (r != -1) {
-						app_view.updateStatus ("Elevul a fost adaugat.", AppView.SUCCESS);
+						app_view.updateStatus ("Elevul a fost adaugat.", 
+									AppView.SUCCESS);
 						app_view.refresh ();
 					}	
 
 				} 
-				catch (java.sql.SQLException sqlex) {
+				catch (SQLException sqlex) {
 					app_view.displayError (sqlex.getMessage ());
 				}
 
@@ -210,9 +202,10 @@ class AppController
 				e.getSource () == app_view.getObs ().get ("adauga profil") ) {	
 
 			try {
-				java.sql.PreparedStatement ps = 
-					con.getConnection ()
-						.prepareStatement ("INSERT INTO profil (nume_profil) VALUES (?)"); 	
+	
+				String prepared = "INSERT INTO profil (nume_profil) VALUES (?)";
+ 	
+				PreparedStatement ps = con.getPreparedStatement (prepared); 	
 
 				String profil = app_view.getProfil ();
 
@@ -249,8 +242,7 @@ class AppController
 				String prepared = 
 					"INSERT INTO clasa(id_profil, an_scolar, cod, clasa) VALUES (?, ?, ?, ?)";
 
-				java.sql.PreparedStatement ps = 
-					con.getConnection ().prepareStatement (prepared); 	
+				PreparedStatement ps = con.getPreparedStatement (prepared); 	
 
 				ps.setInt (1, id_profil);
 				ps.setInt (2, an_scolar);
@@ -261,13 +253,62 @@ class AppController
 				app_view.updateStatus ("Clasa a fost adaugata.", AppView.SUCCESS);
 
 			} 
-			catch (java.sql.SQLException sqlex) {
+			catch (SQLException sqlex) {
 				app_view.displayError (sqlex.getMessage ());
 			}
 			catch (Exception ex) {
 				app_view.displayError (ex.getMessage ());
 			}	
+		}
+		else if (app_view != null && 
+			e.getSource () == app_view.getObs ().get ("profil insert") ) {
+			
+			String ID = app_view.getProfilID ();
+			String nume_profil = app_view.getProfil ();
 
+			if (ID.length () > 0 ) {
+
+				System.out.println ("Profil insert: " + ID + " " + nume_profil);
+			} else {
+				System.out.println ("Profil insert: AUTO INC ID " + nume_profil);
+			}
+				
+				 
+
+
+		}
+		else if (app_view != null && 
+			e.getSource () == app_view.getObs ().get ("profil delete") ) {
+				
+			int ID = app_view.getProfilTableSelectedID ();
+			
+			System.out.println ("Profil delete " + ID);
+
+			try {
+				String prepared = 
+					"DELETE FROM profil WHERE id_profil = ?";
+
+				PreparedStatement ps = con.getPreparedStatement (prepared); 	
+
+				ps.setInt (1, ID);
+			
+				ps.executeUpdate ();
+				app_view.updateStatus ("Profilul a fost sters", AppView.SUCCESS);
+
+			} 
+			catch (SQLException sqlex) {
+				app_view.displayWarning (sqlex.getMessage ());
+			}
+			catch (Exception ex) {
+				app_view.displayError (ex.getMessage ());
+			}	
+
+		}
+		else if (app_view != null && 
+			e.getSource () == app_view.getObs ().get ("profil update") ) {
+				
+			System.out.println ("Profil update");
+			
 		}
 		else {
 			System.exit (0);
@@ -304,8 +345,17 @@ class AppController
 			Thread.currentThread ().getStackTrace ()[1].getMethodName ());
 
 		try {
-			con.getConnection ().close ();
-			System.out.println ("Connection succefully closed! :)");
+			int x = 
+			JOptionPane.showConfirmDialog (null, "Commit changes ?", "Warning", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+			
+			if (x == 0) {
+				con.close (true);
+				System.out.println ("Connection succefully closed! [COMMIT] :)");
+			}
+			else {
+				con.close (false);
+				System.out.println ("Connection succefully closed! [ROLLBACK] :)");
+			}
 		}
 		catch (java.sql.SQLException sqlex) {	
 			System.out.println ("Connection wasn't closed closed! :<");
