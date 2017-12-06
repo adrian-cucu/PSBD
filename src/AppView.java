@@ -1,14 +1,22 @@
 import static javax.swing.JOptionPane.*;
+import java.util.Vector;
 import javax.swing.table.*;
 import java.util.HashMap;
 import javax.swing.border.*;
+import javax.swing.JList;
 import java.awt.event.*;
 import javax.swing.*;
 import java.awt.*;
+import javax.swing.event.ListDataListener;
+import javax.swing.ListSelectionModel;
+
+/*
+	TODO de rezolvat problema la jlist model
+*/
 
 class AppView extends JFrame {	
 
-	static final long serialVersionUID = 0xfL;
+	static final long serialVersionUID = 0xad1;
 
 	private JTabbedPane tabbed_pane = null;
 
@@ -19,30 +27,33 @@ class AppView extends JFrame {
 	private JTextArea query_text;
 	private JButton execute, adauga_elev, adauga_clasa;
 
-	private JButton profil_insert, profil_update, profil_delete;
-
-	private JTable profil_table;
-	private JTextField id_profil, nume_profil;
-	private JButton adauga_profil;
 
 	private JTextField nume, prenume, cnp, etnie, nationalitate, 
 			an_scolar, cod, clasa;
 	private JTextArea adresa;
 
-
-
-	/*  materie */
+	/* materie */
 	private JTable table_materie;
-	private JTextField id_materie, nume_materie; 
+	private JTextField nume_materie; 
 	private JButton insert_materie, delete_materie, update_materie;
-	/*  materie */
+	private MaterieTableModel materie_table_model;
+	private DefaultListModel <MaterieDataModel> lista_materii; 
+	private Vector <DefaultListModel <MaterieDataModel>> materii_an_scolar; 
+	/* materie */
+
+
+	/* profil */
+	private	JTextField nume_profil; 
+	private JTable table_profil;
+	private ProfilTableModel profil_table_model;	
+	private JButton insert_profil, delete_profil, update_profil;	
+	/* profil */
 
 
 	private JComboBox<ProfilDataModel> profiluri = null;
 
 	private final JPanel status_panel;
 	private final JLabel status_label;	
-
 
 	private HashMap <String, Object> obs = new HashMap<>();
 	
@@ -63,19 +74,21 @@ class AppView extends JFrame {
 
 		this.con = con;
 
-		setDefaultCloseOperation (EXIT_ON_CLOSE);
+		setDefaultCloseOperation (DO_NOTHING_ON_CLOSE);
 		setBounds (250, 150, 800, 500);	
 		setResizable (true);
 	
 		tabbed_pane = new JTabbedPane ();
-		/*
+	
 		tabbed_pane.add ("Run query", createQueryPanel ());			
+		/*
 		tabbed_pane.add ("Adauga elev", createInfoPanel ());			
 		tabbed_pane.add ("Adauga profil", createProfilPanel ());			
 		tabbed_pane.add ("Adauga clasa", createClasaPanel ());			
 		*/
 
 		tabbed_pane.add ("Materie", createPanelAdaugaMaterie ());			
+		tabbed_pane.add ("Profil", createPanelAdaugaProfil ());			
 		
 		add (tabbed_pane, BorderLayout.CENTER);
 		
@@ -115,16 +128,196 @@ class AppView extends JFrame {
 
 	private JTable createTable (AbstractTableModel tableModel)
 	{
+		boolean multipleSelection = true;	
 		JTable tbl = new JTable (tableModel);
 		tbl.setAutoCreateRowSorter (true);
 		tbl.setFont (new Font ("serif", Font.PLAIN, 11));
-		tbl.setSelectionMode (0);
+		if (!multipleSelection) {
+			tbl.setSelectionMode (0);
+		}
 		tbl.setSelectionBackground (new Color (0xea, 0xee, 0xaf));
 		tbl.setSelectionForeground (new Color (0x22, 0x22, 0x22));
         tbl.setRowHeight (tbl.getRowHeight () + 10);
 		return tbl;
 	}
 	
+	
+	private JPanel createPanelAdaugaProfil ()
+	{
+		JPanel panel = new JPanel (new GridLayout (1, 2));
+		panel.setBorder (
+			new TitledBorder (new EtchedBorder (), "Insert")
+		);	
+	
+		JList <MaterieDataModel> test = new JList <> (lista_materii);		
+
+		test.setSelectionMode (ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+
+		JPanel insertPanel = new JPanel (new BorderLayout ());
+
+		panel.add (insertPanel);		
+		
+		ProfilTableModel profilModel = new ProfilTableModel ();
+		profilModel.setData (con.fetchProfil ());
+
+		JPanel panel00 = new JPanel (new BorderLayout ());
+
+		JPanel panel01 = new JPanel ();
+		delete_profil =  new JButton ("DELETE");
+		delete_profil.setEnabled (false);
+		update_profil = new JButton ("UPDATE");	
+		update_profil.setEnabled (false);
+
+		obs.put ("delete-profil", delete_profil);
+		obs.put ("update-profil", update_profil);
+
+		panel01.add (delete_profil);
+		panel01.add (update_profil);
+
+		profil_table_model = new ProfilTableModel ();
+		table_profil = createTable (profil_table_model);
+		table_profil.getSelectionModel ().addListSelectionListener (e -> {
+			if (table_profil.getSelectedRow () != -1) {
+				delete_profil.setEnabled (true);
+				update_profil.setEnabled (true);
+			} else {
+				delete_profil.setEnabled (false);
+				update_profil.setEnabled (false);
+			}
+		});
+		
+		panel00.add (new JScrollPane (table_profil), BorderLayout.CENTER);
+		panel00.add (panel01, BorderLayout.SOUTH);
+		panel.add (panel00);
+
+		JPanel pnl = new JPanel (new GridLayout (2, 2));		
+
+		insertPanel.add (pnl, BorderLayout.NORTH);		
+		
+		nume_profil = new JTextField (10);
+		
+		pnl.add (new JLabel ("Profil"));
+		pnl.add (nume_profil);
+		
+		JPanel cards = new JPanel (new CardLayout ());
+
+		Vector <JList <MaterieDataModel>> lists = new Vector <>();
+		materii_an_scolar = new Vector <> ();	
+		JPanel[] panels = new JPanel [4];
+
+		for (int i = 0; i < 4; ++ i) {
+			panels [i] = new JPanel (new GridLayout (1, 2));
+			DefaultListModel <MaterieDataModel> model =
+				new DefaultListModel <MaterieDataModel> ();
+			/*  {
+					public static final long serialVersionUID = 0xad1;
+					@Override
+					public MaterieDataModel getElementAt (int index) {
+						return materii_an_scolar.get (index);
+					}
+					@Override
+					public int getSize () {
+						return materii_an_scolar.getRowCount ();
+					}
+				};
+			*/	
+			materii_an_scolar.add (model);
+			
+			JList <MaterieDataModel> list = new JList <> (model);
+			lists.add (list);
+			panels [i].add (new JScrollPane (lists.get (i)));
+			JPanel buttonsPanel = new JPanel (new GridLayout (3, 1));
+
+			JButton push = new JButton ("add");
+			JButton pop = new JButton ("delete");
+			JButton removeAll = new JButton ("delete all");		
+
+			JPanel pnll1 = new JPanel ();
+			pnll1.add (push);
+			buttonsPanel.add (pnll1);
+
+			JPanel pnll2 = new JPanel ();
+			pnll2.add (pop);	
+			buttonsPanel.add (pnll2);
+
+			JPanel pnll3 = new JPanel ();
+			pnll3.add (removeAll);	
+			buttonsPanel.add (pnll3);
+			
+			push.addActionListener (e -> {	
+				for (MaterieDataModel m : test.getSelectedValuesList ()) {
+					if (!model.contains (m)) {		
+						model.addElement (m);
+					}
+					System.out.println (m);
+				}
+			});
+
+			pop.addActionListener (e -> {
+				int index;
+				while (	(index = list.getSelectedIndex ()) != -1) {
+					model.remove (index);
+				}
+			});
+			
+			removeAll.addActionListener (e -> {
+				model.removeAllElements ();
+			});
+		
+			panels [i].add (buttonsPanel);	
+		}
+			
+		String CLS9 = "Clasa 9";	
+		String CLS10 = "Clasa 10";	
+		String CLS11 = "Clasa 11";	
+		String CLS12 = "Clasa 12";	
+
+		cards.add (panels [0], CLS9);	
+		cards.add (panels [1], CLS10);	
+		cards.add (panels [2], CLS11);	
+		cards.add (panels [3], CLS12);	
+
+		String comboBoxItems[] = {CLS9, CLS10, CLS11, CLS12};
+
+		JComboBox <String> cb = new JComboBox <>(comboBoxItems);
+		cb.setEditable (false);		
+		cb.addItemListener (e -> {
+			CardLayout cl = (CardLayout) (cards.getLayout ());
+			cl.show (cards, (String)e.getItem ());
+		});
+
+		JPanel center = new JPanel (new BorderLayout ());
+		center.add (cb, BorderLayout.NORTH);
+
+		JPanel cntr = new JPanel (new GridLayout (2, 1));
+		cntr.add (cards);	
+		cntr.add (new JScrollPane (test));
+		center.add (cntr, BorderLayout.CENTER);
+		insertPanel.add (center, BorderLayout.CENTER);
+				
+		insert_profil = new JButton ("INSERT");
+		insert_profil.setEnabled (false);
+		obs.put ("insert-profil", insert_profil);
+
+		nume_profil.addKeyListener (new KeyListener () {
+			public void keyPressed (KeyEvent e) {
+			}		
+			public void keyReleased (KeyEvent e) {
+				insert_profil.setEnabled (
+					nume_profil.getText ().trim ().length () > 0
+				);	
+			}		
+			public void keyTyped (KeyEvent e) {
+			}	
+		});
+	
+
+		insertPanel.add (insert_profil, BorderLayout.SOUTH);
+		obs.put ("insert-profil", insert_profil);
+	
+		return panel;
+	}
+
 	
 	private JPanel createPanelAdaugaMaterie ()
 	{
@@ -145,10 +338,6 @@ class AppView extends JFrame {
 		insertPanel.setLayout (new BorderLayout ());
 				
 		JPanel north = new JPanel (new GridLayout (2, 2));
-
-		north.add (new JLabel ("ID"));
-		id_materie = new JTextField (10); 
-		north.add (id_materie);
 
 		north.add (new JLabel ("Materie"));
 		nume_materie = new JTextField (10);
@@ -176,7 +365,6 @@ class AppView extends JFrame {
 			}	
 		};
 	
-		id_materie.addKeyListener (klsnr);
 		nume_materie.addKeyListener (klsnr);
 		/*************************************************/
 
@@ -184,7 +372,10 @@ class AppView extends JFrame {
 	
 		delete_materie = new JButton ("DELETE");
 		update_materie = new JButton ("UPDATE");
-		
+
+		obs.put ("delete-materie", delete_materie);		
+		obs.put ("update-materie", update_materie);		
+
 		delete_materie.setEnabled (false);
 		update_materie.setEnabled (false);
 		south.add (delete_materie);
@@ -192,40 +383,40 @@ class AppView extends JFrame {
 	
 		table.add (south, BorderLayout.SOUTH);
 
-		AbstractTableModel tableModel = new MaterieTableModel ();
-		
-		tableModel.setData (con.getAllProfil ());	
-					
-		table_materie = createTable (tableModel);
+		materie_table_model = new MaterieTableModel ();
 
-		table_materie.getSelectionModel ().addListSelectionListener (e -> {
-			
-			int selected = profil_table.getSelectedRow ();
-			
-			if (selected != -1) {
-				int s = profil_table.convertRowIndexToModel (selected);
+		Vector <MaterieDataModel> materii = con.fetchMaterie ();	
+	
+		MaterieTableModel.setData (materii);	
 
-				if (s != -1) {
-					/*
-					System.out.println ("hope not buggy: " + 
-						profil_table.getModel ().getValueAt (s, 0));	
-					*/
-
-					System.out.println ("Selection: " + s);
-
-					System.out.println (
-						profil_table.getModel ().getValueAt (s, 1));
-		
-					delete.setEnabled (true);
-					update.setEnabled (true);
+		lista_materii = 
+			new DefaultListModel <MaterieDataModel> () {
+				public static final long serialVersionUID = 0xad1;
+				@Override
+				public MaterieDataModel getElementAt (int index) {
+					return materie_table_model.get (index);
 				}
+				@Override
+				public int getSize () {
+					int size = materie_table_model.getRowCount ();
+					fireContentsChanged (this, 0, size);
+					return size;
+				}
+			};
+	
+					
+		table_materie = createTable (materie_table_model);
+		table_materie.getSelectionModel ().addListSelectionListener (e -> {
+			if (table_materie.getSelectedRow () != -1) {
+				delete_materie.setEnabled (true);
+				update_materie.setEnabled (true);
 			} else {
-					delete.setEnabled (false);
-					update.setEnabled (false);
+				delete_materie.setEnabled (false);
+				update_materie.setEnabled (false);
 			}
 		});
 
-		JScrollPane scrollPane = new JScrollPane (profil_table);
+		JScrollPane scrollPane = new JScrollPane (table_materie);
 		scrollPane.setVerticalScrollBarPolicy (
 			ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS
 		);
@@ -244,9 +435,9 @@ class AppView extends JFrame {
 		table.add (searchInputPanel, BorderLayout.NORTH);
 
         TableRowSorter <AbstractTableModel> trs =
-                new TableRowSorter <> (dtm);
+                new TableRowSorter <> (materie_table_model);
 
-        profil_table.setRowSorter (trs);
+        table_materie.setRowSorter (trs);
 
         KeyListener searchKeyLsnr = new KeyListener () {
             public void keyTyped (KeyEvent e) {}
@@ -295,7 +486,7 @@ class AppView extends JFrame {
 		return panel;
 	}
 
-	
+	/*	
 	private JPanel createClasaPanel ()
 	{
 		clasa_panel = new JPanel ();
@@ -366,7 +557,7 @@ class AppView extends JFrame {
 		
 		return clasa_panel;
 	}
-
+	*/
 
 	private JPanel createQueryPanel ()
 	{
@@ -376,7 +567,7 @@ class AppView extends JFrame {
 					new EtchedBorder (), "Execute a query")
 		);	
 	
-		query_text = new JTextArea (6, 60);
+		query_text = new JTextArea ();
 		query_text.setWrapStyleWord (true);					
 		query_text.setEditable (true);
 		
@@ -388,14 +579,29 @@ class AppView extends JFrame {
 		execute = new JButton ("Go");				
 			
 		obs.put ("execute", execute);
+		
+		JPanel north_wrapper = new JPanel (new GridBagLayout ());
+		
+		GridBagConstraints c = new GridBagConstraints ();
+		
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.weightx = 0.9;
+		c.gridx = 0;
+		c.gridy = 0;
+		c.anchor = GridBagConstraints.FIRST_LINE_START;
+		c.ipady = 70;
+		north_wrapper.add (scroll, c);
 
-		JPanel north_wrapper = new JPanel ();
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridx = 1;
+		c.gridy = 0;
+		c.weightx = 0.1;
 
-		north_wrapper.add (scroll);
-		north_wrapper.add (execute);
+		JPanel buttonWrapper = new JPanel ();
+		buttonWrapper.add (execute);
+		north_wrapper.add (buttonWrapper, c);
 
-		query_result_panel = new JPanel ();
-
+		query_result_panel = new JPanel (new GridLayout (1, 1));
 		query_panel.add (north_wrapper, BorderLayout.NORTH);
 		query_panel.add (query_result_panel, BorderLayout.CENTER);	
   		return query_panel;
@@ -404,7 +610,6 @@ class AppView extends JFrame {
 
 	public void refresh ()
 	{
-		profiluri.setSelectedIndex (0);
 		//profiluri.setModel (new DefaultComboBoxModel<> (con.getAllProfil ()));
 	}
 
@@ -419,12 +624,41 @@ class AppView extends JFrame {
 	}	
 
 
+	public void re ()
+	{
+		lista_materii.getSize ();
+		tabbed_pane.revalidate ();	
+		tabbed_pane.repaint ();
+	}
+
+
 	public void addQueryResult (String text)
 	{
 		query_result_panel.removeAll ();	
 		query_result_panel.revalidate ();
 		query_result_panel.repaint ();
-        query_result_panel.add (new JTextArea (text, 3, 40));
+        query_result_panel.add (
+			new JScrollPane (
+				new JTextArea (text)
+			)
+		);
+	}
+
+	public Vector <Vector <MaterieDataModel>> getMateriiIDs ()
+	{
+		Vector <Vector <MaterieDataModel>> ret = new Vector <>();
+
+		for (DefaultListModel <MaterieDataModel> m : materii_an_scolar) {
+		
+			Vector <MaterieDataModel> materii_an = new Vector <>();
+			for (java.util.Enumeration <MaterieDataModel> x = m.elements ();
+					x.hasMoreElements (); ) 
+			{
+				materii_an.add (x.nextElement ());	
+			}
+			ret.add (materii_an);
+		}
+		return ret;
 	}
 
 
@@ -490,9 +724,9 @@ class AppView extends JFrame {
 	}
 
 
-	public String getProfilID ()
+	public String getNumeMaterie ()
 	{
-		return id_profil.getText ().trim ();
+		return nume_materie.getText ().trim ();
 	}
 
 	
@@ -508,24 +742,43 @@ class AppView extends JFrame {
 	}
 	
 
-	public int getProfilTableSelectedID ()
+	public Vector <Integer> getTableMaterieSelectedIDs (boolean confirmEachDelete)
 	{
- 		int selected = profil_table.getSelectedRow ();
-			
-		// ((ProfilDataModel)profil_table.getModel ()).removeRow (4);
+		Vector <Integer> selectedIDs = new Vector <>();
 
-		if (selected != -1) {
-			int s = profil_table.convertRowIndexToModel (selected);
-	
-			System.out.println ("SELECTED: " + s);	
-	
-			if (s != -1) {
-				return 
-					((Integer) profil_table.getModel ().getValueAt (s, 0)).intValue ();	
+		for (int index : table_materie.getSelectedRows ()) {
+			int s = table_materie.convertRowIndexToModel (index);
+			
+			String str = ((MaterieTableModel)table_materie.getModel ()).getRow (s);	
+			
+			if (confirmEachDelete && 	
+				displayConfirmation ("Are you sure you want to delete: " + str) == YES_OPTION)
+			{
+				selectedIDs.add ((Integer)table_materie.getModel ().getValueAt (s, 0));
 			}
-		}
-		return selected;
+		}	
+		return selectedIDs;
 	}
+
+
+	public Vector <Integer> getTableProfilSelectedIDs (boolean confirmEachDelete)
+	{
+		Vector <Integer> selectedIDs = new Vector <>();
+
+		for (int index : table_profil.getSelectedRows ()) {
+			int s = table_profil.convertRowIndexToModel (index);
+			
+			String str = ((ProfilTableModel)table_profil.getModel ()).getRow (s);	
+			if (confirmEachDelete && 	
+				displayConfirmation ("Are you sure you want to delete: " + str) == YES_OPTION)
+			{
+				selectedIDs.add ((Integer)table_profil.getModel ().getValueAt (s, 0));
+			}
+		}	
+		return selectedIDs;
+	}
+
+
 
 
 	public void displayError (String errorMsg)
@@ -537,16 +790,36 @@ class AppView extends JFrame {
 	public void displayWarning (String warnMsg)
 	{
 		showMessageDialog (this, warnMsg, "Warning", WARNING_MESSAGE);
-	}	
+	}
+
+
+	public int displayConfirmation (String confirmMsg)
+	{
+		return showConfirmDialog (this, confirmMsg, "Confirmation", 
+									YES_NO_OPTION, WARNING_MESSAGE);
+	}
+		
+	
+	public void displayInformation (String infoMsg)
+	{
+		showMessageDialog (this, infoMsg, "Notice", INFORMATION_MESSAGE);
+	}
 
 
 	public void addListener (ActionListener lsnr)
 	{
-		//execute.addActionListener (lsnr);
+		execute.addActionListener (lsnr);
 		//adauga_elev.addActionListener (lsnr);
-		adauga_profil.addActionListener (lsnr);
+		//adauga_profil.addActionListener (lsnr);
 		//adauga_clasa.addActionListener (lsnr);
 		//exit.addActionListener (lsnr);
+		insert_materie.addActionListener (lsnr);
+		delete_materie.addActionListener (lsnr);
+		update_materie.addActionListener (lsnr);
+		
+		insert_profil.addActionListener (lsnr);
+		update_profil.addActionListener (lsnr);
+		delete_profil.addActionListener (lsnr);
 	}
 	
 

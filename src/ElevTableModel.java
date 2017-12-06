@@ -2,30 +2,20 @@ import javax.swing.table.AbstractTableModel;
 import java.util.Vector;
 import java.util.Arrays;
 
-import static javax.swing.JOptionPane.*;
-import javax.swing.table.*;
-import java.util.HashMap;
-import java.awt.*;
-import javax.swing.border.*;
-import javax.swing.*;
-import javax.swing.table.*;
-import java.sql.*;
-import java.awt.event.*;
-
-class ProfilTableModel extends AbstractTableModel {
+class ElevTableModel extends AbstractTableModel {
 
 	public static final long serialVersionUID = 0xad1;		
 
-	public static Vector <ProfilDataModel> data = null;	
+	public static Vector <ElevDataModel> data = null;	
 
 	public static final Vector <String> columns =
 		new Vector <String> (Arrays.asList (
 			new String[] {
-				"id_profil", "nume_profil"
+				"id_elev", "nume", "prenume", "adresa", "cnp", "etnie", "nationalitate"
 			}
 		));	
 
-	public static Vector <ProfilTableModel> listeners = new Vector <> ();
+	public static Vector <ElevDataModel> listeners = new Vector <> ();
 	
 
 	public ProfilTableModel ()
@@ -35,19 +25,11 @@ class ProfilTableModel extends AbstractTableModel {
 	}
 	
 	
-	public void setData (Vector <ProfilDataModel> datas)
+	public void setData (Vector <ElevDataModel> datas)
 	{
 		data = datas;
 		notifyListeners ();
 	}
-
-
-    public String getRow (int row)
-    {
-        if (row < data.size ())
-            return data.get (row).toString ();
-        return "";
-    }
 
 	
 	public static void refresh (MyConnection con)
@@ -58,13 +40,21 @@ class ProfilTableModel extends AbstractTableModel {
 	}
 
 
-	public static void addRow (ProfilDataModel newRow)
+	public static void addRow (ElevDataModel newRow)
 	{
 		if (data == null) { 
 			data = new Vector <>();
 		}
 		data.add (newRow); 
 	}		
+
+		
+	public static String getRow (int row)
+	{
+		if (row < data.size ())
+			return data.get (row).toString ();
+		return "";
+	}
 
 	
 	private static void notifyListeners ()
@@ -78,7 +68,6 @@ class ProfilTableModel extends AbstractTableModel {
 	@Override
 	public Class<?> getColumnClass (int column) 
 	{
-		Class <?> type = Object.class;
 		if (column == 0) {
 			return Integer.class;
 		}
@@ -86,7 +75,7 @@ class ProfilTableModel extends AbstractTableModel {
 			return String.class;
 		}
 
-		return type;
+		return Object.class;
 	}
 	
 

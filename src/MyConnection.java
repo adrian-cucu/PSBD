@@ -24,7 +24,7 @@ class MyConnection {
 	}
 
 
-	public Vector<ClasaDataModel> getAllClase ()
+	public Vector <ClasaDataModel> fetchClase ()
 	{
 		Vector <ClasaDataModel> data = new Vector <>();
 		
@@ -46,7 +46,7 @@ class MyConnection {
 	}
 
 
-	public Vector<ElevDataModel> getAllElevi ()
+	public Vector <ElevDataModel> fetchElevi ()
 	{
 		Vector <ElevDataModel> data = new Vector <>();
 		
@@ -68,7 +68,7 @@ class MyConnection {
 	}
 
 
-	public Vector<ProfilDataModel> getAllProfil ()
+	public Vector<ProfilDataModel> fetchProfil ()
 	{
 		Vector <ProfilDataModel> data = new Vector <>();
 		
@@ -108,9 +108,7 @@ class MyConnection {
 		catch (java.sql.SQLException e) {
 			return null;
 		}
-		return data;
-	
-	
+		return data;	
 	}
 	
 	
@@ -129,10 +127,32 @@ class MyConnection {
 		return pst;
 	}
 
+
+	public synchronized PreparedStatement getPreparedStatement (String prepared, int sts)
+		throws SQLException
+	{
+		PreparedStatement pst = conn.prepareStatement (prepared, sts);
+		return pst;
+	}
+
+
+	public synchronized PreparedStatement getPreparedStatement (String prepared, String[] col)
+		throws SQLException
+	{
+		PreparedStatement pst = conn.prepareStatement (prepared, col);
+		return pst;
+	}
+
 	
 	public boolean isConnected ()
 	{
 		return (conn != null) ? true : false;
+	}
+
+	
+	public Connection get ()
+	{
+		return conn;
 	}
 
 	

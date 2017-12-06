@@ -54,7 +54,7 @@ CREATE TABLE clasa (
 	id_profil		NUMBER(10) NOT NULL,
 	an_scolar		NUMBER(5)  NOT NULL,
 	cod				VARCHAR(5) NOT NULL,
-	clasa			NUMBER(3)  NOT NULL
+	an_clasa		NUMBER(3)  NOT NULL
 );
 
 ALTER TABLE clasa 
@@ -97,6 +97,19 @@ CREATE TABLE materie (
 ALTER TABLE materie
 ADD CONSTRAINT materie_pk 
 PRIMARY KEY (id_materie);
+
+
+CREATE SEQUENCE materie_seq;
+
+CREATE OR REPLACE TRIGGER materie_on_insert
+	BEFORE INSERT ON materie
+	FOR EACH ROW 
+BEGIN	
+	SELECT materie_seq.nextval
+	INTO :new.id_materie
+	FROM dual;
+END;
+/
 ---------------------------------------------------------------
 CREATE TABLE profil_materie (
 	id_profil		NUMBER(10) NOT NULL,
@@ -163,19 +176,19 @@ INSERT INTO  profil (nume_profil) VALUES ('Filologie');
 
 
 -----------------------------------------------------------------------------------
-INSERT INTO materie (id_materie, nume_materie) VALUES (1, 'Limba si literatura romana');
-INSERT INTO materie (id_materie, nume_materie) VALUES (2, 'Matematica');
-INSERT INTO materie (id_materie, nume_materie) VALUES (3, 'Informatica');
-INSERT INTO materie (id_materie, nume_materie) VALUES (4, 'Filozofie');
-INSERT INTO materie (id_materie, nume_materie) VALUES (5, 'Psihologie');
-INSERT INTO materie (id_materie, nume_materie) VALUES (6, 'Istorie');
-INSERT INTO materie (id_materie, nume_materie) VALUES (7, 'Sport');
-INSERT INTO materie (id_materie, nume_materie) VALUES (8, 'Limba engleza');
-INSERT INTO materie (id_materie, nume_materie) VALUES (9, 'Limba franceza');
-INSERT INTO materie (id_materie, nume_materie) VALUES (10, 'Religie');
-INSERT INTO materie (id_materie, nume_materie) VALUES (11, 'Tehnologia informatiei');
-INSERT INTO materie (id_materie, nume_materie) VALUES (12, 'Fizica');
-INSERT INTO materie (id_materie, nume_materie) VALUES (13, 'Stiinte politice');
+INSERT INTO materie (nume_materie) VALUES ('Limba si literatura romana');
+INSERT INTO materie (nume_materie) VALUES ('Matematica');
+INSERT INTO materie (nume_materie) VALUES ('Informatica');
+INSERT INTO materie (nume_materie) VALUES ('Filozofie');
+INSERT INTO materie (nume_materie) VALUES ('Psihologie');
+INSERT INTO materie (nume_materie) VALUES ('Istorie');
+INSERT INTO materie (nume_materie) VALUES ('Sport');
+INSERT INTO materie (nume_materie) VALUES ('Limba engleza');
+INSERT INTO materie (nume_materie) VALUES ('Limba franceza');
+INSERT INTO materie (nume_materie) VALUES ('Religie');
+INSERT INTO materie (nume_materie) VALUES ('Tehnologia informatiei');
+INSERT INTO materie (nume_materie) VALUES ('Fizica');
+INSERT INTO materie (nume_materie) VALUES ('Stiinte politice');
 ------------------------------------------------------------------------------------
 
 

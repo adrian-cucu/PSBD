@@ -12,7 +12,7 @@ ifndef ORACLE_HOME
 	$(error ORACLE_HOME is not set)
 endif
 
-JAR_LIB := ${ORACLE_HOME}/jdbc/lib/ojdbc5.jar
+JAR_LIB := ${ORACLE_HOME}/jdbc/lib/ojdbc6_g.jar
 CAL_LIB := lib/jcalendar-1.4.jar
 
 CLASSPATH := .:${JAR_LIB}:${CAL_LIB}

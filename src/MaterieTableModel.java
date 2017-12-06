@@ -7,7 +7,7 @@ class MaterieTableModel extends AbstractTableModel {
 
 	public static final long serialVersionUID = 0xad1;		
 
-	public Vector <MaterieDataModel> data = null;	
+	public static Vector <MaterieDataModel> data = null;	
 
 	public static final Vector <String> column =
 		new Vector <String> (Arrays.asList (
@@ -15,6 +15,39 @@ class MaterieTableModel extends AbstractTableModel {
 				"id_materie", "nume_materie"
 			}
 		));	
+
+    public static Vector <MaterieTableModel> listeners = new Vector <> ();
+
+
+    public MaterieTableModel ()
+    {
+        super ();
+        listeners.add (this);
+    }
+
+
+
+    public static void setData (Vector <MaterieDataModel> datas)
+    {
+        data = datas;
+        notifyListeners ();
+    }
+
+
+    public static void refresh (MyConnection con)
+    {
+        data.clear ();
+        data = con.fetchMaterie ();
+        notifyListeners ();
+    }
+
+
+    private static void notifyListeners ()
+    {
+        for (MaterieTableModel listener : listeners)
+            listener.fireTableDataChanged ();
+    }
+
 
 
 	@Override
@@ -40,7 +73,7 @@ class MaterieTableModel extends AbstractTableModel {
 	@Override
 	public Object getValueAt (int row, int col)
 	{
-		if (this.data != null) 
+		if (data != null) 
 		{	
 			if (col == 0) { return data.get (row).getID (); }
 			if (col == 1) { return data.get (row).getNumeMaterie (); }
@@ -71,6 +104,18 @@ class MaterieTableModel extends AbstractTableModel {
 	}	
 		
 	
+	public MaterieDataModel get (int index)
+	{
+		return data.get (index);
+	}
+
+
+	public String getRow (int x)
+	{
+		return data.get (x).toString ();
+	}
+
+	
 	@Override
 	public int getColumnCount ()
 	{
@@ -82,12 +127,5 @@ class MaterieTableModel extends AbstractTableModel {
 	public int getRowCount ()
 	{
 		return data != null ? data.size () : 0;
-	}
-
-	
-	public void setData (Vector <MaterieDataModel> data)
-	{
-		this.data = data;
-		fireTableDataChanged ();
 	}
 }

@@ -157,7 +157,7 @@ class ClasaDataModel {
 	}
 	*/
 
-
+	/*
 	public static void main (String[] args)
 		throws DriverNotFoundException, ConnectionErrorException
 	{
@@ -166,7 +166,7 @@ class ClasaDataModel {
 
 		DefaultTableModel dtm = ClasaDataModel.getTableModel ();
 
-		for (ClasaDataModel o : con.getAllClase ()) {
+		for (ClasaDataModel o : con.fetchClase ()) {
 			dtm.addRow (o.get ());
 		}
 					
@@ -188,9 +188,9 @@ class ClasaDataModel {
 		panel.add (scrollPane, BorderLayout.CENTER);
 
 		frame.add (panel);
-		frame.setVisible (true);
-		
+		frame.setVisible (true);	
 	}
+	*/
 
 	
 	public int getID () 
@@ -230,5 +230,4 @@ class ClasaDataModel {
 			this.cod + " " +
 			this.clasa;
 	}
-
 }
