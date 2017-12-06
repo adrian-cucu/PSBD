@@ -11,7 +11,7 @@ import javax.swing.event.ListDataListener;
 import javax.swing.ListSelectionModel;
 
 /*
-	TODO de rezolvat problema la jlist model
+	TODO plm
 */
 
 class AppView extends JFrame {	
