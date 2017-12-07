@@ -54,7 +54,7 @@ CREATE TABLE clasa (
 	id_profil		NUMBER(10) NOT NULL,
 	an_scolar		NUMBER(5)  NOT NULL,
 	cod				VARCHAR(5) NOT NULL,
-	an_clasa		NUMBER(3)  NOT NULL
+	an_studiu		NUMBER(3)  NOT NULL
 );
 
 ALTER TABLE clasa 
@@ -114,7 +114,7 @@ END;
 CREATE TABLE profil_materie (
 	id_profil		NUMBER(10) NOT NULL,
 	id_materie		NUMBER(10) NOT NULL,
-	an_clasa		NUMBER(3) NOT NULL  -- anul in care se face materia respectiva
+	an_studiu		NUMBER(3) NOT NULL  -- anul in care se face materia respectiva
 );
 
 ALTER TABLE profil_materie
