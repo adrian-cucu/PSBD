@@ -6,8 +6,7 @@ class Main {
 	{		
 		try {
 			java.awt.EventQueue.invokeAndWait ( ()-> {
-					AppController controller = 
-						new AppController (new LoginView ());
+				AppController controller = new AppController (new LoginView ());
 			});
 
 		} catch (InterruptedException e) {
