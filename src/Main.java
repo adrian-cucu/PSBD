@@ -5,11 +5,9 @@ class Main {
 	public static void main (String[] args)
 	{		
 		try {
-			java.awt.EventQueue.invokeAndWait (new Runnable () {
-				public void run () {
+			java.awt.EventQueue.invokeAndWait ( ()-> {
 					AppController controller = 
 						new AppController (new LoginView ());
-				}
 			});
 
 		} catch (InterruptedException e) {
