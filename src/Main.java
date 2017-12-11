@@ -2,7 +2,6 @@ import static java.lang.System.*;
 
 class Main {
 
-
 	public static void main (String[] args)
 	{		
 		try {
@@ -12,12 +11,12 @@ class Main {
 						new AppController (new LoginView ());
 				}
 			});
-		}
-		catch (InterruptedException e) {
-		}	
-		catch (java.lang.reflect.InvocationTargetException e) {
 
+		} catch (InterruptedException e) {
+			out.println (e.getMessage ());		
+
+		} catch (java.lang.reflect.InvocationTargetException e) {
+			out.println (e.getMessage ());
 		}
 	}
-
 }
