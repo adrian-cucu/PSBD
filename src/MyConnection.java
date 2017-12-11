@@ -1,10 +1,9 @@
 import java.util.Vector;
 import java.sql.*;	
 
-
 class MyConnection {
 
-	private static final long serialVersionUID = 10L;
+	private static final long serialVersionUID = 0xad1;
 	private Connection conn = null;	
 
 	public MyConnection (String url, String user, String password) 
@@ -14,35 +13,42 @@ class MyConnection {
 			Class.forName ("oracle.jdbc.driver.OracleDriver");
 			conn = DriverManager.getConnection (url, user, password);	
 			conn.setAutoCommit (false);
-		} 
-		catch (SQLException sqlex) {
+
+		} catch (SQLException sqlex) {
 			throw new ConnectionErrorException (sqlex.getMessage ());	
-		} 
-		catch (ClassNotFoundException cnfe) {	
+
+		} catch (ClassNotFoundException cnfe) {	
 			throw new DriverNotFoundException (cnfe.getMessage ());
 		}
 	}
 
 
-	public Vector <ClasaDataModel> fetchClase ()
+	public Vector <Vector <Object>> fetchClase ()
 	{
-		Vector <ClasaDataModel> data = new Vector <>();
-		
-		ResultSet result_set;
-		Statement statement;	
+		Vector <Vector <Object>> fetchedData = new Vector <> ();
+	
+		ResultSet result_set = null;
+		Statement statement = null;	
+		Vector <Object> fetchedRow = null;
 
 		try {
 			statement = getStatement ();
 			result_set = statement.executeQuery ("SELECT * FROM clasa");
 
 			while (result_set.next ()) {
-				data.add (new ClasaDataModel (result_set));
+				fetchedRow = ClasaDataModel.make (result_set);
+				fetchedData.add (fetchedRow);
 			}
-		}
-		catch (java.sql.SQLException e) {
+
+		} catch (java.sql.SQLException e) {
 			return null;
-		}	
-		return data;
+
+		} finally {
+			closeQuietly (result_set);
+			closeQuietly (statement);
+		}
+
+		return fetchedData;
 	}
 
 
@@ -50,8 +56,8 @@ class MyConnection {
 	{
 		Vector <ElevDataModel> data = new Vector <>();
 		
-		ResultSet result_set;
-		Statement statement;	
+		ResultSet result_set = null;
+		Statement statement = null;	
 
 		try {
 			statement = getStatement ();
@@ -60,9 +66,13 @@ class MyConnection {
 			while (result_set.next ()) {
 				data.add (new ElevDataModel (result_set));
 			}
-		}
-		catch (java.sql.SQLException e) {
+
+		} catch (java.sql.SQLException e) {
 			return null;
+	
+		} finally {
+			closeQuietly (result_set);
+			closeQuietly (statement);
 		}	
 		return data;
 	}
@@ -72,8 +82,8 @@ class MyConnection {
 	{
 		Vector <ProfilDataModel> data = new Vector <>();
 		
-		ResultSet result_set;
-		Statement statement;	
+		ResultSet result_set = null;
+		Statement statement = null;	
 
 		try {
 			statement = getStatement ();
@@ -82,10 +92,14 @@ class MyConnection {
 			while (result_set.next ()) {
 				data.add (new ProfilDataModel (result_set));
 			}
-		}
-		catch (java.sql.SQLException e) {
+
+		} catch (java.sql.SQLException e) {
 			return null;
-		}
+
+		} finally {
+			closeQuietly (result_set);
+			closeQuietly (statement);
+		} 
 		return data;
 	}
 
@@ -94,8 +108,8 @@ class MyConnection {
 	{
 		Vector <MaterieDataModel> data = new Vector <>();
 		
-		ResultSet result_set;
-		Statement statement;	
+		ResultSet result_set = null;
+		Statement statement = null;	
 
 		try {
 			statement = getStatement ();
@@ -104,9 +118,13 @@ class MyConnection {
 			while (result_set.next ()) {
 				data.add (new MaterieDataModel (result_set));
 			}
-		}
-		catch (java.sql.SQLException e) {
+
+		} catch (java.sql.SQLException e) {
 			return null;
+
+		} finally {
+			closeQuietly (result_set);
+			closeQuietly (statement);
 		}
 		return data;	
 	}
@@ -120,24 +138,27 @@ class MyConnection {
 	}
 
 
-	public synchronized PreparedStatement getPreparedStatement (String prepared)
-		throws SQLException
+	public synchronized 
+		PreparedStatement getPreparedStatement (String prepared)
+			throws SQLException
 	{
 		PreparedStatement pst = conn.prepareStatement (prepared);
 		return pst;
 	}
 
 
-	public synchronized PreparedStatement getPreparedStatement (String prepared, int sts)
-		throws SQLException
+	public synchronized 	
+		PreparedStatement getPreparedStatement (String prepared, int sts)
+			throws SQLException
 	{
 		PreparedStatement pst = conn.prepareStatement (prepared, sts);
 		return pst;
 	}
 
 
-	public synchronized PreparedStatement getPreparedStatement (String prepared, String[] col)
-		throws SQLException
+	public synchronized 
+		PreparedStatement getPreparedStatement (String prepared, String[] col)
+			throws SQLException
 	{
 		PreparedStatement pst = conn.prepareStatement (prepared, col);
 		return pst;
@@ -156,15 +177,39 @@ class MyConnection {
 	}
 
 	
-	public void close (boolean commit)
+	public void close (boolean commitOnClose)
 		throws SQLException
 	{
-		if (commit) {
+		if (commitOnClose) {
 			conn.commit ();
+
 		} else {
 			conn.rollback ();
 		}
 		conn.close ();
 	}
 
+
+    public static void closeQuietly (Statement statement)
+    {
+        try {
+            if (statement != null) {
+                statement.close ();
+            }
+        } catch (SQLException sqlException) {
+            /* quiet */
+        }
+    }
+
+
+    public static void closeQuietly (ResultSet resultSet)
+    {
+        try {
+            if (resultSet != null) {
+                resultSet.close ();
+            }
+        } catch (SQLException sqlException) {
+            /* quiet */
+        }
+    }
 }
