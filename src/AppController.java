@@ -12,7 +12,6 @@ class AppController implements ActionListener, WindowListener {
 	private AppView app_view = null;
 	private MyConnection con = null;
 
-
 	public AppController (LoginView login_view)
 	{		
 		this.login_view = login_view;
@@ -44,15 +43,16 @@ class AppController implements ActionListener, WindowListener {
 				app_view.addListener (this);	
 				app_view.windowCloseListener (this);
 				app_view.setVisible (true);		
-			} 
-			catch (ConnectionErrorException ce) {
+
+			} catch (ConnectionErrorException ce) {
 				login_view.displayError (ce.getMessage ());
-			}
-			catch (DriverNotFoundException dnfe) {
+
+			} catch (DriverNotFoundException dnfe) {
 				login_view.displayError (dnfe.getMessage ());
+
 			} 			
-		} 
-		else { 
+
+		} else { 
 			login_view.displayError ("Invalid input field !");
 		}
 	}
@@ -65,8 +65,6 @@ class AppController implements ActionListener, WindowListener {
 			
 		String op = query.split (" ")[0].toUpperCase();
 		int rr = 0;
-
-		out.println (query);
 
 		switch (op) {
 			case "SELECT":	
@@ -119,7 +117,6 @@ class AppController implements ActionListener, WindowListener {
 					app_view.addQueryResult (sqlex.getMessage ());
 					app_view.updateStatus ("query error!", AppView.ERROR);
 				} 	
-
 				break;
 			case "INSERT":
 			case "UPDATE":
@@ -137,11 +134,11 @@ class AppController implements ActionListener, WindowListener {
 
 					if (op.equals ("INSERT")) {
 						app_view.addQueryResult (rr + " row inserted.");
-					} 
-					else if (op.equals ("UPDATE")) {
+
+					} else if (op.equals ("UPDATE")) {
 						app_view.addQueryResult (rr + " rows updated.");
-					}
-					else {
+
+					} else {
 						app_view.addQueryResult (rr + " rows deleted.");
 					}
 								
@@ -150,8 +147,8 @@ class AppController implements ActionListener, WindowListener {
 					}
 
 					app_view.refresh ();
-        		} 
-				catch (SQLException sqlex) {
+
+        		} catch (SQLException sqlex) {
             		sqlex.printStackTrace ();
 					String err_msg = sqlex.getMessage ();
 					err_msg = err_msg.substring (err_msg.indexOf (":") + 2);
@@ -168,39 +165,129 @@ class AppController implements ActionListener, WindowListener {
 	
 	private void insert_elev_btn ()
 	{
-		String prepared = 
-			"INSERT INTO elev (nume, prenume, adresa, cnp, etnie, nationalitate) VALUES (?, ?, ?, ?, ?, ?)";
-		PreparedStatement ps = null; 
-
-		ElevDataModel p = app_view.getElevData ();
-
-		if (p == null) {
-			app_view.displayError ("Data entered cannot be inserted!");
-			app_view.updateStatus ("-[INSERT]- fail", AppView.SUCCESS);
-		}				
+		String prepared = "INSERT INTO elev (nume, prenume, adresa, cnp, etnie, nationalitate) VALUES (?, ?, ?, ?, ?, ?)";
+		String prepared2 = "INSERT INTO elev_clasa (id_elev, id_clasa) VALUES (?, ?)";
+		PreparedStatement ps = null;
+		PreparedStatement ps2 = null;
+		ResultSet generatedKeys = null;			
 
 		try {
-			ps = con.getPreparedStatement (prepared);
-			
-			ps.setString (1, p.getNume ());	
-			ps.setString (2, p.getPren ());	
-			ps.setString (3, p.getCnp ());	
-			ps.setString (4, p.getAdresa ());	
-			ps.setString (5, p.getEtnie ());	
-			ps.setString (6, p.getNat ());
-						
+			ps = con.getPreparedStatement (prepared, new String[]{"id_elev"});
+
+		
+			String nume = app_view.getNumeElev();
+			String prenume = app_view.getPrenumeElev();
+			String adresa = app_view.getAdresaElev();
+			String cnp = app_view.getCnpElev();
+			String etnie = app_view.getEtnieElev();
+			String nationalitate = app_view.getNationalotateElev();
+
+			ElevDataModel.checkNume (nume);	
+			ElevDataModel.checkPrenume (prenume);	
+			ElevDataModel.checkAdresa (adresa);	
+			ElevDataModel.checkCnp (cnp);	
+			ElevDataModel.checkEtnie (etnie);	
+			ElevDataModel.checkNationalitate (nationalitate);	
+		
+			ps.setString (1, nume);
+			ps.setString (2, prenume);
+			ps.setString (3, adresa);
+			ps.setString (4, cnp);
+			ps.setString (5, etnie);
+			ps.setString (6, nationalitate);
+
 			ps.executeUpdate ();
-			
+	
+			generatedKeys = ps.getGeneratedKeys ();
+
+			if (generatedKeys.next ()) {
+				int id_elev = Integer.parseInt (generatedKeys.getString (1));	
+				int id_clasa = app_view.getClasaComboBoxSelectedID ();
+				out.println ("ID - ul ultimului elev: " + id_elev + 
+							 " cu clasa " + id_clasa);
+
+				ps2 = con.getPreparedStatement (prepared2);				
+				ps2.setInt (1, id_elev);
+				ps2.setInt (2, id_clasa);
+				ps2.executeUpdate ();
+				ElevTableModel.refresh (con);			
+			}
+
 			app_view.displayInformation (ps.getUpdateCount () + " rows inserted.");
 			app_view.updateStatus ("-[INSERT]- success", AppView.SUCCESS);
 
 		} catch (SQLException sqlex) {	
 			app_view.displayError (sqlex.getMessage ());
-			app_view.updateStatus ("-[INSERT]- fail", AppView.SUCCESS);
-		
+			app_view.updateStatus ("-[INSERT]- fail", AppView.ERROR);
+
+		} catch (Exception ex) {
+			app_view.displayError (ex.getMessage ());
+			app_view.updateStatus ("--[INSERT]- fail", AppView.ERROR);	
+			
 		} finally {
-			closeQuietly (ps);
+			MyConnection.closeQuietly (ps);
 		}		
+		
+	}
+
+		
+	private void delete_elev_btn ()
+	{
+		String prepared = "SELECT * FROM elev_clasa WHERE id_clasa = ?";
+		String prepared2 = "DELETE FROM elev WHERE id_elev = ?";
+		PreparedStatement ps = null;
+		PreparedStatement ps2 = null;
+		ResultSet rs = null;
+
+		Vector <Integer> selected_id = app_view.getTableElevSelectedIDs (true);
+
+		if (selected_id == null) {
+			return;
+		}
+
+		try {
+			ps = con.getPreparedStatement (prepared); 		
+			ps2 = con.getPreparedStatement (prepared2); 		
+
+			for (int id : selected_id) {
+
+				ps.setInt (1, id);
+				rs = ps.executeQuery ();
+
+				if (rs != null)
+					if (!rs.next ()) {
+						ps2.setInt (1, id);
+						ps2.addBatch ();
+					}
+			}
+		
+			ps2.executeBatch ();
+	
+			int rowsAffected = ps2.getUpdateCount ();
+
+			if (rowsAffected > 0) {		
+				ElevTableModel.refresh (con);
+				app_view.displayInformation (rowsAffected + " rows deleted.");
+				app_view.updateStatus ("-[DELETE]- success", AppView.SUCCESS);
+		
+			} else {	
+				app_view.displayInformation ("No rows affected");
+			}
+
+		} catch (SQLException sqlex) {
+			app_view.displayError (sqlex.getMessage ());
+			app_view.updateStatus ("-[DELETE]- success", AppView.ERROR);
+
+		} catch (Exception ex) {
+			app_view.displayError (ex.getMessage ());
+			app_view.updateStatus ("--[DELETE]- fail", AppView.ERROR);	
+			
+		} finally {
+			MyConnection.closeQuietly (ps2);
+			MyConnection.closeQuietly (ps);
+			MyConnection.closeQuietly (rs);
+		} 
+
 	}
 	
 	
@@ -208,21 +295,22 @@ class AppController implements ActionListener, WindowListener {
 	{		
 		Vector <Vector <MaterieDataModel>> m = app_view.getMateriiIDs ();
 		String prepared = "INSERT INTO profil (nume_profil) VALUES (?)";
-		String prepared2 = 
-			"INSERT INTO profil_materie (id_profil, id_materie, an_clasa) VALUES (?, ?, ?)";
+		String prepared2 = "INSERT INTO profil_materie (id_profil, id_materie, an_studiu) VALUES (?, ?, ?)";
 		PreparedStatement ps = null;
 		PreparedStatement ps2 = null;
 		ResultSet generatedKeys = null;
 
 		try {
-			ps = 
-				con.getPreparedStatement (prepared, new String[]{"id_profil"}); 	
+			ps = con.getPreparedStatement (prepared, new String[]{"id_profil"}); 	
 			String profil = app_view.getProfil ();
+
+			ProfilDataModel.checkNumeProfil (profil);
 
 			ps.setString (1, profil);
 			ps.executeUpdate ();
 
 			generatedKeys = ps.getGeneratedKeys ();
+
 			if (generatedKeys.next ()) {
 				int id = Integer.parseInt (generatedKeys.getString (1));
 				
@@ -253,52 +341,59 @@ class AppController implements ActionListener, WindowListener {
 
 		} catch (SQLException sqlex) {	
 			app_view.displayError (sqlex.getMessage ());
-			app_view.updateStatus ("-[INSERT]- fail", AppView.SUCCESS);
-		
+			app_view.updateStatus ("-[INSERT]- fail", AppView.ERROR);
+
+		} catch (Exception ex) {
+			app_view.displayError (ex.getMessage ());
+			app_view.updateStatus ("--[INSERT]- fail", AppView.ERROR);	
+			
 		} finally {
-			closeQuietly (ps);
-			closeQuietly (ps2);
-			closeQuietly (generatedKeys);
+			MyConnection.closeQuietly (ps);
+			MyConnection.closeQuietly (ps2);
+			MyConnection.closeQuietly (generatedKeys);
 		}	
 	}
 
 
 	private void insert_clasa_btn ()
 	{
-		String prepared = 
-		"INSERT INTO clasa(id_profil, an_scolar, cod, clasa) VALUES (?, ?, ?, ?)";
+		String prepared = "INSERT INTO clasa(id_profil, an_scolar, cod, an_studiu) VALUES (?, ?, ?, ?)";
 
 		PreparedStatement ps = null; 	
 		
 		try {
-			int an_scolar = Integer.parseInt (app_view.getAnScolar ());	
+			int an_scolar = Integer.parseInt (app_view.getAnScolar ());
 			String codClasa = app_view.getCodClasa ();
-			int clasa = Integer.parseInt (app_view.getClasa ());		
+			int an_studiu = app_view.getAnStudiu ();		
 			int id_profil = app_view.getComboBoxSelectedID ();
+	
+			ClasaDataModel.checkAnScolar (an_scolar);	
+			ClasaDataModel.checkCod (codClasa);	
+			ClasaDataModel.checkAnStudiu (an_studiu);	
 
-			System.out.println ("ID profil: " + id_profil);
-			System.out.println ("Cod clasa: " + codClasa);
-			System.out.println ("Clasa: " + clasa);
-			System.out.println ("an scolar: " + an_scolar);
-				
 			ps = con.getPreparedStatement (prepared); 	
 
 			ps.setInt (1, id_profil);
 			ps.setInt (2, an_scolar);
 			ps.setString (3, codClasa);
-			ps.setInt (4, clasa);
+			ps.setInt (4, an_studiu);
 			
 			ps.executeUpdate ();
+			ClasaTableModel.refresh (con);
 		
 			app_view.displayInformation (ps.getUpdateCount () + " rows inserted.");
 			app_view.updateStatus ("-[INSERT]- success", AppView.SUCCESS);
 
 		} catch (SQLException sqlex) {	
 			app_view.displayError (sqlex.getMessage ());
-			app_view.updateStatus ("-[INSERT]- fail", AppView.SUCCESS);
+			app_view.updateStatus ("-[INSERT]- fail", AppView.ERROR);
+
+		} catch (Exception ex) {
+			app_view.displayError (ex.getMessage ());
+			app_view.updateStatus ("--[INSERT]- fail", AppView.ERROR);	
 		
 		} finally {
-			closeQuietly (ps);
+			MyConnection.closeQuietly (ps);
 		}
 	}
 
@@ -312,9 +407,10 @@ class AppController implements ActionListener, WindowListener {
 			ps = con.getPreparedStatement (prepared);
 
 			int id = -1;
-			String materie;
-								
-			materie = app_view.getNumeMaterie ();	
+			String materie = app_view.getNumeMaterie ();	
+			
+			MaterieDataModel.checkNumeMaterie (materie);
+
 			ps.setString (1, materie);
 			
 			ps.executeUpdate ();
@@ -326,10 +422,14 @@ class AppController implements ActionListener, WindowListener {
 
 		} catch (SQLException sqlex) {
 			app_view.displayError (sqlex.getMessage ());
-			app_view.updateStatus ("-[INSERT]- fail", AppView.SUCCESS);
+			app_view.updateStatus ("-[INSERT]- fail", AppView.ERROR);
 
+		} catch (Exception ex) {
+			app_view.displayError (ex.getMessage ());
+			app_view.updateStatus ("--[INSERT]- fail", AppView.ERROR);	
+			
 		} finally {
-			closeQuietly (ps);
+			MyConnection.closeQuietly (ps);
 		}
 	}
 
@@ -341,10 +441,17 @@ class AppController implements ActionListener, WindowListener {
 		PreparedStatement ps = null;
 		PreparedStatement ps2 = null;
 
+		Vector <Integer> selected_id = 
+			app_view.getTableMaterieSelectedIDs (true);
+			
+		if (selected_id == null) {
+			return ;
+		} 
+
 		try {
 			ps = con.getPreparedStatement (prepared); 
 			ps2 = con.getPreparedStatement (prepared2);									
-			for (int id : app_view.getTableMaterieSelectedIDs (true)) {
+			for (int id : selected_id) {
 				ps.setInt (1, id);
 				ps.addBatch ();
 		
@@ -364,85 +471,194 @@ class AppController implements ActionListener, WindowListener {
 
 		} catch (SQLException sqlex) {
 			app_view.displayError (sqlex.getMessage ());
-			app_view.updateStatus ("-[DELETE]- success", AppView.SUCCESS);
+			app_view.updateStatus ("-[DELETE]- success", AppView.ERROR);
 
+		} catch (Exception ex) {
+			app_view.displayError (ex.getMessage ());
+			app_view.updateStatus ("--[DELETE]- fail", AppView.ERROR);	
+			
 		} finally {
-			closeQuietly (ps2);
-			closeQuietly (ps);
+			MyConnection.closeQuietly (ps2);
+			MyConnection.closeQuietly (ps);
 		}
 	}
 
 
 	private void update_materie_btn ()
-	{
+	{	
+		String prepared = 
+			"UPDATE materie SET nume_materie = ? WHERE id_materie = ?";
+		PreparedStatement ps = null;
+
+		Vector <Vector <Object>> selected_id = app_view.getTableMaterieUpdate ();
+
+		if (selected_id == null) {
+			return ;
+		} 
+
+		try {
+			ps = con.getPreparedStatement (prepared); 	
+
+			for (Vector <Object> rr : selected_id)
+			{
+				int ID = (( Integer )rr.get (0)).intValue ();
+				String materie = ( String )rr.get (1);
+
+				ps.setInt (2, ID);
+				ps.setString (1, materie);
+				ps.addBatch ();
+			}
+
+			ps.executeBatch ();
+			MaterieTableModel.refresh (con);
+
+			app_view.displayInformation (ps.getUpdateCount () + " rows updated.");
+			app_view.updateStatus ("-[UPDATE]- success", AppView.SUCCESS);
+
+		} catch (SQLException sqlex) {	
+			app_view.displayError (sqlex.getMessage ());
+			app_view.updateStatus ("-[UPDATE]- fail", AppView.ERROR);
+		
+		} catch (Exception ex) {
+			app_view.displayError (ex.getMessage ());
+			app_view.updateStatus ("--[UPDATE]- fail", AppView.ERROR);		
+
+		} finally {
+			MyConnection.closeQuietly (ps);
+		}	
 	}
 
 
 	private void delete_profil_btn ()
 	{
-		String prepared = "DELETE FROM profil WHERE id_profil = ?";
-		String prepared2 = "DELETE FROM profil_materie WHERE id_profil = ?";
+		String prepared = "SELECT * FROM clasa WHERE id_profil = ?";
+		String prepared2 = "DELETE FROM profil WHERE id_profil = ?";
+		String prepared3 = "DELETE FROM profil_materie WHERE id_profil = ?";
 		PreparedStatement ps = null;
 		PreparedStatement ps2 = null;
+		PreparedStatement ps3 = null;
+		ResultSet rs = null;
+
+		Vector <Integer> selected_id = app_view.getTableProfilSelectedIDs (true);
+		if (selected_id == null) {
+			return;
+		}
 
 		try {
 			ps = con.getPreparedStatement (prepared); 		
 			ps2 = con.getPreparedStatement (prepared2); 		
+			ps3 = con.getPreparedStatement (prepared3);
 
-			for (int id : app_view.getTableProfilSelectedIDs (true)) {
+			for (int id : selected_id) {
+
 				ps.setInt (1, id);
-				ps.addBatch ();
-			
-				ps2.setInt (1, id);
-				ps2.addBatch ();
+				rs = ps.executeQuery ();
+
+				if (rs != null)
+					if (!rs.next ()) {
+						ps2.setInt (1, id);
+						ps2.addBatch ();
+						ps3.setInt (1, id);
+						ps3.addBatch ();
+					}
 			}
 		
+			ps3.executeBatch ();
 			ps2.executeBatch ();
-			ps.executeBatch ();
-
-			ProfilTableModel.refresh (con);
 	
-			app_view.re ();
+			int rowsAffected = ps2.getUpdateCount ();
 
-			app_view.displayInformation (ps.getUpdateCount () + " rows deleted.");
-			app_view.updateStatus ("-[DELETE]- success", AppView.SUCCESS);
+			if (rowsAffected > 0) {		
+				ProfilTableModel.refresh (con);
+				app_view.re ();
+				app_view.displayInformation (rowsAffected + " rows deleted.");
+				app_view.updateStatus ("-[DELETE]- success", AppView.SUCCESS);
+		
+			} else {	
+				app_view.displayInformation ("No rows affected");
+			}
 
 		} catch (SQLException sqlex) {
 			app_view.displayError (sqlex.getMessage ());
-			app_view.updateStatus ("-[DELETE]- success", AppView.SUCCESS);
+			app_view.updateStatus ("-[DELETE]- success", AppView.ERROR);
 
+		} catch (Exception ex) {
+			app_view.displayError (ex.getMessage ());
+			app_view.updateStatus ("--[DELETE]- fail", AppView.ERROR);	
+			
 		} finally {
-			closeQuietly (ps);
+			MyConnection.closeQuietly (ps2);
+			MyConnection.closeQuietly (ps);
+			MyConnection.closeQuietly (rs);
 		} 
 	}
 
 	private void update_profil_btn ()
 	{
 		out.println ("UPDATE PROFIL");
+		app_view.getTableProfilUpdate ();
 	}
 
-
-	private void closeQuietly (Statement statement)
+	
+	private void delete_clasa_btn ()
 	{
-		try {
-			if (statement != null) {
-				statement.close ();
-			}
-		} catch (SQLException sqlException) {
-			/* quiet */
-		}
-	}
+		String prepared = "SELECT * FROM elev_clasa WHERE id_clasa = ?";
+		String prepared2 = "DELETE FROM clasa WHERE id_clasa = ?";
+		PreparedStatement ps = null;
+		PreparedStatement ps2 = null;
+		ResultSet rs = null;
 
-
-	private void closeQuietly (ResultSet resultSet)
-	{
+		Vector <Integer> indices = app_view.getTableClasaSelectedIDs (true);
+					
+		if (indices == null) {
+			return;
+		}					
+	
 		try {
-			if (resultSet != null) {
-				resultSet.close ();
+			ps = con.getPreparedStatement (prepared); 	
+			ps2 = con.getPreparedStatement (prepared2);
+
+			for (int id : indices) {
+				out.print ("Pentru id: " + id);
+				
+				ps.setInt (1, id);
+				rs = ps.executeQuery ();
+				
+				if (rs != null)
+					if (!rs.next ()) {
+						out.print (" trebuie sters");
+						ps2.setInt (1, id);
+						ps2.addBatch ();
+				}
+				out.println ();
 			}
-		} catch (SQLException sqlException) {
-			/* quiet */
-		}
+
+			ps2.executeBatch ();
+
+			int rowsAffected = ps2.getUpdateCount ();
+
+			if (rowsAffected > 0) {		
+				ClasaTableModel.refresh (con);
+				app_view.displayInformation (rowsAffected + " rows deleted.");
+				app_view.updateStatus ("-[DELETE]- success", AppView.SUCCESS);
+		
+			} else {	
+				app_view.displayInformation ("No rows affected");
+			}
+
+		} catch (SQLException sqlex) {
+			app_view.displayError (sqlex.getMessage ());
+			app_view.updateStatus ("--[DELETE]- fail", AppView.ERROR);	
+			
+		} catch (Exception ex) {
+			app_view.displayError (ex.getMessage ());
+			app_view.updateStatus ("--[DELETE]- fail", AppView.ERROR);		
+			
+		} finally {
+			MyConnection.closeQuietly (ps2);
+			MyConnection.closeQuietly (ps);
+			MyConnection.closeQuietly (rs);
+		}  
 	}
 
 
@@ -460,12 +676,27 @@ class AppController implements ActionListener, WindowListener {
 			if (evtSrc == app_view.getObs().get ("execute")) {
 				query_btn ();		
 			}
-			else if (evtSrc == app_view.getObs ().get ("adauga elev") ) {
-				insert_elev_btn ();
+			else if (evtSrc == app_view.getObs ().get ("insert-elev") ) {
+				insert_elev_btn (); 
 			}
-			else if (evtSrc == app_view.getObs ().get ("adauga clasa") ) {
+			else if (evtSrc == app_view.getObs ().get ("update-elev") ) {
+				out.println ("update elev");
+			}
+			else if (evtSrc == app_view.getObs ().get ("delete-elev") ) {
+				out.println ("delete elev");
+				delete_elev_btn ();
+			}
+			else if (evtSrc == app_view.getObs ().get ("insert-clasa") ) {
 				insert_clasa_btn ();	
 			}
+			else if (evtSrc == app_view.getObs ().get ("update-clasa") ) {
+				out.println ("-update clasa");	
+				app_view.getTableClasaUpdate ();
+			}
+			else if (evtSrc == app_view.getObs ().get ("delete-clasa") ) {
+				out.println ("-delete-clasa");
+				delete_clasa_btn ();
+			}		
 			else if (evtSrc == app_view.getObs ().get ("insert-profil")) {
 				insert_profil_btn ();
 			}

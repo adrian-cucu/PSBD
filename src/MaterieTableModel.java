@@ -37,7 +37,7 @@ class MaterieTableModel extends AbstractTableModel {
     public static void refresh (MyConnection con)
     {
         data.clear ();
-        data = con.fetchMaterie ();
+        data = con.fetchTableMaterieObjData ();
         notifyListeners ();
     }
 

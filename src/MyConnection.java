@@ -23,9 +23,9 @@ class MyConnection {
 	}
 
 
-	public Vector <Vector <Object>> fetchClase ()
+	public Vector <Vector <Object>> fetchTableClasaRawData ()
 	{
-		Vector <Vector <Object>> fetchedData = new Vector <> ();
+		Vector <Vector <Object>> fetchedData = null;
 	
 		ResultSet result_set = null;
 		Statement statement = null;	
@@ -37,12 +37,15 @@ class MyConnection {
 
 			while (result_set.next ()) {
 				fetchedRow = ClasaDataModel.make (result_set);
+				if (fetchedData == null) {
+					fetchedData = new  Vector <Vector <Object>> ();
+				}	
 				fetchedData.add (fetchedRow);
 			}
 
-		} catch (java.sql.SQLException e) {
-			return null;
-
+		} catch (SQLException e) {
+			/* ignore */
+		
 		} finally {
 			closeQuietly (result_set);
 			closeQuietly (statement);
@@ -52,10 +55,41 @@ class MyConnection {
 	}
 
 
-	public Vector <ElevDataModel> fetchElevi ()
+	public Vector <ClasaDataModel> fetchTableClasaObjData ()
 	{
-		Vector <ElevDataModel> data = new Vector <>();
+		Vector <ClasaDataModel> fetchedData = null;
+	
+		ResultSet result_set = null;
+		Statement statement = null;	
+
+		try {
+			statement = getStatement ();
+			result_set = statement.executeQuery ("SELECT * FROM clasa");
+
+			while (result_set.next ()) {
+				if (fetchedData == null) {
+					fetchedData = new Vector <>();
+				}
+				fetchedData.add (new ClasaDataModel (result_set));
+			}
+
+		} catch (SQLException e) {
+			/* ignore */
 		
+		} finally {
+			closeQuietly (result_set);
+			closeQuietly (statement);
+		}
+
+		return fetchedData;
+	}
+
+
+	public Vector <Vector <Object>> fetchTableElevRawData ()
+	{	
+		Vector <Vector <Object>> fetchedData = null;	
+		Vector <Object> fetchedRow = null;
+
 		ResultSet result_set = null;
 		Statement statement = null;	
 
@@ -64,23 +98,58 @@ class MyConnection {
 			result_set = statement.executeQuery ("SELECT * FROM elev");
 
 			while (result_set.next ()) {
-				data.add (new ElevDataModel (result_set));
+				fetchedRow = ElevDataModel.make (result_set);
+				if (fetchedData == null) {
+					fetchedData = new Vector <>();
+				}
+				fetchedData.add (fetchedRow);
 			}
 
-		} catch (java.sql.SQLException e) {
-			return null;
+		} catch (SQLException e) {
+			/* ignore */
 	
 		} finally {
 			closeQuietly (result_set);
 			closeQuietly (statement);
 		}	
-		return data;
+
+		return fetchedData;
 	}
 
 
-	public Vector<ProfilDataModel> fetchProfil ()
+	public Vector <ElevDataModel> fetchTableElevObjData ()
 	{
-		Vector <ProfilDataModel> data = new Vector <>();
+		Vector <ElevDataModel> fetchedData = null;	
+
+		ResultSet result_set = null;
+		Statement statement = null;	
+
+		try {
+			statement = getStatement ();
+			result_set = statement.executeQuery ("SELECT * FROM elev");
+
+			while (result_set.next ()) {
+				if (fetchedData == null) {
+					fetchedData = new Vector <>();
+				}
+				fetchedData.add (new ElevDataModel (result_set));
+			}
+
+		} catch (SQLException e) {
+			/* ignore */
+	
+		} finally {
+			closeQuietly (result_set);
+			closeQuietly (statement);
+		}	
+
+		return fetchedData;
+	}
+
+
+	public Vector<ProfilDataModel> fetchTableProfilObjData ()
+	{
+		Vector <ProfilDataModel> fetchedData = null;
 		
 		ResultSet result_set = null;
 		Statement statement = null;	
@@ -90,24 +159,58 @@ class MyConnection {
 			result_set = statement.executeQuery ("SELECT * FROM profil");
 			
 			while (result_set.next ()) {
-				data.add (new ProfilDataModel (result_set));
+				if (fetchedData == null) {
+					fetchedData = new Vector <ProfilDataModel> ();
+				}
+				fetchedData.add (new ProfilDataModel (result_set));
 			}
 
-		} catch (java.sql.SQLException e) {
-			return null;
+		} catch (SQLException e) {
+			/* ignore */
 
 		} finally {
 			closeQuietly (result_set);
 			closeQuietly (statement);
 		} 
-		return data;
+
+		return fetchedData;
 	}
 
 
-	public Vector <MaterieDataModel> fetchMaterie ()
+	public Vector<Vector<Object>> fetchTableProfilRawData ()
 	{
-		Vector <MaterieDataModel> data = new Vector <>();
+		Vector <Vector<Object>> fetchedData = null;
 		
+		ResultSet result_set = null;
+		Statement statement = null;	
+
+		try {
+			statement = getStatement ();
+			result_set = statement.executeQuery ("SELECT * FROM profil");
+			
+			while (result_set.next ()) {
+				if (fetchedData == null) {
+					fetchedData = new Vector <Vector<Object>> ();
+				}
+				fetchedData.add (ProfilDataModel.make (result_set));
+			}
+
+		} catch (SQLException e) {
+			/* ignore */
+
+		} finally {
+			closeQuietly (result_set);
+			closeQuietly (statement);
+		} 
+
+		return fetchedData;
+	}
+
+
+	public Vector <MaterieDataModel> fetchTableMaterieObjData ()
+	{	
+		Vector <MaterieDataModel> fetchedData = null;
+
 		ResultSet result_set = null;
 		Statement statement = null;	
 
@@ -116,19 +219,53 @@ class MyConnection {
 			result_set = statement.executeQuery ("SELECT * FROM materie");
 			
 			while (result_set.next ()) {
-				data.add (new MaterieDataModel (result_set));
+				if (fetchedData == null) {
+					fetchedData = new  Vector <MaterieDataModel> ();
+				}
+				fetchedData.add (new MaterieDataModel (result_set));
 			}
 
-		} catch (java.sql.SQLException e) {
-			return null;
+		} catch (SQLException e) {
+			/* ignore */
 
 		} finally {
 			closeQuietly (result_set);
 			closeQuietly (statement);
 		}
-		return data;	
+
+		return fetchedData;	
 	}
-	
+
+
+	public Vector <Vector<Object>> fetchTableMaterieRawData ()
+	{	
+		Vector <Vector<Object>> fetchedData = null;
+
+		ResultSet result_set = null;
+		Statement statement = null;	
+
+		try {
+			statement = getStatement ();
+			result_set = statement.executeQuery ("SELECT * FROM materie");
+			
+			while (result_set.next ()) {
+				if (fetchedData == null) {
+					fetchedData = new  Vector <Vector<Object>> ();
+				}
+				fetchedData.add (MaterieDataModel.make (result_set));
+			}
+
+		} catch (SQLException e) {
+			/* ignore */
+
+		} finally {
+			closeQuietly (result_set);
+			closeQuietly (statement);
+		}
+
+		return fetchedData;	
+	}
+
 	
 	public synchronized Statement getStatement ()
 		throws SQLException

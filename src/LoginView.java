@@ -1,16 +1,14 @@
-import java.awt.event.*;
 import static javax.swing.JOptionPane.*;
+import java.awt.event.*;
 import javax.swing.*;
 import java.awt.*;
 
-
 class LoginView extends JFrame {	
 
-	static final long serialVersionUID = 100L;
+	static final long serialVersionUID = 0xad1;
 
 	private JTextField hostname, username, port, sid, password;
 	private JButton login, reset, exit;
-
 
 	LoginView () 
 	{
@@ -19,7 +17,7 @@ class LoginView extends JFrame {
 		setDefaultCloseOperation (EXIT_ON_CLOSE);
 		setBounds (450, 250, 450, 300);	
 		setResizable (false);
-		getContentPane ().setLayout (null);
+		setLayout (null);
 		
 		JLabel hostname_label = new JLabel ("Hostname: ");  
 		hostname = new JTextField (30);
@@ -137,5 +135,4 @@ class LoginView extends JFrame {
 	{
 		return login;
 	}   
-
 }

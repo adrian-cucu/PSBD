@@ -1,10 +1,8 @@
 
 class InputCheck {
 
-
 	private static final char[] invalid_chars = 
 		"!@#$%^&*()!`\"\\/<>;:'".toCharArray ();
-
 
 	public static boolean 
 		contains_invalid_chars (String str)
@@ -22,5 +20,4 @@ class InputCheck {
  	{
 		return !str.isEmpty () && !contains_invalid_chars (str); 
 	}
-
 }

@@ -5,27 +5,17 @@ import java.util.Arrays;
 class ElevTableModel extends AbstractTableModel {
 
 	public static final long serialVersionUID = 0xad1;		
+	public static Vector <Vector <Object>> data = null;	
+	public static Vector <ElevTableModel> listeners = new Vector <> ();
 
-	public static Vector <ElevDataModel> data = null;	
-
-	public static final Vector <String> columns =
-		new Vector <String> (Arrays.asList (
-			new String[] {
-				"id_elev", "nume", "prenume", "adresa", "cnp", "etnie", "nationalitate"
-			}
-		));	
-
-	public static Vector <ElevDataModel> listeners = new Vector <> ();
-	
-
-	public ProfilTableModel ()
+	public ElevTableModel ()
 	{
 		super ();
 		listeners.add (this);
 	}
 	
 	
-	public void setData (Vector <ElevDataModel> datas)
+	public void setData (Vector <Vector <Object>> datas)
 	{
 		data = datas;
 		notifyListeners ();
@@ -35,18 +25,9 @@ class ElevTableModel extends AbstractTableModel {
 	public static void refresh (MyConnection con)
 	{
 		data.clear ();
-		data = con.fetchProfil ();
+		data = con.fetchTableElevRawData ();
 		notifyListeners ();
 	}
-
-
-	public static void addRow (ElevDataModel newRow)
-	{
-		if (data == null) { 
-			data = new Vector <>();
-		}
-		data.add (newRow); 
-	}		
 
 		
 	public static String getRow (int row)
@@ -59,43 +40,22 @@ class ElevTableModel extends AbstractTableModel {
 	
 	private static void notifyListeners ()
 	{
-		for (ProfilTableModel listener : listeners)
+		for (ElevTableModel listener : listeners)
 			listener.fireTableDataChanged ();
 	}	
-
 	
 
 	@Override
 	public Class<?> getColumnClass (int column) 
 	{
-		if (column == 0) {
-			return Integer.class;
-		}
-		if (column == 1) {
-			return String.class;
-		}
-
-		return Object.class;
+		return ElevDataModel.colType.get (column);
 	}
 	
 
 	@Override
 	public String getColumnName (int column)
 	{
-		return columns.get (column);
-	}
-
-	
-	@Override
-	public Object getValueAt (int row, int column)
-	{
-		if (data != null) {	
-			if (column == 0) 
-				return data.get (row).getID ();
-			if (column == 1)
-				return data.get (row).getNumeProfil ();
-		}	
-		return null;
+		return ElevDataModel.colName.get (column);
 	}
 
 	
@@ -105,14 +65,24 @@ class ElevTableModel extends AbstractTableModel {
 		return false;
 	} 
 		
-	
+
 	@Override
 	public int getColumnCount ()
 	{
-		return columns.size ();
+		return ElevDataModel.colName.size ();
 	}
-		
+
 	
+	@Override
+	public Object getValueAt (int row, int column)
+	{
+		if (data != null) {
+			return data.get (row).get (column);
+		}	
+		return null;
+	}	
+
+
 	@Override
 	public int getRowCount ()
 	{

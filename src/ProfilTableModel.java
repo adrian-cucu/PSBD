@@ -2,31 +2,11 @@ import javax.swing.table.AbstractTableModel;
 import java.util.Vector;
 import java.util.Arrays;
 
-import static javax.swing.JOptionPane.*;
-import javax.swing.table.*;
-import java.util.HashMap;
-import java.awt.*;
-import javax.swing.border.*;
-import javax.swing.*;
-import javax.swing.table.*;
-import java.sql.*;
-import java.awt.event.*;
-
 class ProfilTableModel extends AbstractTableModel {
 
 	public static final long serialVersionUID = 0xad1;		
-
 	public static Vector <ProfilDataModel> data = null;	
-
-	public static final Vector <String> columns =
-		new Vector <String> (Arrays.asList (
-			new String[] {
-				"id_profil", "nume_profil"
-			}
-		));	
-
-	public static Vector <ProfilTableModel> listeners = new Vector <> ();
-	
+	public static Vector <ProfilTableModel> listeners = new Vector<>();	
 
 	public ProfilTableModel ()
 	{
@@ -53,7 +33,7 @@ class ProfilTableModel extends AbstractTableModel {
 	public static void refresh (MyConnection con)
 	{
 		data.clear ();
-		data = con.fetchProfil ();
+		data = con.fetchTableProfilObjData ();
 		notifyListeners ();
 	}
 
@@ -78,22 +58,14 @@ class ProfilTableModel extends AbstractTableModel {
 	@Override
 	public Class<?> getColumnClass (int column) 
 	{
-		Class <?> type = Object.class;
-		if (column == 0) {
-			return Integer.class;
-		}
-		if (column == 1) {
-			return String.class;
-		}
-
-		return type;
+		return ProfilDataModel.colType.get (column);
 	}
 	
 
 	@Override
 	public String getColumnName (int column)
 	{
-		return columns.get (column);
+		return ProfilDataModel.colName.get (column);
 	}
 
 	
@@ -120,7 +92,7 @@ class ProfilTableModel extends AbstractTableModel {
 	@Override
 	public int getColumnCount ()
 	{
-		return columns.size ();
+		return ProfilDataModel.colType.size ();
 	}
 		
 	

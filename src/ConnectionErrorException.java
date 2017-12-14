@@ -1,9 +1,7 @@
 
 class ConnectionErrorException extends Exception {
-
 	
-	public static final long serialVersionUID = 1L;
-
+	public static final long serialVersionUID = 0xad1;
 
 	public ConnectionErrorException (String errMsg)
 	{
