@@ -126,15 +126,19 @@ ADD CONSTRAINT profil_materie_fk_materie
 FOREIGN KEY (id_materie) REFERENCES materie(id_materie);
 ---------------------------------------------------------------
 CREATE TABLE medie (
-	id_elev 		NUMBER(10) NOT NULL,	
+	id_elev 		NUMBER(10) NOT NULL,
+	id_clasa		NUMBER(10) NOT NULL,	
 	medie			NUMBER(2)  NOT NULL,
-	an_scolar		NUMBER(2)  NOT NULL,
 	semestru		NUMBER(2)  NOT NULL
 );
 
 ALTER TABLE medie
 ADD CONSTRAINT medie_fk_elev
 FOREIGN KEY (id_elev) REFERENCES elev (id_elev);
+
+ALTER TABLE medie
+ADD CONSTRAINT medie_fk_clasa
+FOREIGN KEY (id_clasa) REFERENCES clasa (id_clasa);
 ---------------------------------------------------------------
 CREATE TABLE bursa (
 	id_bursa		NUMBER(10) NOT NULL,
