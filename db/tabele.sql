@@ -1,6 +1,29 @@
-set serveroutput on;
-set termout on;
+SET SERVEROUTPUT ON;
+SET TERMOUT ON;
 
+/*
+DROP TRIGGER elev_on_insert;
+DROP TRIGGER profil_on_insert;
+DROP TRIGGER clasa_on_insert;
+DROP TRIGGER materie_on_insert;
+
+DROP SEQUENCE elev_seq;
+DROP SEQUENCE profil_seq;
+DROP SEQUENCE clasa_seq;
+DROP SEQUENCE materie_seq;
+
+DROP TABLE medie;
+DROP TABLE elev_bursa;
+DROP TABLE elev_clasa;
+DROP TABLE profil_materie;
+
+DROP TABLE elev;
+
+DROP TABLE clasa;
+DROP TABLE profil;
+DROP TABLE materie;
+DROP TABLE bursa;
+*/
 --------------------------------------------------------
 CREATE TABLE elev (
 	id_elev 		NUMBER(10) NOT NULL, 
@@ -98,7 +121,6 @@ ALTER TABLE materie
 ADD CONSTRAINT materie_pk 
 PRIMARY KEY (id_materie);
 
-
 CREATE SEQUENCE materie_seq;
 
 CREATE OR REPLACE TRIGGER materie_on_insert
@@ -114,7 +136,7 @@ END;
 CREATE TABLE profil_materie (
 	id_profil		NUMBER(10) NOT NULL,
 	id_materie		NUMBER(10) NOT NULL,
-	an_studiu		NUMBER(3) NOT NULL  -- anul in care se face materia respectiva
+	an_studiu		NUMBER(3) NOT NULL 
 );
 
 ALTER TABLE profil_materie
@@ -128,6 +150,7 @@ FOREIGN KEY (id_materie) REFERENCES materie(id_materie);
 CREATE TABLE medie (
 	id_elev 		NUMBER(10) NOT NULL,
 	id_clasa		NUMBER(10) NOT NULL,	
+	id_materie		NUMBER(10) NOT NULL,
 	medie			NUMBER(2)  NOT NULL,
 	semestru		NUMBER(2)  NOT NULL
 );
@@ -139,6 +162,10 @@ FOREIGN KEY (id_elev) REFERENCES elev (id_elev);
 ALTER TABLE medie
 ADD CONSTRAINT medie_fk_clasa
 FOREIGN KEY (id_clasa) REFERENCES clasa (id_clasa);
+
+ALTER TABLE medie
+ADD CONSTRAINT medie_fk_materie
+FOREIGN KEY (id_materie) REFERENCES materie (id_materie);
 ---------------------------------------------------------------
 CREATE TABLE bursa (
 	id_bursa		NUMBER(10) NOT NULL,
@@ -149,7 +176,6 @@ CREATE TABLE bursa (
 ALTER TABLE bursa
 ADD CONSTRAINT bursa_pk 
 PRIMARY KEY (id_bursa);
-
 
 CREATE TABLE elev_bursa (
 	id_elev			NUMBER(10) NOT NULL,
@@ -164,6 +190,8 @@ FOREIGN KEY (id_elev) REFERENCES elev (id_elev);
 ALTER TABLE elev_bursa 
 ADD CONSTRAINT elev_bursa_fk_bursa 
 FOREIGN KEY (id_bursa) REFERENCES bursa (id_bursa);
+-----------------------------------------------------------------------------------
+
 
 -----------------------------------------------------------------------------------
 INSERT INTO bursa (id_bursa, tip_bursa, valoare) VALUES ('1', 'performanta', '1000');
@@ -355,14 +383,6 @@ INSERT INTO profil_materie VALUES (3, 13, 9);
 INSERT INTO profil_materie VALUES (3, 13, 10);
 INSERT INTO profil_materie VALUES (3, 13, 11);
 INSERT INTO profil_materie VALUES (3, 13, 12);
-
-/*
-SELECT p.*, m.nume_materie, pm.an_clasa 
-FROM profil p
-INNER JOIN profil_materie pm ON p.id_profil = pm.id_profil
-INNER JOIN materie m ON pm.id_materie = m.id_materie
-ORDER BY pm.an_clasa;
-*/
 -----------------------------------------------------------------------------------
 
 
@@ -456,26 +476,22 @@ VALUES ('Vivianu', 'Marius', 'Str. Schela Galati', '1960123170099', 'romana', 'r
 
 INSERT INTO elev (nume, prenume, adresa, cnp, etnie, nationalitate) 
 VALUES ('Vianu', 'Tudor', 'Str. Furnalului Galati', '1960910170044', 'romana', 'romana');	
-
 -----------------------------------------------------------------------------------
 
 
 -----------------------------------------------------------------------------------
-INSERT INTO clasa (id_clasa, id_profil, an_scolar, cod, clasa) VALUES (1, 1, 2015, 'A', 9);
-INSERT INTO clasa (id_clasa, id_profil, an_scolar, cod, clasa) VALUES (2, 2, 2015, 'B', 9);
-INSERT INTO clasa (id_clasa, id_profil, an_scolar, cod, clasa) VALUES (3, 3, 2015, 'C', 9);
-
-INSERT INTO clasa (id_clasa, id_profil, an_scolar, cod, clasa) VALUES (4, 1, 2015, 'A', 10);
-INSERT INTO clasa (id_clasa, id_profil, an_scolar, cod, clasa) VALUES (5, 2, 2015, 'B', 10);
-INSERT INTO clasa (id_clasa, id_profil, an_scolar, cod, clasa) VALUES (6, 3, 2015, 'C', 10);
-
-INSERT INTO clasa (id_clasa, id_profil, an_scolar, cod, clasa) VALUES (7, 1, 2015, 'A', 11);
-INSERT INTO clasa (id_clasa, id_profil, an_scolar, cod, clasa) VALUES (8, 2, 2015, 'B', 11);
-INSERT INTO clasa (id_clasa, id_profil, an_scolar, cod, clasa) VALUES (9, 3, 2015, 'C', 11);
-
-INSERT INTO clasa (id_clasa, id_profil, an_scolar, cod, clasa) VALUES (10, 1, 2015, 'A', 12);
-INSERT INTO clasa (id_clasa, id_profil, an_scolar, cod, clasa) VALUES (11, 2, 2015, 'B', 12);
-INSERT INTO clasa (id_clasa, id_profil, an_scolar, cod, clasa) VALUES (12, 3, 2015, 'C', 12);
+INSERT INTO clasa (id_profil, an_scolar, cod, an_studiu) VALUES (1, 2015, 'A', 9);
+INSERT INTO clasa (id_profil, an_scolar, cod, an_studiu) VALUES (2, 2015, 'B', 9);
+INSERT INTO clasa (id_profil, an_scolar, cod, an_studiu) VALUES (3, 2015, 'C', 9);
+INSERT INTO clasa (id_profil, an_scolar, cod, an_studiu) VALUES (1, 2015, 'A', 10);
+INSERT INTO clasa (id_profil, an_scolar, cod, an_studiu) VALUES (2, 2015, 'B', 10);
+INSERT INTO clasa (id_profil, an_scolar, cod, an_studiu) VALUES (3, 2015, 'C', 10);
+INSERT INTO clasa (id_profil, an_scolar, cod, an_studiu) VALUES (1, 2015, 'A', 11);
+INSERT INTO clasa (id_profil, an_scolar, cod, an_studiu) VALUES (2, 2015, 'B', 11);
+INSERT INTO clasa (id_profil, an_scolar, cod, an_studiu) VALUES (3, 2015, 'C', 11);
+INSERT INTO clasa (id_profil, an_scolar, cod, an_studiu) VALUES (1, 2015, 'A', 12);
+INSERT INTO clasa (id_profil, an_scolar, cod, an_studiu) VALUES (2, 2015, 'B', 12);
+INSERT INTO clasa (id_profil, an_scolar, cod, an_studiu) VALUES (3, 2015, 'C', 12);
 -----------------------------------------------------------------------------------
 
 
@@ -516,50 +532,16 @@ INSERT INTO elev_clasa (id_elev, id_clasa) VALUES ('28', '6');
 INSERT INTO elev_clasa (id_elev, id_clasa) VALUES ('29', '6');
 INSERT INTO elev_clasa (id_elev, id_clasa) VALUES ('30', '6');
 -----------------------------------------------------------------------------------
-
 COLUMN id format 99999;
 COLUMN nume format a15;
 COLUMN prenume format a20;
-COLUMN adresa format a60;
+COLUMN adresa format a70;
 COLUMN cnp format a13;
 COLUMN etnie format a15;
 COLUMN nationalitate format a15;
 
 SET PAGESIZE 10000;
 SET LINESIZE 200;
-
-SELECT * FROM elev;
-
-
-SELECT e.id_elev, e.nume, e.prenume , c.clasa, c.cod, p.nume_profil
-FROM elev e
-INNER JOIN elev_clasa ec 
-	ON ec.id_elev = e.id_elev
-INNER JOIN clasa c 
-	ON ec.id_clasa = c.id_clasa
-INNER JOIN profil p
-	ON p.id_profil = c.id_profil;
-
-/*
-SELECT e.id_elev, e.nume, e.prenume, c.an_scolar, c.cod, c.clasa
-FROM elev e
-INNER JOIN elev_clasa ec ON e.id_elev = ec.id_elev
-INNER JOIN clasa c ON ec.id_clasa = c.id_clasa; 
-*/
-
-/*
-SELECT * FROM profil;
-SELECT * FROM clasa;
-SELECT * FROM bursa;
-*/
-
---SELECT e.nume, e.prenume, e.etnie, 
---	c.id_clasa, c.an_scolar, c.cod, c.clasa, p.nume_profil
---FROM elev e 
---INNER JOIN elev_clasa ec ON e.id_elev = ec.id_elev
---INNER JOIN clasa c ON c.id_clasa = ec.id_clasa
---INNER JOIN profil p ON c.id_profil = p.id_profil;
-
 -----------------------------------
 /*
 DROP SEQUENCE profil_seq;
@@ -579,8 +561,6 @@ DROP TABLE materie;
 DROP TABLE bursa;
 */
 -----------------------------------
-
-
 BEGIN	
 	dbms_output.put_line ('Salut');
 END;

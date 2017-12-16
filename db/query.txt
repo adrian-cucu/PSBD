@@ -1,0 +1,43 @@
+################################################################
+# Materiile de la un anumit profil, 
+# la o anumita clasa (pm.an_studiu = 9, 10, 11, 12)
+
+SELECT p.nume_profil, pm.an_studiu,mat.nume_materie
+FROM profil p
+INNER JOIN profil_materie pm ON pm.id_profil = p.id_profil
+INNER JOIN materie mat ON mat.id_materie = pm.id_materie
+ORDER BY pm.an_studiu
+################################################################
+
+
+
+################################################################
+# Mediile unui elev
+SELECT 
+	elv.nume||' '||elv.prenume "NUME ELEV",
+	cls.an_studiu||' '||cls.cod "CLASA",
+	mat.nume_materie "MATERIE",
+	med.medie "MEDIE"
+
+FROM elev elv
+INNER JOIN elev_clasa elv_cls ON elv_cls.id_elev = elv.id_elev
+INNER JOIN clasa cls ON cls.id_clasa = elv_cls.id_clasa
+INNER JOIN profil pfl ON pfl.id_profil = cls.id_profil
+INNER JOIN profil_materie pfl_mat
+ON
+  pfl_mat.id_profil = pfl.id_profil
+AND
+  pfl_mat.an_studiu = cls.an_studiu
+INNER JOIN materie mat ON mat.id_materie = pfl_mat.id_materie;
+INNER JOIN medie med 
+ON 
+  med.id_elev  = elv.id_elev
+AND
+  med.id_clasa = cls.id_clasa
+AND
+  med.id_materie = mat.id_materie;
+
+
+################################################################
+
+
