@@ -1,9 +1,7 @@
+import javax.swing.table.*;
+import java.util.Calendar;
 import java.util.Vector;
 import java.util.Arrays;
-import java.util.Calendar;
-import java.awt.*;
-import javax.swing.*;
-import javax.swing.table.*;
 import java.sql.*;
 
 class ClasaDataModel {		
@@ -25,8 +23,9 @@ class ClasaDataModel {
 
 	private int id_clasa;
 	private int id_profil;
+	private String nume_profil = null;
 	private int an_scolar;
-	private String cod;
+	private String cod = null;
 	private int an_studiu;
 
 	public ClasaDataModel (int id_clasa, int id_profil, int an_scolar, String cod, int an_studiu)
@@ -50,26 +49,9 @@ class ClasaDataModel {
 	}	
 
 	
-	public static Vector <Object> make (ResultSet r)
-		throws SQLException
+	public void setNumeProfil (String nume_profil)
 	{
-		if (r == null) {
-			return null;
-		}
-
-		int id_clasa = r.getInt (1);
-		int id_profil = r.getInt (2);
-		int an_scolar = r.getInt (3);
-		String cod = r.getString (4);
-		int an_studiu = r.getInt (5);
-
-		Vector <Object> rowData = new Vector <Object> (5);
-		rowData.add (id_clasa);
-		rowData.add (id_profil);
-		rowData.add (an_scolar);
-		rowData.add (cod);
-		rowData.add (an_studiu);
-		return 	rowData;
+		this.nume_profil = nume_profil;
 	}
 
 
@@ -106,10 +88,30 @@ class ClasaDataModel {
 	@Override	
 	public String toString ()
 	{
-		return this.id_profil + " " +
-			this.an_scolar + " " + 
-			this.cod + " " +
-			this.an_studiu;
+		return (nume_profil == null ? "" : nume_profil + " ") + an_studiu + cod + " " + an_scolar;
+	}
+
+
+	public static Vector <Object> make (ResultSet r)
+		throws SQLException
+	{
+		if (r == null) {
+			return null;
+		}
+
+		int id_clasa = r.getInt (1);
+		int id_profil = r.getInt (2);
+		int an_scolar = r.getInt (3);
+		String cod = r.getString (4);
+		int an_studiu = r.getInt (5);
+
+		Vector <Object> rowData = new Vector <Object> (5);
+		rowData.add (id_clasa);
+		rowData.add (id_profil);
+		rowData.add (an_scolar);
+		rowData.add (cod);
+		rowData.add (an_studiu);
+		return 	rowData;
 	}
 
 

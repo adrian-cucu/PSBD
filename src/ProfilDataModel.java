@@ -18,7 +18,7 @@ class ProfilDataModel {
         ));
 
 	private int id_profil;	
-	private String nume_profil;
+	private String nume_profil = null;
 
 	public ProfilDataModel (int id_profil, String nume_profil)
 	{
@@ -33,24 +33,6 @@ class ProfilDataModel {
 		id_profil = r.getInt (1);
 		nume_profil = r.getString (2);
 	}
-
-
-	public static Vector <Object> make (ResultSet r)
-        throws SQLException
-    {
-        if (r == null) {
-            return null;
-        }
-
-        int id_profil = r.getInt (1);
-        String nume_profil = r.getString (2);
-
-        Vector <Object> rowData = new Vector <Object> (2);
-
-        rowData.add (id_profil);
-        rowData.add (nume_profil);
-      	return rowData;
-    }
 
 
 	public int getID ()
@@ -70,6 +52,24 @@ class ProfilDataModel {
 	{
 		return nume_profil;
 	} 
+
+
+	public static Vector <Object> make (ResultSet r)
+        throws SQLException
+    {
+        if (r == null) {
+            return null;
+        }
+
+        int id_profil = r.getInt (1);
+        String nume_profil = r.getString (2);
+
+        Vector <Object> rowData = new Vector <Object> (2);
+
+        rowData.add (id_profil);
+        rowData.add (nume_profil);
+      	return rowData;
+    }
 
 
 	public static boolean checkNumeProfil (String nume_profil) 

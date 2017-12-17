@@ -151,7 +151,7 @@ CREATE TABLE medie (
 	id_elev 		NUMBER(10) NOT NULL,
 	id_clasa		NUMBER(10) NOT NULL,	
 	id_materie		NUMBER(10) NOT NULL,
-	medie			NUMBER(2)  NOT NULL,
+	med_sem			NUMBER(2)  NOT NULL,
 	semestru		NUMBER(2)  NOT NULL
 );
 

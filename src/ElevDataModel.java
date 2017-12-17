@@ -20,16 +20,28 @@ class ElevDataModel {
         ));
 
 	private int id_elev;
-	private String nume;
-	private String prenume;
-	private String adresa;
-	private String cnp;
-	private String etnie;
-	private String nationalitate;
+	private String nume = null;
+	private String prenume = null;
+	private String adresa = null;
+	private String cnp = null;
+	private String etnie = null;
+	private String nationalitate = null;
 
 
 	public ElevDataModel (String nume, String prenume, String adresa, String cnp, String etnie, String nationalitate)
 	{
+		this.nume = nume;
+		this.prenume = prenume;
+		this.adresa = adresa;
+		this.cnp = cnp;
+		this.etnie = etnie;
+		this.nationalitate = nationalitate;
+	}
+
+
+	public ElevDataModel (int id_elev, String nume, String prenume, String adresa, String cnp, String etnie, String nationalitate)
+	{
+		this.id_elev = id_elev;
 		this.nume = nume;
 		this.prenume = prenume;
 		this.adresa = adresa;
@@ -50,34 +62,6 @@ class ElevDataModel {
 		etnie = r.getString ("etnie");
 		nationalitate = r.getString ("nationalitate");
 	}	
-
-
-	public static Vector <Object> make (ResultSet r) 
-		throws SQLException
-	{
-		if (r == null) {
-			return null;
-		}
-
-		int id_elev = r.getInt (1);
-		String nume = r.getString (2);
-		String prenume = r.getString (3);
-		String adresa = r.getString (4);
-		String cnp = r.getString (5);
-		String etnie = r.getString (6);
-		String nationalitate = r.getString (7);
-
-		Vector <Object> rowData = new Vector <Object> (7);
-
-		rowData.add (id_elev);
-		rowData.add (nume);
-		rowData.add (prenume);
-		rowData.add (adresa);
-		rowData.add (cnp);
-		rowData.add (etnie);
-		rowData.add (nationalitate);
-		return rowData;
-	}
 
 
 	public int getID () 
@@ -121,17 +105,71 @@ class ElevDataModel {
 		return nationalitate;		
 	}
 
+	
+	public String getNumeComplet ()
+	{
+		return prenume + " "  + nume;
+	}
+
 
 	@Override
 	public String toString () 
 	{
-		return this.getNume () + " " + 
-			this.getPren () + "  " + 
-			this.getAdresa () + " " +
-			this.getCnp () + " " + 
-			this.getEtnie () + " " + 
-			this.getNat ();
+		return nume + " " + prenume + "  " + adresa + " " + cnp + " " + etnie + " " + nationalitate;
 	}
+
+
+	public static Vector <Object> make (ResultSet r) 
+		throws SQLException
+	{
+		if (r == null) {
+			return null;
+		}
+
+		int id_elev = r.getInt (1);
+		String nume = r.getString (2);
+		String prenume = r.getString (3);
+		String adresa = r.getString (4);
+		String cnp = r.getString (5);
+		String etnie = r.getString (6);
+		String nationalitate = r.getString (7);
+
+		Vector <Object> rowData = new Vector <Object> (7);
+
+		rowData.add (id_elev);
+		rowData.add (nume);
+		rowData.add (prenume);
+		rowData.add (adresa);
+		rowData.add (cnp);
+		rowData.add (etnie);
+		rowData.add (nationalitate);
+		return rowData;
+	}
+
+	
+	public static ElevDataModel makeObj (Vector <Object> raw)
+	{
+		int id_elev = ((Integer)raw.get (0)).intValue ();
+		String nume = (String)raw.get (1);
+		String prenume = (String)raw.get (2);
+		String adresa = (String)raw.get (3);
+		String cnp = (String)raw.get (4);
+		String etnie = (String)raw.get (5);
+		String nationalitate =  (String)raw.get (6);
+
+		ElevDataModel obj = 
+			new ElevDataModel (
+				id_elev,
+				nume,
+				prenume,
+				adresa,
+				cnp,
+				etnie,
+				nationalitate
+			);					
+		
+		return obj;
+	}	
 
 
 	public static boolean checkNume (String nume) 

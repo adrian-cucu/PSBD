@@ -4,8 +4,7 @@ import java.sql.*;
 class MaterieDataModel {
 
 	private int id_materie;	
-	private String nume_materie;
-
+	private String nume_materie = null;
 
 	public MaterieDataModel (int id_materie, String nume_materie)
 	{
@@ -20,24 +19,6 @@ class MaterieDataModel {
 		id_materie = r.getInt (1);
 		nume_materie = r.getString (2);
 	}
-
-
-    public static Vector <Object> make (ResultSet r)
-        throws SQLException
-    {
-        if (r == null) {
-            return null;
-        }
-
-        int id_materie = r.getInt (1);
-		String nume_materie = r.getString (2);
-
-        Vector <Object> rowData = new Vector <Object> (2);
-
-        rowData.add (id_materie);
-        rowData.add (nume_materie);
-        return rowData;
-    }
 
 
 	public int getID ()
@@ -57,6 +38,24 @@ class MaterieDataModel {
 	{
 		return nume_materie;
 	} 
+
+
+    public static Vector <Object> make (ResultSet r)
+        throws SQLException
+    {
+        if (r == null) {
+            return null;
+        }
+
+        int id_materie = r.getInt (1);
+		String nume_materie = r.getString (2);
+
+        Vector <Object> rowData = new Vector <Object> (2);
+
+        rowData.add (id_materie);
+        rowData.add (nume_materie);
+        return rowData;
+    }
 
 
 	public static boolean checkNumeMaterie (String nume_materie) 

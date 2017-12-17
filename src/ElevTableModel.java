@@ -30,11 +30,12 @@ class ElevTableModel extends AbstractTableModel {
 	}
 
 		
-	public static String getRow (int row)
+	public static ElevDataModel getRow (int row)
 	{
-		if (row < data.size ())
-			return data.get (row).toString ();
-		return "";
+		if (row < data.size ()) {
+			return ElevDataModel.makeObj (data.get (row));
+		}
+		return null;
 	}
 
 	

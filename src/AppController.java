@@ -293,7 +293,13 @@ class AppController implements ActionListener, WindowListener {
 	
 	private void insert_profil_btn ()
 	{		
-		Vector <Vector <MaterieDataModel>> m = app_view.getMateriiIDs ();
+		Vector <Vector <MaterieDataModel>> lista_materii = 
+			app_view.getMateriiIDs ();
+
+		if (lista_materii == null) {
+			return;
+		}
+
 		String prepared = "INSERT INTO profil (nume_profil) VALUES (?)";
 		String prepared2 = "INSERT INTO profil_materie (id_profil, id_materie, an_studiu) VALUES (?, ?, ?)";
 		PreparedStatement ps = null;
@@ -317,7 +323,7 @@ class AppController implements ActionListener, WindowListener {
 				ps2 = con.getPreparedStatement (prepared2);	
 
 				int clasa = 9;
-				for (Vector <MaterieDataModel> materii : m)
+				for (Vector <MaterieDataModel> materii : lista_materii)
 				{
 					for (MaterieDataModel materie : materii) {
 						ps2.setInt (1, id);
