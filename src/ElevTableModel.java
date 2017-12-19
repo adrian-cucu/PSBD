@@ -63,7 +63,7 @@ class ElevTableModel extends AbstractTableModel {
 	@Override
 	public boolean isCellEditable (int row, int column) 
 	{
-		return false;
+		return column != 0 && column != 4;
 	} 
 		
 
@@ -73,6 +73,13 @@ class ElevTableModel extends AbstractTableModel {
 		return ElevDataModel.colName.size ();
 	}
 
+	@Override
+	public void setValueAt (Object aValue, int row, int column) 
+	{
+		if (isCellEditable (row, column)) {
+			data.get (row).set (column, aValue);
+		}
+	}
 	
 	@Override
 	public Object getValueAt (int row, int column)

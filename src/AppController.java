@@ -108,6 +108,9 @@ class AppController implements ActionListener, WindowListener {
 							new Dimension (700, 130)
 					);
     	    		table.setFillsViewportHeight (true);	
+					table.setRowHeight (table.getRowHeight ());
+					table.setAutoCreateRowSorter (true);
+					table.setEnabled (false);
 	 		   		app_view.addQueryResult (table);
 
             		if (statement != null) 
@@ -336,7 +339,7 @@ class AppController implements ActionListener, WindowListener {
 				ps2.executeBatch ();
 
 				ProfilTableModel.refresh (con);
-				app_view.re ();
+				app_view.refresh ();
 	
 			} else {	
 				throw new SQLException ("Failed to insert");
@@ -421,7 +424,7 @@ class AppController implements ActionListener, WindowListener {
 			
 			ps.executeUpdate ();
 			MaterieTableModel.refresh (con);
-			app_view.re ();
+			app_view.refresh ();
 	
 			app_view.displayInformation (ps.getUpdateCount () + " rows inserted.");
 			app_view.updateStatus ("-[INSERT]- success", AppView.SUCCESS);
@@ -470,7 +473,7 @@ class AppController implements ActionListener, WindowListener {
 
 			MaterieTableModel.refresh (con);
 	
-			app_view.re ();
+			app_view.refresh ();
 
 			app_view.displayInformation (ps.getUpdateCount () + " rows deleted.");
 			app_view.updateStatus ("-[DELETE]- success", AppView.SUCCESS);
@@ -576,7 +579,7 @@ class AppController implements ActionListener, WindowListener {
 
 			if (rowsAffected > 0) {		
 				ProfilTableModel.refresh (con);
-				app_view.re ();
+				app_view.refresh ();
 				app_view.displayInformation (rowsAffected + " rows deleted.");
 				app_view.updateStatus ("-[DELETE]- success", AppView.SUCCESS);
 		
@@ -597,12 +600,6 @@ class AppController implements ActionListener, WindowListener {
 			MyConnection.closeQuietly (ps);
 			MyConnection.closeQuietly (rs);
 		} 
-	}
-
-	private void update_profil_btn ()
-	{
-		out.println ("UPDATE PROFIL");
-		app_view.getTableProfilUpdate ();
 	}
 
 	
@@ -695,10 +692,6 @@ class AppController implements ActionListener, WindowListener {
 			else if (evtSrc == app_view.getObs ().get ("insert-clasa") ) {
 				insert_clasa_btn ();	
 			}
-			else if (evtSrc == app_view.getObs ().get ("update-clasa") ) {
-				out.println ("-update clasa");	
-				app_view.getTableClasaUpdate ();
-			}
 			else if (evtSrc == app_view.getObs ().get ("delete-clasa") ) {
 				out.println ("-delete-clasa");
 				delete_clasa_btn ();
@@ -707,7 +700,7 @@ class AppController implements ActionListener, WindowListener {
 				insert_profil_btn ();
 			}
 			else if (evtSrc == app_view.getObs ().get ("update-profil")) {
-				update_profil_btn ();
+		
 			}
 			else if (evtSrc == app_view.getObs ().get ("delete-profil")) {
 				delete_profil_btn ();

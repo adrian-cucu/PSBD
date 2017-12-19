@@ -22,6 +22,96 @@ class MyConnection {
 		}
 	}
 
+	
+	public boolean insertMedie (int id_elev, int id_clasa, int id_materie, int medie, int semestru)
+	{	
+		ResultSet resSet1 = null;
+		PreparedStatement prepStm1 = null;	
+		PreparedStatement prepStm2 = null;			
+		String prepQuery1 = "SELECT * FROM medie WHERE id_elev = ? AND id_clasa = ? AND id_materie = ? AND semestru = ?";		   
+		String prepQuery2 = "INSERT INTO medie (id_elev, id_clasa, id_materie, med_sem, semestru) VALUES (?, ?, ?, ?, ?)";
+
+		String prepQuery3 = "UPDATE medie SET med_sem = ? WHERE id_elev = ? AND id_clasa = ? AND id_materie = ? AND semestru = ?";
+	
+		boolean ret = false;
+
+		try {
+			prepStm1 = getPreparedStatement (prepQuery1);	
+			prepStm1.setInt (1, id_elev);
+			prepStm1.setInt (2, id_clasa);	
+			prepStm1.setInt (3, id_materie);
+			prepStm1.setInt (4, semestru);
+			resSet1 = prepStm1.executeQuery ();
+
+			if (resSet1.next ()) {
+				System.out.println ("UPDATE");
+				prepStm2 = getPreparedStatement (prepQuery3);
+				prepStm2.setInt (1, medie);
+				prepStm2.setInt (2, id_elev);
+				prepStm2.setInt (3, id_clasa);
+				prepStm2.setInt (4, id_materie);	
+				prepStm2.setInt (5, semestru);
+				
+				ret = prepStm2.execute ();
+
+			} else {
+				System.out.println ("INSERT");
+				prepStm2 = getPreparedStatement (prepQuery2);
+				prepStm2.setInt (1, id_elev);
+				prepStm2.setInt (2, id_clasa);
+				prepStm2.setInt (3, id_materie);	
+				prepStm2.setInt (4, medie);	
+				prepStm2.setInt (5, semestru);
+				
+				ret = prepStm2.execute ();
+			}
+
+		} catch (SQLException e) {
+			/* ignore */
+			System.out.println (e.getMessage ());
+		
+		} finally {
+			closeQuietly (resSet1);
+			closeQuietly (prepStm1);
+			closeQuietly (prepStm2);
+		}
+
+		return true;
+	}					
+
+
+	public boolean 
+	executeUpdate (String tableName, String idColName, String updatedColName, int ID, Object newVal, Class<?> classType)
+	{
+		boolean ret = false;
+		PreparedStatement prepStm = null;
+		String prepQuery = 
+			"UPDATE " + tableName + 
+			" SET " +  updatedColName + " = ? " + 
+			"WHERE " +  idColName + " = ?";
+
+		try {
+			prepStm = getPreparedStatement (prepQuery);
+	
+			if (classType == Integer.class) {
+				prepStm.setInt (1, ((Integer) newVal).intValue ());
+			} else if (classType == String.class) {	
+				prepStm.setString (1, (String)newVal);	
+			}
+			
+			prepStm.setInt (2, ID);	
+			ret = prepStm.execute ();
+
+		} catch (SQLException e) {
+			/* ignore */
+		
+		} finally {
+			closeQuietly (prepStm);
+		}
+		
+		return true;
+	}	
+
 
 	public Vector <Vector <Object>> fetchMediCls (int id_elev, int id_clasa, int id_profil, int an_studiu)
 	{
@@ -63,7 +153,6 @@ class MyConnection {
 				int id_materie = resSet.getInt (1);
 				String nume_materie = resSet.getString (2);
 		
-
 				inf.get (0).add (new MaterieDataModel (resSet));
 
 				prepStm1.setInt (1, id_elev);
@@ -75,8 +164,11 @@ class MyConnection {
 					resSet1 = prepStm1.executeQuery ();
 					med_sem = -1;
 					try {
-						med_sem = resSet1.getInt (1);	
+						if (resSet1.next ()) {
+							med_sem = resSet1.getInt (1);	
+						}
 					} catch (SQLException sqlex) {	
+						System.out.println ("[DEBUG]: " + sqlex.getMessage ());
 					}
 					inf.get (semestru).add (new Integer (med_sem));
 				}				

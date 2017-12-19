@@ -2,7 +2,6 @@ import javax.swing.table.AbstractTableModel;
 import java.util.Vector;
 import java.util.Arrays;
 
-
 class MaterieTableModel extends AbstractTableModel {
 
 	public static final long serialVersionUID = 0xad1;		
@@ -26,7 +25,6 @@ class MaterieTableModel extends AbstractTableModel {
     }
 
 
-
     public static void setData (Vector <MaterieDataModel> datas)
     {
         data = datas;
@@ -47,7 +45,6 @@ class MaterieTableModel extends AbstractTableModel {
         for (MaterieTableModel listener : listeners)
             listener.fireTableDataChanged ();
     }
-
 
 
 	@Override

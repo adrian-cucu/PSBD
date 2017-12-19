@@ -11,10 +11,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.beans.*;
 
-/*
-	TODO
-*/
-
 class AppView extends JFrame {	
 
 	static final long serialVersionUID = 0xad1;
@@ -48,7 +44,7 @@ class AppView extends JFrame {
 	/* clasa */
 	private JTable table_clasa;
 	private ClasaTableModel clasa_table_model;
-	private JButton insert_clasa, delete_clasa, update_clasa;	
+	private JButton insert_clasa, delete_clasa;	
 	private JComboBox <ProfilDataModel> profiluri = null;
 	private Vector <ProfilDataModel> prof = null;
 	private JComboBox <Integer> cbAnStudiu = 
@@ -153,163 +149,6 @@ class AppView extends JFrame {
 		return table;
 	}
 
-	private static class TableCellListener implements PropertyChangeListener, Runnable
-{
-	private JTable table;
-	private Action action;
-
-	private int row;
-	private int column;
-	private Object oldValue;
-	private Object newValue;
-
-	/**
-	 *  Create a TableCellListener.
-	 *
-	 *  @param table   the table to be monitored for data changes
-	 *  @param action  the Action to invoke when cell data is changed
-	 */
-	public TableCellListener(JTable table, Action action)
-	{
-		this.table = table;
-		this.action = action;
-		this.table.addPropertyChangeListener( this );
-	}
-
-	/**
-	 *  Create a TableCellListener with a copy of all the data relevant to
-	 *  the change of data for a given cell.
-	 *
-	 *  @param row  the row of the changed cell
-	 *  @param column  the column of the changed cell
-	 *  @param oldValue  the old data of the changed cell
-	 *  @param newValue  the new data of the changed cell
-	 */
-	private TableCellListener(JTable table, int row, int column, Object oldValue, Object newValue)
-	{
-		this.table = table;
-		this.row = row;
-		this.column = column;
-		this.oldValue = oldValue;
-		this.newValue = newValue;
-	}
-
-	/**
-	 *  Get the column that was last edited
-	 *
-	 *  @return the column that was edited
-	 */
-	public int getColumn()
-	{
-		return column;
-	}
-
-	/**
-	 *  Get the new value in the cell
-	 *
-	 *  @return the new value in the cell
-	 */
-	public Object getNewValue()
-	{
-		return newValue;
-	}
-
-	/**
-	 *  Get the old value of the cell
-	 *
-	 *  @return the old value of the cell
-	 */
-	public Object getOldValue()
-	{
-		return oldValue;
-	}
-
-	/**
-	 *  Get the row that was last edited
-	 *
-	 *  @return the row that was edited
-	 */
-	public int getRow()
-	{
-		return row;
-	}
-
-	/**
-	 *  Get the table of the cell that was changed
-	 *
-	 *  @return the table of the cell that was changed
-	 */
-	public JTable getTable()
-	{
-		return table;
-	}
-//
-//  Implement the PropertyChangeListener interface
-//
-	@Override
-	public void propertyChange(PropertyChangeEvent e)
-	{
-		//  A cell has started/stopped editing
-
-		if ("tableCellEditor".equals(e.getPropertyName()))
-		{
-			if (table.isEditing())
-				processEditingStarted();
-			else
-				processEditingStopped();
-		}
-	}
-
-	/*
-	 *  Save information of the cell about to be edited
-	 */
-	private void processEditingStarted()
-	{
-		//  The invokeLater is necessary because the editing row and editing
-		//  column of the table have not been set when the "tableCellEditor"
-		//  PropertyChangeEvent is fired.
-		//  This results in the "run" method being invoked
-
-		SwingUtilities.invokeLater( this );
-	}
-	/*
-	 *  See above.
-	 */
-	@Override
-	public void run()
-	{
-		row = table.convertRowIndexToModel( table.getEditingRow() );
-		column = table.convertColumnIndexToModel( table.getEditingColumn() );
-		oldValue = table.getModel().getValueAt(row, column);
-		newValue = null;
-	}
-
-	/*
-	 *	Update the Cell history when necessary
-	 */
-	private void processEditingStopped()
-	{
-		newValue = table.getModel().getValueAt(row, column);
-
-		//  The data has changed, invoke the supplied Action
-
-		if (! newValue.equals(oldValue))
-		{
-			//  Make a copy of the data in case another cell starts editing
-			//  while processing this change
-
-			TableCellListener tcl = new TableCellListener(
-				getTable(), getRow(), getColumn(), getOldValue(), getNewValue());
-
-			ActionEvent event = new ActionEvent(
-				tcl,
-				ActionEvent.ACTION_PERFORMED,
-				"");
-			action.actionPerformed(event);
-		}
-	}
-}
-
 
 	private JPanel createPanelAdaugaMedie ()
 	{
@@ -320,95 +159,6 @@ class AppView extends JFrame {
 		insertPanelWrapper.setBorder (
 			new TitledBorder (new EtchedBorder (), "Insert")
 		);
-		/*	
-		JPanel insertPanel = new JPanel ();	
-		insertPanel.setLayout (new GridLayout (7, 2, 5, 5));
-
-		JPanel wrapper = null;	
-
-		JLabel lbl_nume_elev = new JLabel ("Nume");
-		wrapper = new JPanel ();
-		wrapper.add (lbl_nume_elev);
-		insertPanel. add (wrapper);
-
-		nume_elev = new JTextField (10);				
-		wrapper = new JPanel ();
-		wrapper.add (nume_elev);
-		insertPanel.add (wrapper);
-
-		JLabel lbl_prenume_elev = new JLabel ("Prenume");		
-		wrapper = new JPanel ();
-		wrapper.add (lbl_prenume_elev);
-		insertPanel. add (wrapper);
-
-		prenume_elev = new JTextField (10);	
-		wrapper = new JPanel ();
-		wrapper.add (prenume_elev);
-		insertPanel. add (wrapper);
-
-		JLabel lbl_cnp = new JLabel ("CNP");
-		wrapper = new JPanel ();
-		wrapper.add (lbl_cnp);
-		insertPanel. add (wrapper);
-
-		cnp_elev = new JTextField (10);
-		wrapper = new JPanel ();
-		wrapper.add (cnp_elev);
-		insertPanel. add (wrapper);
-
-
-		JLabel lbl_etnie = new JLabel ("Etnie");
-		wrapper = new JPanel ();
-		wrapper.add (lbl_etnie);
-		insertPanel. add (wrapper);
-
-		etnie_elev = new JTextField (10);
-		wrapper = new JPanel ();
-		wrapper.add (etnie_elev);
-		insertPanel. add (wrapper);
-
-
-		JLabel lbl_nationalitate = new JLabel ("Nationalitate");
-		wrapper = new JPanel ();
-		wrapper.add (lbl_nationalitate);
-		insertPanel. add (wrapper);
-
-		nationalitate_elev = new JTextField (10);
-		wrapper = new JPanel ();
-		wrapper.add (nationalitate_elev);
-		insertPanel. add (wrapper);
-
-		
-		JLabel lbl_adresa = new JLabel ("Adresa");
-		wrapper = new JPanel ();
-		wrapper.add (lbl_adresa);
-		insertPanel. add (wrapper);
-
-		adresa = new JTextArea ();
-		insertPanel. add (new JScrollPane (adresa));
-	
-		JLabel lbl_clasa = new JLabel ("Clasa");
-		wrapper = new JPanel ();
-		wrapper.add (lbl_clasa);
-		insertPanel.add (wrapper);
-
-		clase = new JComboBox <ClasaDataModel> ();
-		clasaVector = con.fetchTableClasaObjData ();
-		clase.setModel (new DefaultComboBoxModel <> (clasaVector));	
-		wrapper = new JPanel ();
-		wrapper.add (clase);
-		insertPanel.add (wrapper);
-		*/		
-	
-		//insertPanelWrapper.add (insertPanel, BorderLayout.CENTER);				
-
-		/////////////////////////////////////////////////////////////////
-		//JPanel insertButtonPanel = new JPanel ();
-		
-		//insert_elev = new JButton ("INSERT");
-		//obs.put ("insert-elev", insert_elev);
-		//insertButtonPanel.add (insert_elev);
-
 		JLabel lbl1 = new JLabel (" ---- ");
 		lbl1.setFont (new Font ("serif", Font.PLAIN, 12));
 
@@ -426,15 +176,6 @@ class AppView extends JFrame {
 		JPanel ctr = new JPanel (new GridLayout (1, 1));
 
 		JComboBox <ClasaDataModel> clase_elv = new JComboBox <> ();
-		clase_elv.addItemListener (evt -> {
-			//	CardLayout cl = (CardLayout) (cards.getLayout ());
-			//	cl.show (cards, (String)e.getItem ());
-
-			System.out.println (evt.getItem ());
-			System.out.println ("-->" + clase_elv.getSelectedItem ());
-		
-		});
-
 		nth.add (clase_elv);
 
 		centerWrapper.add (nth, BorderLayout.NORTH);	
@@ -474,26 +215,26 @@ class AppView extends JFrame {
 	
 		tablePanelContent.add (searchInputPanel, BorderLayout.NORTH);
 
-		elev_table_model = new ElevTableModel ();
+		ElevTableModel elev_table_model1 = new ElevTableModel ();
 
 		Vector <Vector <Object>> data = con.fetchTableElevRawData ();
 
-        elev_table_model.setData (data);
+        elev_table_model1.setData (data);
 
-		table_elev = createTable (elev_table_model) ;
+		JTable table_elev1 = createTable (elev_table_model1) ;
 	
-		table_elev.setSelectionMode (0);
+		table_elev1.setSelectionMode (0);
 
-		table_elev.getSelectionModel ().addListSelectionListener (e -> {
+		table_elev1.getSelectionModel ().addListSelectionListener (e -> {
 			if (e.getValueIsAdjusting ()) {
 				return;
 			}
 
-			int x = table_elev.getSelectedRow ();
+			int x = table_elev1.getSelectedRow ();
 			if (x != -1) {
-				ElevTableModel model = (ElevTableModel)table_elev.getModel ();
+				ElevTableModel model = (ElevTableModel)table_elev1.getModel ();
 
-				int index = table_elev.convertRowIndexToModel (x);			
+				int index = table_elev1.convertRowIndexToModel (x);			
 				ElevDataModel obj = ElevTableModel.getRow (index);
 				lbl1.setText (obj.getNumeComplet ());
 				int id_elev = obj.getID ();
@@ -521,31 +262,20 @@ class AppView extends JFrame {
 										"(profil) # " + id_profil + " " + 
 									 	"(an_stud)# " + an_studiu);
 
-					Vector <Vector <Object>> medii_sem = 
+					Vector <Vector <Object>> medii_sem =   
 						con.fetchMediCls (id_elev, id_clasa, id_profil, an_studiu);
-					//JLabel lbl00 = new JLabel ("Aici");
-				
-					JTable tabela_medii = new JTable ();
-					DefaultTableModel mdl = 
-						new DefaultTableModel (medii_sem.get (0), 0);
-					mdl.insertRow (0, medii_sem.get (1));
-					mdl.insertRow (1, medii_sem.get (2));
 
-					Vector <Object> medii_anuale = new Vector <> ();
-					for (int i = 0; i < medii_sem.get (0).size (); ++ i) {
-						if (i == 1) {
-							medii_anuale.add (new Double (7.5f));
-							continue;
-						}
-						int med1 = ((Integer)medii_sem.get (1).get (i)).intValue();
-						int med2 = ((Integer)medii_sem.get (2).get (i)).intValue();
-						if (med1 == -1 || med2 == -1) {
-							medii_anuale.add (new String ("-"));
-						} else {
-							medii_anuale.add (new Double ((med1 + med2) / 2.0));
-						}
-					}	
-					mdl.addRow (medii_anuale);
+					Vector <String> nume_materii = new Vector <String> ();
+
+					for (Object o : medii_sem.get (0)) {
+						nume_materii.add (((MaterieDataModel)o).getNumeMaterie ());
+					}
+					JTable tabela_medii = new JTable ();
+					MedieTableModel mdl = 
+						new MedieTableModel (nume_materii); 
+		
+					mdl.setData (0, medii_sem.get (1));
+					mdl.setData (1, medii_sem.get (2));
 
 					tabela_medii.setModel (mdl);
 					ctr.removeAll ();
@@ -577,10 +307,41 @@ class AppView extends JFrame {
 							
 							if (displayConfirmation ("Change " +  tcl.getOldValue () + " to " +  tcl.getNewValue ()) != YES_OPTION) {
 								mdl.setValueAt (tcl.getOldValue (), tcl.getRow (), tcl.getColumn ());		
-							}
-						
+							
+							} else {
+								/* update in database */
+		
+								System.out.println ("(elev)   #"  + id_elev  + " " + 
+								    "(clasa)  # " + id_clasa + " " +
+									"(profil) # " + id_profil + " " + 
+								 	"(an_stud)# " + an_studiu + " " + 
+									"SEM " + (tcl.getRow () + 1));
+
+								int semestru = tcl.getRow () + 1;	
+								int medie = -1;
+								int id_materie = 
+									((MaterieDataModel) medii_sem.get (0).get (tcl.getColumn ())).getID ();
+								boolean success = false;
+
+								try {
+									medie = Integer.parseInt ((String)tcl.getNewValue ());
+									if (!(1 < medie && medie <= 10)) {
+										throw new Exception ("Media este invalida");
+									}
+									success = 
+									con.insertMedie (id_elev, id_clasa, id_materie, medie, semestru);
+									mdl.notifyListeners ();
 									
-	
+								} catch (Exception e) {
+									mdl.setValueAt (tcl.getOldValue (), tcl.getRow (), tcl.getColumn ());		
+									displayError (e.getMessage ());
+									success = false;
+								}
+					
+								if (success) {
+									displayInformation ("Succefully update!");		
+								}
+							}
 						}
 					};
 					TableCellListener tcl = 
@@ -588,13 +349,112 @@ class AppView extends JFrame {
 				}
 			}	
 		});
-	
+
+		clase_elv.addItemListener (evt -> {
+			ClasaDataModel selectedCls = (ClasaDataModel)clase_elv.getSelectedItem ();
+
+			int id_clasa = selectedCls.getID ();
+			int id_profil = selectedCls.getIdProfil ();
+			int an_studiu = selectedCls.getAnStudiu ();
+
+			int id_elev = -1;
+
+			int x = table_elev1.getSelectedRow ();
+			if (x != -1) {
+				ElevTableModel model = (ElevTableModel)table_elev1.getModel ();
+
+				int index = table_elev1.convertRowIndexToModel (x);			
+				ElevDataModel obj = ElevTableModel.getRow (index);
+				id_elev = obj.getID ();
+
+			}
+							
+
+			Vector <Vector <Object>> medii_sem = con.fetchMediCls (id_elev, id_clasa, id_profil, an_studiu);
+			Vector <String> nume_materii = new Vector <String> ();
+
+			for (Object o : medii_sem.get (0)) {
+				nume_materii.add (((MaterieDataModel)o).getNumeMaterie ());
+			}
+		
+			JTable tabela_medii = new JTable ();
+			MedieTableModel mdl = new MedieTableModel (nume_materii); 
+		
+			mdl.setData (0, medii_sem.get (1));
+			mdl.setData (1, medii_sem.get (2));
+
+			tabela_medii.setModel (mdl);
+			ctr.removeAll ();
+			ctr.revalidate ();
+			ctr.repaint ();
+			ctr.add (new JScrollPane (tabela_medii));					
+
+			Action action = new AbstractAction () {
+				public static final long serialVersionUID = 0xad1;
+				public void actionPerformed (ActionEvent actEvt) {
+				TableCellListener tcl = (TableCellListener) actEvt.getSource ();
+
+				System.out.print (" new value: " + tcl.getNewValue ());
+
+				System.out.print (" row: " + tcl.getRow ());
+
+				System.out.print (" col: " + tcl.getColumn ());
+
+				System.out.println (" old val: " + tcl.getOldValue ());
+							
+				if (displayConfirmation ("Change " +  tcl.getOldValue () + " to " +  tcl.getNewValue ()) != YES_OPTION) {
+					
+					mdl.setValueAt (tcl.getOldValue (), tcl.getRow (), tcl.getColumn ());		
+							
+				} else {
+					/* update in database */
+		
+					int semestru = tcl.getRow () + 1;	
+					int medie = -1;
+					int id_materie = ((MaterieDataModel) medii_sem.get (0).get (tcl.getColumn ())).getID ();
+					boolean success = false;
+					int id_elev = -1;
+
+					int x = table_elev1.getSelectedRow ();
+					if (x != -1) {
+						ElevTableModel model = (ElevTableModel)table_elev1.getModel ();
+
+						int index = table_elev1.convertRowIndexToModel (x);			
+						ElevDataModel obj = ElevTableModel.getRow (index);
+						id_elev = obj.getID ();
+					}
+							
+
+					try {
+						medie = Integer.parseInt ((String)tcl.getNewValue ());
+						if (!(1 < medie && medie <= 10))  {
+							throw new Exception ("Media este invalida");
+						}
+						success = con.insertMedie (id_elev, id_clasa, id_materie, medie, semestru);
+						mdl.notifyListeners ();
+									
+					} catch (Exception e) {
+						mdl.setValueAt (tcl.getOldValue (), tcl.getRow (), tcl.getColumn ());		
+						displayError (e.getMessage ());
+						success = false;
+					}
+					
+					if (success) {
+						displayInformation ("Succefully update!");		
+					}
+				}
+			}
+		};
+		
+		TableCellListener tcl = new TableCellListener (tabela_medii, action);
+	});
+
         TableRowSorter <AbstractTableModel> trs =
 			new TableRowSorter <> (elev_table_model);
 
-        table_elev.setRowSorter (trs);
+        table_elev1.setRowSorter (trs);
 
-		tablePanelContent.add (new JScrollPane (table_elev), BorderLayout.CENTER);
+		tablePanelContent.add (new JScrollPane (table_elev1), BorderLayout.CENTER);
 
         KeyListener searchKeyLsnr = new KeyListener () {
             public void keyTyped (KeyEvent e) {}
@@ -949,8 +809,7 @@ class AppView extends JFrame {
 		nume_materie = new JTextField (10);
 		north.add (nume_materie);
 
-		insertPanel.add (north, BorderLayout.NORTH);
-	
+		insertPanel.add (north, BorderLayout.NORTH);	
 
 		insert_materie = new JButton ("INSERT");
 		insert_materie.setEnabled (false);
@@ -1229,17 +1088,12 @@ class AppView extends JFrame {
 		searchInputPanel.add (searchEtnie);
 		searchInputPanel.add (searchNationalitate);
 
-		update_elev = new JButton ("UPDATE");
-		update_elev.setEnabled (false);
-		obs.put ("update-elev", update_elev);
-
 		delete_elev = new JButton ("DELETE");
 		delete_elev.setEnabled (false);
 		obs.put ("delete-elev", delete_elev);
 
 		JPanel sth = new JPanel ();
 
-		sth.add (update_elev);
 		sth.add (delete_elev);
 
 		tablePanelContent.add (sth, BorderLayout.SOUTH);		
@@ -1260,15 +1114,71 @@ class AppView extends JFrame {
         table_elev.setRowSorter (trs);
 
 		table_elev.getSelectionModel ().addListSelectionListener (e -> {
-			if (table_elev.getSelectedRow () != -1) {
-				delete_elev.setEnabled (true);
-				update_elev.setEnabled (true);
-			} else {
-				delete_elev.setEnabled (false);
-				update_elev.setEnabled (false);
-			}
+			delete_elev.setEnabled (
+				table_elev.getSelectedRow () != -1
+			); 
 		});
+		
 
+		Action action = new AbstractAction () {
+			public static final long serialVersionUID = 0xad1;
+		
+			public void actionPerformed (ActionEvent actEvt) {
+				TableCellListener tcl = (TableCellListener) actEvt.getSource ();
+	
+				if (displayConfirmation ("Change " + tcl.getOldValue () + " to " + tcl.getNewValue ()) != YES_OPTION) 
+				{
+					elev_table_model.setValueAt (tcl.getOldValue (), tcl.getRow (), tcl.getColumn ());		
+
+				} else {
+					/* update in database */
+
+					System.out.println ("We must perform some check");
+					int col = tcl.getColumn ();
+					String newValue = (String) tcl.getNewValue ();
+	
+					try {
+						if (col == 1) {
+					 		System.out.println ("===> check name");				
+							ElevDataModel.checkNume (newValue);
+						} else if (col == 2) {
+					 		System.out.println ("===> check prename");										   ElevDataModel.checkPrenume (newValue);
+						} else if (col == 3) {
+						 	System.out.println ("===> check adresa");			
+							ElevDataModel.checkAdresa (newValue);
+						} else if (col == 5) {
+						 	System.out.println ("===> check etnie");			
+							ElevDataModel.checkEtnie (newValue);
+						} else if (col == 6) {
+						 	System.out.println ("===> check nationalitate");
+							ElevDataModel.checkNationalitate (newValue);
+						}
+
+					} catch (DataModelTypeMismatchError dmtEx) {
+
+						elev_table_model.setValueAt (tcl.getOldValue (), tcl.getRow (), tcl.getColumn ());		
+						displayError (dmtEx.getMessage ());	
+						return;
+					}
+						
+					
+					boolean success = 
+					con.executeUpdate ("elev", "id_elev",
+							elev_table_model.getColumnName (tcl.getColumn ()),
+							 ElevTableModel.getRow (tcl.getRow ()).getID (),
+							tcl.getNewValue (),	
+							elev_table_model.getColumnClass (tcl.getColumn ())
+					);
+
+					if  (success) {
+						displayInformation ("Succefully update!");		
+					}
+				}
+
+			}
+		};
+	
+		TableCellListener tcl = new TableCellListener (table_elev, action);
 
 		tablePanelContent.add (new JScrollPane (table_elev), BorderLayout.CENTER);
 
@@ -1445,17 +1355,12 @@ class AppView extends JFrame {
 		searchInputPanel.add (searchCod);
 		searchInputPanel.add (searchAnStudiu);
 
-		update_clasa = new JButton ("UPDATE");
-		update_clasa.setEnabled (false);
-		obs.put ("update-clasa", update_clasa);
-
 		delete_clasa = new JButton ("DELETE");
 		delete_clasa.setEnabled (false);
 		obs.put ("delete-clasa", delete_clasa);
 
 		JPanel sth = new JPanel ();
 
-		sth.add (update_clasa);
 		sth.add (delete_clasa);
 
 		tablePanelContent.add (sth, BorderLayout.SOUTH);		
@@ -1477,13 +1382,9 @@ class AppView extends JFrame {
         table_clasa.setRowSorter (trs);
 
 		table_clasa.getSelectionModel ().addListSelectionListener (e -> {
-			if (table_clasa.getSelectedRow () != -1) {
-				delete_clasa.setEnabled (true);
-				update_clasa.setEnabled (true);
-			} else {
-				delete_clasa.setEnabled (false);
-				update_clasa.setEnabled (false);
-			}
+				delete_clasa.setEnabled (
+					table_clasa.getSelectedRow () != -1
+				);
 		});
 
 
@@ -1615,12 +1516,6 @@ class AppView extends JFrame {
 	}
 
 
-	public void refresh ()
-	{
-		//profiluri.setModel (new DefaultComboBoxModel<> (con.getAllProfil ()));
-	}
-
-
 	public void addQueryResult (JTable table)
 	{	
 		query_result_panel.removeAll ();	
@@ -1631,11 +1526,12 @@ class AppView extends JFrame {
 	}	
 
 
-	public void re ()
+	public void refresh ()
 	{
 		model_lista_materii.getSize ();
 		tabbed_pane.revalidate ();	
 		tabbed_pane.repaint ();
+		//profiluri.setModel (new DefaultComboBoxModel<> (con.getAllProfil ()));
 	}
 
 
@@ -1644,20 +1540,44 @@ class AppView extends JFrame {
 		query_result_panel.removeAll ();	
 		query_result_panel.revalidate ();
 		query_result_panel.repaint ();
-        query_result_panel.add (
-			new JScrollPane (
-				new JTextArea (text)
-			)
-		);
+        query_result_panel.add (new JScrollPane (new JTextArea (text)));
 	}
 
 
-	public String getNumeElev() {return nume_elev.getText ().trim ();}
-	public String getPrenumeElev() {return prenume_elev.getText ().trim ();}
-	public String getCnpElev() {return cnp_elev.getText ().trim ();}
-	public String getEtnieElev() {return etnie_elev.getText ().trim ();}
-	public String getNationalotateElev() {return nationalitate_elev.getText ().trim ();}
-	public String getAdresaElev() {return adresa.getText ().trim ();}
+	public String getNumeElev() 
+	{
+		return nume_elev.getText ().trim ();
+	}
+
+
+	public String getPrenumeElev() 
+	{
+		return prenume_elev.getText ().trim ();
+	}
+	
+
+	public String getCnpElev() 
+	{
+		return cnp_elev.getText ().trim ();
+	}
+
+
+	public String getEtnieElev() 
+	{
+		return etnie_elev.getText ().trim ();
+	}
+
+
+	public String getNationalotateElev() 
+	{
+		return nationalitate_elev.getText ().trim ();
+	}
+
+
+	public String getAdresaElev() 
+	{
+		return adresa.getText ().trim ();
+	}
 
 
 	public int getClasaComboBoxSelectedID ()
@@ -1665,8 +1585,6 @@ class AppView extends JFrame {
 		return ((ClasaDataModel) clase.getSelectedItem ()).getID ();
 	}
 
-
-	
 
 	public String getAnScolar ()
 	{
@@ -1803,57 +1721,6 @@ class AppView extends JFrame {
 	}
 
 
-	public Vector <Vector <Object>> getTableProfilUpdate ()
-	{
-		int[] indices = table_profil.getSelectedRows ();
-
-		if (indices.length == 0) {
-			return null;
-		} 
-
-		showInputDialog (inputProfilPanel ());
-
-		return null;
-
-		/*
-		Vector <Vector <Object>> vals = null;
-		ProfilTableModel model = (ProfilTableModel)table_profil.getModel ();
-		String input;
-		int index;
-
-		for (int i : indices) {
-			index = table_materie.convertRowIndexToModel (i);
-	
-			input = showInputDialog ("Enter new value for: " + 
-						model.getRow (index));
-
-			while (input != null) {
-
-				input = input.trim ();
-
-				if (!input.isEmpty () && 
-					input.length () > 0 && 
-					input.matches ("^[A-Za-z ]+$")) 
-				{				
-					Vector <Object> vec = new Vector <>();
-					vec.add (model.getValueAt (index, 0)); // id
-					vec.add (input);
-					if (vals == null) {
-						vals = new Vector <>();
-					}
-					vals.add (vec); 
-					break;	
-				} else {	
-					input = showInputDialog ("Enter a valid value for: " + 
-											model.getRow (index));
-				}
-			}		
-		}		
-		return vals;
-		*/
-	}
-
-
 	public Vector <Vector <Object>> getTableMaterieUpdate ()
 	{
 		int[] indices = table_materie.getSelectedRows ();
@@ -1864,37 +1731,44 @@ class AppView extends JFrame {
 
 		Vector <Vector <Object>> vals = null;
 		MaterieTableModel model = (MaterieTableModel)table_materie.getModel ();
-		String input;
+		String inp;
 		int index;
 
 		for (int i : indices) {
 			index = table_materie.convertRowIndexToModel (i);
 	
-			input = showInputDialog ("Enter new value for: " + 
-						model.getRow (index));
-
-			while (input != null) {
-
-				input = input.trim ();
-
-				if (!input.isEmpty () && 
-					input.length () > 0 && 
-					input.matches ("^[A-Za-z ]+$")) 
-				{				
-					Vector <Object> vec = new Vector <>();
-					vec.add (model.getValueAt (index, 0)); // id
-					vec.add (input);
-					if (vals == null) {
-						vals = new Vector <>();
+			inp = showInputDialog ("Enter new value: " + model.getRow (index));
+			if (inp == null) {
+				continue;
+			}
+			do 
+			 {
+				if (inp != null) {
+					inp = inp.trim ();
+					try {	
+						MaterieDataModel.checkNumeMaterie (inp);
+						Vector <Object> vec = new Vector <>();
+						vec.add (model.getValueAt (index, 0)); // id
+						vec.add (inp);
+						if (vals == null) {
+							vals = new Vector <>();
+						}
+						vals.add (vec); 
+						break;
+	
+					} catch (DataModelTypeMismatchError dtmErr) {
+						displayError (dtmErr.getMessage ());	
 					}
-					vals.add (vec); 
-					break;	
-				} else {	
-					input = showInputDialog ("Enter a valid value for: " + 
-											model.getRow (index));
+					
+				} 
+				inp = showInputDialog ("Enter a valid value: " + model.getRow (index));
+				if (inp == null) {
+					break;
 				}
-			}		
-		}		
+
+			} while (true);
+		}
+
 		return vals;
 	}
 
@@ -1926,9 +1800,6 @@ class AppView extends JFrame {
 		}	
 		return selectedIDs;
 	}
-
-
-
 
 
 	public Vector <Integer> getTableMaterieSelectedIDs (boolean confirmEachDelete)
@@ -1989,8 +1860,6 @@ class AppView extends JFrame {
 	}
 
 
-
-
 	public Vector <Integer> getTableProfilSelectedIDs (boolean confirmEachDelete)
 	{
 		int[] indices = table_profil.getSelectedRows ();
@@ -2019,8 +1888,6 @@ class AppView extends JFrame {
 		}	
 		return selectedIDs;
 	}
-
-
 
 
 	public void displayError (String errorMsg)
@@ -2061,13 +1928,10 @@ class AppView extends JFrame {
 		delete_profil.addActionListener (lsnr);
 
 		insert_clasa.addActionListener (lsnr);
-		update_clasa.addActionListener (lsnr);
 		delete_clasa.addActionListener (lsnr);
 		
 		insert_elev.addActionListener (lsnr);
-		update_elev.addActionListener (lsnr);
-		delete_elev.addActionListener (lsnr);
-		
+		delete_elev.addActionListener (lsnr);		
 	}
 	
 

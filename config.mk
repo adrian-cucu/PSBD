@@ -5,7 +5,7 @@ JSOURCE := Main AppController AppView \
 			DriverNotFoundException ConnectionErrorException ElevDataModel \
 			ClasaDataModel ProfilDataModel ProfilTableModel \
 			MaterieDataModel MaterieTableModel ClasaTableModel ElevTableModel \
-			DataModelTypeMismatchError
+			DataModelTypeMismatchError TableCellListener MedieTableModel
 
 MAIN := Main
 
