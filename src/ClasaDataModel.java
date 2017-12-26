@@ -115,6 +115,28 @@ class ClasaDataModel {
 	}
 
 
+	public static ClasaDataModel make (Vector <Object> r)
+	{
+		if (r == null) {
+			return null;
+		}
+
+		int id_clasa = ((Integer) r.get (0)).intValue ();
+		int id_profil = ((Integer) r.get (1)).intValue ();
+		int an_scolar = ((Integer) r.get (2)).intValue ();
+		String cod = (String) r.get (3);
+		int an_studiu = ((Integer) r.get (4)).intValue ();
+
+		return new ClasaDataModel (
+			id_clasa,
+			id_profil,
+			an_scolar,
+			cod,
+			an_studiu
+		);
+	}
+
+
 	public static boolean checkAnScolar (int an_scolar) 
 		throws DataModelTypeMismatchError
 	{

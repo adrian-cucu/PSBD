@@ -61,7 +61,9 @@ class AppController implements ActionListener, WindowListener {
 	private void query_btn ()
 	{
 		String query = app_view.getQueryText ();	
-		query = query.trim ().replaceAll ("\n", " ").replace (";", "");
+		query = query.trim ()
+					 .replaceAll ("\n", " ")
+					 .replace (";", "");
 			
 		String op = query.split (" ")[0].toUpperCase();
 		int rr = 0;
@@ -168,10 +170,10 @@ class AppController implements ActionListener, WindowListener {
 	
 	private void insert_elev_btn ()
 	{
-		String prepared = "INSERT INTO elev (nume, prenume, adresa, cnp, etnie, nationalitate) VALUES (?, ?, ?, ?, ?, ?)";
-		String prepared2 = "INSERT INTO elev_clasa (id_elev, id_clasa) VALUES (?, ?)";
+		String prepared = "INSERT INTO elev (nume, prenume, adresa, cnp, datan, etnie, nationalitate) VALUES (?, ?, ?, ?, ?, ?, ?)";
+	//	String prepared2 = "INSERT INTO elev_clasa (id_elev, id_clasa) VALUES (?, ?)";
 		PreparedStatement ps = null;
-		PreparedStatement ps2 = null;
+	//	PreparedStatement ps2 = null;
 		ResultSet generatedKeys = null;			
 
 		try {
@@ -184,23 +186,27 @@ class AppController implements ActionListener, WindowListener {
 			String cnp = app_view.getCnpElev();
 			String etnie = app_view.getEtnieElev();
 			String nationalitate = app_view.getNationalotateElev();
+			java.util.Date datan = app_view.getDataNasterii ();
 
 			ElevDataModel.checkNume (nume);	
 			ElevDataModel.checkPrenume (prenume);	
 			ElevDataModel.checkAdresa (adresa);	
 			ElevDataModel.checkCnp (cnp);	
-			ElevDataModel.checkEtnie (etnie);	
+			ElevDataModel.checkEtnie (etnie);		
 			ElevDataModel.checkNationalitate (nationalitate);	
+			ElevDataModel.checkDataNasterii (datan);	
 		
 			ps.setString (1, nume);
 			ps.setString (2, prenume);
 			ps.setString (3, adresa);
 			ps.setString (4, cnp);
-			ps.setString (5, etnie);
-			ps.setString (6, nationalitate);
+			ps.setDate (5, new java.sql.Date (datan.getTime ()));
+			ps.setString (6, etnie);
+			ps.setString (7, nationalitate);
 
 			ps.executeUpdate ();
-	
+
+			/*	
 			generatedKeys = ps.getGeneratedKeys ();
 
 			if (generatedKeys.next ()) {
@@ -213,9 +219,9 @@ class AppController implements ActionListener, WindowListener {
 				ps2.setInt (1, id_elev);
 				ps2.setInt (2, id_clasa);
 				ps2.executeUpdate ();
-				ElevTableModel.refresh (con);			
 			}
-
+			*/
+			ElevTableModel.refresh (con);			
 			app_view.displayInformation (ps.getUpdateCount () + " rows inserted.");
 			app_view.updateStatus ("-[INSERT]- success", AppView.SUCCESS);
 
@@ -236,7 +242,7 @@ class AppController implements ActionListener, WindowListener {
 		
 	private void delete_elev_btn ()
 	{
-		String prepared = "SELECT * FROM elev_clasa WHERE id_clasa = ?";
+		String prepared = "SELECT * FROM elev_clasa WHERE id_elev = ?";
 		String prepared2 = "DELETE FROM elev WHERE id_elev = ?";
 		PreparedStatement ps = null;
 		PreparedStatement ps2 = null;
@@ -371,7 +377,7 @@ class AppController implements ActionListener, WindowListener {
 		PreparedStatement ps = null; 	
 		
 		try {
-			int an_scolar = Integer.parseInt (app_view.getAnScolar ());
+			int an_scolar = app_view.getAnScolar ();
 			String codClasa = app_view.getCodClasa ();
 			int an_studiu = app_view.getAnStudiu ();		
 			int id_profil = app_view.getComboBoxSelectedID ();
@@ -693,14 +699,14 @@ class AppController implements ActionListener, WindowListener {
 				insert_clasa_btn ();	
 			}
 			else if (evtSrc == app_view.getObs ().get ("delete-clasa") ) {
-				out.println ("-delete-clasa");
 				delete_clasa_btn ();
 			}		
 			else if (evtSrc == app_view.getObs ().get ("insert-profil")) {
 				insert_profil_btn ();
 			}
 			else if (evtSrc == app_view.getObs ().get ("update-profil")) {
-		
+						
+				out.println ("-delete-clasa");
 			}
 			else if (evtSrc == app_view.getObs ().get ("delete-profil")) {
 				delete_profil_btn ();
@@ -712,6 +718,7 @@ class AppController implements ActionListener, WindowListener {
 				delete_materie_btn ();
 			}
 			else if (evtSrc == app_view.getObs ().get ("update-materie") ) {	
+				System.out.println ("Update 000");
 				update_materie_btn ();
 			}
 		}

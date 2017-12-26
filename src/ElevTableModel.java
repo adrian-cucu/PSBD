@@ -63,7 +63,7 @@ class ElevTableModel extends AbstractTableModel {
 	@Override
 	public boolean isCellEditable (int row, int column) 
 	{
-		return column != 0 && column != 4;
+		return column != 0 && column != 4 && column != 5;
 	} 
 		
 

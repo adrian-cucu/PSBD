@@ -1,0 +1,108 @@
+SELECT 
+e.id_elev "ID", 
+c.an_studiu||c.cod||' '||p.nume_profil "CLASA",
+e.nume||' '||e.prenume "NUME"
+FROM elev e
+INNER JOIN elev_clasa ec ON ec.id_elev = e.id_elev
+INNER JOIN clasa c ON c.id_clasa = ec.id_clasa
+INNER JOIN profil p ON p.id_profil = c.id_profil
+WHERE c.an_scolar = 2015
+
+SELECT 
+e.id_elev "ID", 
+c.an_studiu||c.cod||' '||p.nume_profil "CLASA",
+e.nume||' '||e.prenume "NUME",
+med.*
+FROM elev e
+INNER JOIN elev_clasa ec ON ec.id_elev = e.id_elev
+INNER JOIN clasa c ON c.id_clasa = ec.id_clasa
+INNER JOIN profil p ON p.id_profil = c.id_profil
+INNER JOIN medie med 
+ON 
+  med.id_elev = e.id_elev
+AND
+  med.id_clasa = c.id_clasa
+
+
+
+SELECT SUM(AVG (ms1.med_sem)) / 2 "MEDIE ANUALA"
+FROM medie ms1
+WHERE ms1.id_elev = 1
+AND ms1.id_clasa = 2
+GROUP BY ms1.semestru
+
+
+SELECT 
+e.nume||' '||e.prenume "NUME",
+c.an_studiu||' '||c.cod "CLASA",
+p.nume_profil "Profil",
+TO_CHAR (med.medie_anuala, 'FM99999.90') "Medie"
+FROM elev e
+JOIN (
+   SELECT id_elev, id_clasa, AVG (med_sem) medie_anuala
+   FROM medie  
+   GROUP BY id_elev, id_clasa
+) med ON e.id_elev = med.id_elev 
+JOIN clasa c ON c.id_clasa = med.id_clasa
+JOIN profil p ON p.id_profil = c.id_profil
+ORDER BY med.medie_anuala DESC;
+
+
+SELECT 
+e.id_elev "ID",
+e.nume||' '||e.prenume "NUME",
+c.an_studiu||' '||c.cod "CLASA",
+p.nume_profil "Profil",
+TO_CHAR (med.medie_anuala, 'FM99999.90') "Medie"
+FROM elev e
+JOIN (
+   SELECT id_elev
+   FROM oli
+) o ON o.id_elev = e.id_elev
+JOIN (
+   SELECT id_elev, id_clasa, AVG (med_sem) medie_anuala
+   FROM medie  
+   GROUP BY id_elev, id_clasa
+) med ON e.id_elev = med.id_elev 
+JOIN clasa c ON c.id_clasa = med.id_clasa
+JOIN profil p ON p.id_profil = c.id_profil
+ORDER BY med.medie_anuala DESC;
+
+
+SELECT * 
+FROM (
+SELECT 
+e.id_elev "ID",
+e.nume||' '||e.prenume "NUME",
+c.an_studiu||' '||c.cod "CLASA",
+p.nume_profil "Profil",
+TO_CHAR (med.medie_anuala, 'FM99999.90') "Medie"
+FROM elev e
+JOIN (
+   SELECT id_elev, id_clasa, AVG (med_sem) medie_anuala
+   FROM medie  
+   GROUP BY id_elev, id_clasa
+) med ON e.id_elev = med.id_elev 
+JOIN clasa c ON c.id_clasa = med.id_clasa
+JOIN profil p ON p.id_profil = c.id_profil
+ORDER BY med.medie_anuala DESC
+) WHERE ROWNUM <= 1;
+
+
+SELECT * 
+FROM (
+  SELECT 
+  e.nume||' '||e.prenume "NUME",
+  c.an_studiu||' '||c.cod "CLASA",
+  p.nume_profil "Profil",
+  TO_CHAR (med.medie_anuala, 'FM99999.90') "Medie"
+  FROM elev e
+  JOIN (
+     SELECT id_elev, id_clasa, AVG (med_sem) medie_anuala
+     FROM medie  
+     GROUP BY id_elev, id_clasa
+  ) med ON e.id_elev = med.id_elev 
+  JOIN clasa c ON c.id_clasa = med.id_clasa
+  JOIN profil p ON p.id_profil = c.id_profil
+  ORDER BY med.medie_anuala DESC
+) WHERE ROWNUM <= 3;

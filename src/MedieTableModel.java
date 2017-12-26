@@ -93,21 +93,12 @@ class MedieTableModel extends AbstractTableModel {
 					medie2 = ((Integer)data.get (1).get (column)).intValue ();
 				}
 
-
-
-
 				if (medie1 != -1 && medie2 != -1) {
 					return new Double ((medie1 + medie2) / 2.0f);
 				}
 				return "-";
 			}			
-		
-			/*	
-			if (data.get (row).get (column) == null ||
-				((Integer) data.get (row).get (column)).intValue () == -1) {
-				return "-";
-			} 
-			*/
+	
 			return data.get (row).get (column);	
 		}	
 		return null;
@@ -137,7 +128,6 @@ class MedieTableModel extends AbstractTableModel {
 	@Override
 	public void setValueAt (Object aValue, int row, int column)
 	{
-		System.out.println ("CALLED!!!!!!!!!!!!!!!!");
 		if (isCellEditable (row, column)) {
 			data.get (row).set (column, aValue);
 		}

@@ -1,4 +1,5 @@
 import java.util.Vector;
+import java.util.Date;
 import java.sql.*;
 
 class ElevDataModel {
@@ -7,7 +8,7 @@ class ElevDataModel {
         new java.util.Vector <String> (java.util.Arrays.asList (
             new String[] {
                 "id_elev", "nume", "prenume", "adresa", "cnp",
-				"etnie", "nationalitate"
+				"datan", "etnie", "nationalitate"
             }
         ));
 
@@ -15,7 +16,7 @@ class ElevDataModel {
         new java.util.Vector <Class <?>> (java.util.Arrays.asList (
             new Class <?>[] {
                 Integer.class, String.class, String.class,
-                String.class, String.class, String.class, String.class
+                String.class, String.class, Date.class, String.class, String.class
            }
         ));
 
@@ -24,28 +25,32 @@ class ElevDataModel {
 	private String prenume = null;
 	private String adresa = null;
 	private String cnp = null;
+	private Date datan = null;
 	private String etnie = null;
 	private String nationalitate = null;
 
 
-	public ElevDataModel (String nume, String prenume, String adresa, String cnp, String etnie, String nationalitate)
+	public ElevDataModel (String nume, String prenume, String adresa, String cnp, 
+				Date datan, String etnie, String nationalitate)
 	{
 		this.nume = nume;
 		this.prenume = prenume;
 		this.adresa = adresa;
 		this.cnp = cnp;
+		this.datan = datan;
 		this.etnie = etnie;
 		this.nationalitate = nationalitate;
 	}
 
 
-	public ElevDataModel (int id_elev, String nume, String prenume, String adresa, String cnp, String etnie, String nationalitate)
+	public ElevDataModel (int id_elev, String nume, String prenume, String adresa, String cnp, Date datan, String etnie, String nationalitate)
 	{
 		this.id_elev = id_elev;
 		this.nume = nume;
 		this.prenume = prenume;
 		this.adresa = adresa;
 		this.cnp = cnp;
+		this.datan = datan;
 		this.etnie = etnie;
 		this.nationalitate = nationalitate;
 	}
@@ -59,6 +64,7 @@ class ElevDataModel {
 		prenume = r.getString ("prenume");
 		adresa = r.getString ("adresa");
 		cnp = r.getString ("cnp");
+		datan = r.getDate ("datan");
 		etnie = r.getString ("etnie");
 		nationalitate = r.getString ("nationalitate");
 	}	
@@ -93,6 +99,12 @@ class ElevDataModel {
 		return cnp;
 	}		
 
+	
+	public Date getData ()
+	{
+		return datan;
+	}
+
 
 	public String getEtnie () 
 	{
@@ -115,7 +127,9 @@ class ElevDataModel {
 	@Override
 	public String toString () 
 	{
-		return nume + " " + prenume + "  " + adresa + " " + cnp + " " + etnie + " " + nationalitate;
+		return nume + " " + prenume + "  " + 
+				adresa + " " + cnp + " " + 
+				etnie + " " + nationalitate;
 	}
 
 
@@ -131,16 +145,18 @@ class ElevDataModel {
 		String prenume = r.getString (3);
 		String adresa = r.getString (4);
 		String cnp = r.getString (5);
-		String etnie = r.getString (6);
-		String nationalitate = r.getString (7);
+		Date datan = r.getDate (6);
+		String etnie = r.getString (7);
+		String nationalitate = r.getString (8);
 
-		Vector <Object> rowData = new Vector <Object> (7);
+		Vector <Object> rowData = new Vector <Object> (8);
 
 		rowData.add (id_elev);
 		rowData.add (nume);
 		rowData.add (prenume);
 		rowData.add (adresa);
 		rowData.add (cnp);
+		rowData.add (datan);
 		rowData.add (etnie);
 		rowData.add (nationalitate);
 		return rowData;
@@ -154,8 +170,9 @@ class ElevDataModel {
 		String prenume = (String)raw.get (2);
 		String adresa = (String)raw.get (3);
 		String cnp = (String)raw.get (4);
-		String etnie = (String)raw.get (5);
-		String nationalitate =  (String)raw.get (6);
+		Date datan = (Date)raw.get (5);
+		String etnie = (String)raw.get (6);
+		String nationalitate =  (String)raw.get (7);
 
 		ElevDataModel obj = 
 			new ElevDataModel (
@@ -164,6 +181,7 @@ class ElevDataModel {
 				prenume,
 				adresa,
 				cnp,
+				datan,
 				etnie,
 				nationalitate
 			);					
@@ -217,6 +235,16 @@ class ElevDataModel {
 	{
 		if (etnie == null || etnie.isEmpty () || etnie.length () > 30 || !etnie.matches ("^[A-Za-z ]+$")) {	
 			throw new DataModelTypeMismatchError ("Etnia elevului este invalida");
+		}
+		return true;
+	}
+	
+
+	public static boolean checkDataNasterii (java.util.Date data) 
+		throws DataModelTypeMismatchError
+	{
+		if (data == null) {	
+			throw new DataModelTypeMismatchError ("Data nasterii este invalida");
 		}
 		return true;
 	}

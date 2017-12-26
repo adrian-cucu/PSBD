@@ -1,6 +1,8 @@
 import javax.swing.event.ListDataListener;
+import com.toedter.calendar.JDateChooser;
 import static javax.swing.JOptionPane.*;
 import javax.swing.ListSelectionModel;
+import javax.swing.table.TableColumn;
 import javax.swing.border.*;
 import javax.swing.table.*;
 import java.util.HashMap;
@@ -49,7 +51,7 @@ class AppView extends JFrame {
 	private Vector <ProfilDataModel> prof = null;
 	private JComboBox <Integer> cbAnStudiu = 
 		new JComboBox <> (new Integer[] {9, 10, 11, 12});
-	private JTextField an_scolar, cod, an_studiu;
+	private JTextField cod, an_studiu;
 	/* clasa */
 
 	/* elev */
@@ -61,22 +63,33 @@ class AppView extends JFrame {
 	private JTextField cnp_elev; 	
 	private JTextField etnie_elev; 	
 	private JTextField nationalitate_elev; 	
+	private JDateChooser dataNasterii;
 	private JButton insert_elev, delete_elev, update_elev; 
 	private JComboBox <ClasaDataModel> clase = null;
 	private Vector <ClasaDataModel> clasaVector = null;
 	/* elev */
 
+	/* bursa */
+	private JComboBox <String> bursa = null;
+	/* bursa */
+
 	private final JPanel status_panel;
 	private final JLabel status_label;	
 
-	private HashMap <String, Object> obs = new HashMap<>();
+	private HashMap <String, Object> obs = new HashMap<>();	
+	private HashMap <String, JPanel> goPanels = new HashMap<>();
 	
 	private java.util.Vector <java.util.Vector <Object>> data = null;
+
 
 	private MyConnection con = null;
 
 	public static final int SUCCESS = 1;
 	public static final int ERROR = 0;	
+
+	private String panelsName[] = {
+		"Elev", "Clasa", "Materie", "Profil",
+		"Medie", "Elev-Clasa", "Run query", "Bursa"};
 
 
 	AppView (String title, MyConnection con) 
@@ -88,18 +101,38 @@ class AppView extends JFrame {
 		setDefaultCloseOperation (DO_NOTHING_ON_CLOSE);
 		setBounds (250, 150, 800, 500);	
 		setResizable (true);
-	
-		tabbed_pane = new JTabbedPane ();
-	
-		tabbed_pane.add ("Elev", createElevPanel ());			
-		tabbed_pane.add ("Clasa", createClasaPanel ());			
-		tabbed_pane.add ("Materie", createPanelAdaugaMaterie ());			
-		tabbed_pane.add ("Profil", createPanelAdaugaProfil ());				
-		tabbed_pane.add ("Medie", createPanelAdaugaMedie ());				
-		tabbed_pane.add ("Run query", createQueryPanel ());			
 
-		add (tabbed_pane, BorderLayout.CENTER);
-		
+		JMenuBar menuBar = new JMenuBar ();
+		setJMenuBar (menuBar);
+		JMenu open = new JMenu ("Open");
+		menuBar.add (open);
+
+		goPanels.put (panelsName [0], createElevPanel ());
+		goPanels.put (panelsName [1], createClasaPanel ());
+		goPanels.put (panelsName [2], createPanelAdaugaMaterie ());
+		goPanels.put (panelsName [3], createPanelAdaugaProfil ());
+		goPanels.put (panelsName [4], createPanelAdaugaMedie ());
+		goPanels.put (panelsName [5], createPanelElevClasa ());
+		goPanels.put (panelsName [6], createQueryPanel ());
+		goPanels.put (panelsName [7], createBursaPanel ());
+
+		JPanel allPanels = new JPanel (new CardLayout ());	
+
+		add (allPanels);
+			
+		for (String name : panelsName) {		
+			JMenuItem frame = new JMenuItem (name);
+
+			allPanels.add (goPanels.get (name), name);
+			System.out.println (goPanels.get (name));
+			frame.addActionListener (e -> {
+				CardLayout cl = (CardLayout) (allPanels.getLayout ());
+				cl.show (allPanels, ((JMenuItem) e.getSource ()).getText ());	
+			});
+
+			open.add (frame);	
+		}
+
 		status_panel = new JPanel (null);
 		status_panel.setBorder (new BevelBorder (BevelBorder.LOWERED));
 		add (status_panel, BorderLayout.SOUTH);
@@ -110,6 +143,46 @@ class AppView extends JFrame {
 		status_label.setFont (new Font ("Serif", Font.PLAIN, 11));
 		status_panel.add (status_label);		
 	}	
+
+
+	private JPanel createBursaPanel ()
+	{
+
+		JPanel panel = new JPanel (new GridLayout (1, 2, 5, 0));	
+		//////////////////////////////////////////////////////////////////		
+		///////////////////////// insert panel ///////////////////////////
+		JPanel insertPanelWrapper = new JPanel (new BorderLayout ());
+		insertPanelWrapper.setBorder (
+			new TitledBorder (new EtchedBorder (), "Insert")
+		);
+		
+		JPanel northWrapper = new JPanel ();
+		bursa = new JComboBox <> ();
+		northWrapper.add (bursa);
+
+		insertPanelWrapper.add (northWrapper, BorderLayout.NORTH);		
+
+		//insertPanelWrapper.add (northWrapper, BorderLayout.NORTH);		
+		//insertPanelWrapper.add (centerWrapper, BorderLayout.CENTER);		
+		panel.add (insertPanelWrapper);				
+		/////////////////////////////////////////////////////////////////
+		//////////////////////// table panel ////////////////////////////
+		JPanel tablePanel = new JPanel (new GridLayout (1, 1));				
+		tablePanel.setBorder (
+			new TitledBorder (new EtchedBorder (), "Table")
+		);
+			
+		//////////////////////// table panel - content //////////////////		
+		JPanel tablePanelContent = new JPanel (new BorderLayout ());
+
+
+		tablePanel.add (tablePanelContent);	
+		
+		panel.add (tablePanel);				
+		/////////////////////////////////////////////////////////////////		
+		return panel;
+
+	}
 	
 
 	public void updateStatus (String status, int sts)
@@ -148,6 +221,288 @@ class AppView extends JFrame {
         table.setRowHeight (table.getRowHeight () + 10);
 		return table;
 	}
+
+
+	private JPanel createPanelElevClasa ()
+	{
+		JPanel panel = new JPanel (new GridLayout (1, 2, 5, 0));	
+		//////////////////////////////////////////////////////////////////		
+		///////////////////////// insert panel ///////////////////////////
+		JPanel insertPanelWrapper = new JPanel (new BorderLayout ());
+		insertPanelWrapper.setBorder (
+			new TitledBorder (new EtchedBorder (), "Insert")
+		);
+
+		JLabel lbl1 = new JLabel (" ---- ");
+		lbl1.setFont (new Font ("serif", Font.PLAIN, 12));
+
+		JLabel lbl2 = new JLabel (" ---- ");
+		lbl2.setFont (new Font ("serif", Font.PLAIN, 10));
+
+		JPanel northWrapper = new JPanel ();	
+		northWrapper.add (lbl1);
+		northWrapper.add (lbl2);
+
+		JPanel centerWrapper = new JPanel (new GridLayout (1, 2, 1, 10));	
+
+		ClasaTableModel cls_tbl_mdl1 = new ClasaTableModel ();
+		cls_tbl_mdl1.setData (con.fetchTableClasaRawData ());
+
+		ClasaTableModel cls_tbl_mdl2 = new ClasaTableModel ();
+		cls_tbl_mdl1.setData (con.fetchTableClasaRawData ());
+
+		DefaultListModel <ClasaDataModel> clasa_model1 = 
+			new DefaultListModel <ClasaDataModel> () {
+				public static final long serialVersionUID = 0xad1;
+				@Override
+				public ClasaDataModel getElementAt (int index) {
+					return cls_tbl_mdl1.get (index);
+				}
+				@Override
+				public int getSize () {
+					int size = cls_tbl_mdl1.getRowCount ();
+					fireContentsChanged (this, 0, size);
+					return size;
+				}
+			};
+
+		DefaultListModel <ClasaDataModel> clasa_model2 = 
+			new DefaultListModel <ClasaDataModel> () {
+				public static final long serialVersionUID = 0xad1;
+				@Override
+				public ClasaDataModel getElementAt (int index) {
+					return cls_tbl_mdl2.get (index);
+				}
+				@Override
+				public int getSize () {
+					int size = cls_tbl_mdl2.getRowCount ();
+					fireContentsChanged (this, 0, size);
+					return size;
+				}
+			};
+	
+	
+		JList <ClasaDataModel> list1 = new JList <> (clasa_model1);	
+		JList <ClasaDataModel> list2 = new JList <> (clasa_model2);	
+
+		centerWrapper.add (new JScrollPane (list1));	
+		centerWrapper.add (new JScrollPane (list2));	
+
+		insertPanelWrapper.add (northWrapper, BorderLayout.NORTH);		
+		insertPanelWrapper.add (centerWrapper, BorderLayout.CENTER);		
+		panel.add (insertPanelWrapper);				
+		/////////////////////////////////////////////////////////////////
+		//////////////////////// table panel ////////////////////////////
+		JPanel tablePanel = new JPanel (new GridLayout (1, 1));				
+		tablePanel.setBorder (
+			new TitledBorder (new EtchedBorder (), "Table")
+		);
+			
+		//////////////////////// table panel - content //////////////////
+		
+		JPanel tablePanelContent = new JPanel (new BorderLayout ());
+
+		JTextField searchId = new JTextField (3);			
+		JTextField searchNume = new JTextField (4);			
+		JTextField searchPren = new JTextField (3);			
+		JTextField searchAdresa = new JTextField (6);			
+		JTextField searchCnp = new JTextField (5);			
+		JTextField searchEtnie = new JTextField (5);			
+		JTextField searchNationalitate = new JTextField (5);			
+
+		JPanel searchInputPanel = new JPanel ();
+		
+		searchInputPanel.add (searchId);
+		searchInputPanel.add (searchNume);
+		searchInputPanel.add (searchPren);
+		searchInputPanel.add (searchAdresa);
+		searchInputPanel.add (searchCnp);
+		searchInputPanel.add (searchEtnie);
+		searchInputPanel.add (searchNationalitate);
+	
+		tablePanelContent.add (searchInputPanel, BorderLayout.NORTH);
+
+		ElevTableModel elev_table_model1 = new ElevTableModel ();
+
+		Vector <Vector <Object>> data = con.fetchTableElevRawData ();
+
+        elev_table_model1.setData (data);
+
+		JTable table_elev1 = createTable (elev_table_model1) ;
+	
+		table_elev1.setSelectionMode (0);
+
+		table_elev1.getSelectionModel ().addListSelectionListener (e -> {
+			if (e.getValueIsAdjusting ()) {
+				return;
+			}
+
+			int x = table_elev1.getSelectedRow ();
+			if (x != -1) {
+				ElevTableModel model = (ElevTableModel)table_elev1.getModel ();
+
+				int index = table_elev1.convertRowIndexToModel (x);			
+				ElevDataModel obj = ElevTableModel.getRow (index);
+				lbl1.setText (obj.getNumeComplet ());
+				int id_elev = obj.getID ();
+				lbl2.setText (" ~#" + id_elev);
+			}
+		});
+
+        TableRowSorter <AbstractTableModel> trs =
+			new TableRowSorter <> (elev_table_model);
+
+        table_elev1.setRowSorter (trs);
+
+		Action action = new AbstractAction () {
+			public static final long serialVersionUID = 0xad1;
+		
+			public void actionPerformed (ActionEvent actEvt) {
+				TableCellListener tcl = (TableCellListener) actEvt.getSource ();
+	
+				if (displayConfirmation ("Change " + tcl.getOldValue () + " to " + tcl.getNewValue ()) != YES_OPTION) 
+				{
+					elev_table_model1.setValueAt (tcl.getOldValue (), tcl.getRow (), tcl.getColumn ());		
+
+				} else {
+					/* update in database */
+
+					int col = tcl.getColumn ();
+					String newValue = (String) tcl.getNewValue ();
+	
+					try {
+						if (col == 1) {
+							ElevDataModel.checkNume (newValue);
+						} else if (col == 2) {
+					 		ElevDataModel.checkPrenume (newValue);
+						} else if (col == 3) {
+							ElevDataModel.checkAdresa (newValue);
+						} else if (col == 5) {
+							ElevDataModel.checkEtnie (newValue);
+						} else if (col == 6) {
+							ElevDataModel.checkNationalitate (newValue);
+						}
+
+					} catch (DataModelTypeMismatchError dmtEx) {
+
+						elev_table_model1.setValueAt (tcl.getOldValue (), tcl.getRow (), tcl.getColumn ());		
+						displayError (dmtEx.getMessage ());	
+						return;
+					}		
+					
+					boolean success = 
+					con.executeUpdate ("elev", "id_elev",
+							elev_table_model1.getColumnName (tcl.getColumn ()),
+							 ElevTableModel.getRow (tcl.getRow ()).getID (),
+							tcl.getNewValue (),	
+							elev_table_model1.getColumnClass (tcl.getColumn ())
+					);
+
+					if  (success) {
+						displayInformation ("Succefully update!");		
+					}
+				}
+			}
+		};
+	
+		TableCellListener tcl = new TableCellListener (table_elev1, action);
+
+		tablePanelContent.add (new JScrollPane (table_elev1), BorderLayout.CENTER);
+
+        KeyListener searchKeyLsnr = new KeyListener () {
+            public void keyTyped (KeyEvent e) {}
+            public void keyPressed (KeyEvent e) {}
+            public void keyReleased (KeyEvent e)
+            {
+               	String id_elev = searchId.getText ().trim ();			
+				String nume_elev = searchNume.getText ().trim ();			
+				String pren_elev = searchPren.getText ().trim ();		
+				String adresa_elev = searchAdresa.getText ().trim ();			
+				String cnp_elev = searchCnp.getText ().trim ();			
+				String etnie_elev = searchEtnie.getText ().trim ();			
+				String nat_elev = searchNationalitate.getText ().trim ();		
+           
+                if (!(id_elev.length () > 0 || nume_elev.length () > 0 ||
+					pren_elev.length () > 0 || adresa_elev.length () > 0 || 
+					cnp_elev.length () > 0  || etnie_elev.length () > 0 ||
+					nat_elev.length () > 0)) {
+            
+			        trs.setRowFilter (null);	
+                } else {
+
+                    java.util.List <RowFilter <Object, Object>> filters =
+                        new java.util.ArrayList <> ();
+
+                    if (id_elev.length () > 0) {
+                        filters.add (
+                            RowFilter.regexFilter (
+                            "(?i)^" + java.util.regex.Pattern.quote (id_elev) + ".*",  0
+                            )
+                        );
+                    }
+                    if (nume_elev.length () > 0) {
+                        filters.add (
+                            RowFilter.regexFilter (
+                            "(?i)^" + java.util.regex.Pattern.quote (nume_elev) + ".*",  1
+                            )
+                        );
+                    }
+                    if (pren_elev.length () > 0) {
+                        filters.add (
+                            RowFilter.regexFilter (
+                            "(?i)^" + java.util.regex.Pattern.quote (pren_elev) + ".*",  2
+                            )
+                        );
+                    }
+                    if (adresa_elev.length () > 0) {
+                        filters.add (
+                            RowFilter.regexFilter (
+                            "(?i)^" + ".*" + java.util.regex.Pattern.quote (adresa_elev) + ".*",  3
+                            )
+                        );
+                    }
+                    if (cnp_elev.length () > 0) {
+                        filters.add (
+                            RowFilter.regexFilter (
+                            "(?i)^" + java.util.regex.Pattern.quote (cnp_elev) + ".*",  4
+                            )
+                        );
+                    }
+                    if (etnie_elev.length () > 0) {
+                        filters.add (
+                            RowFilter.regexFilter (
+                            "(?i)^" + java.util.regex.Pattern.quote (etnie_elev) + ".*",  5
+                            )
+                        );
+                    }
+                    if (nat_elev.length () > 0) {
+                        filters.add (
+                            RowFilter.regexFilter (
+                            "(?i)^" + java.util.regex.Pattern.quote (nat_elev) + ".*",  6
+                            )
+                        );
+                    }
+
+                    trs.setRowFilter (RowFilter.andFilter (filters));
+                }
+            }
+        };
+
+        searchId.addKeyListener (searchKeyLsnr);
+        searchNume .addKeyListener (searchKeyLsnr);
+		searchPren .addKeyListener (searchKeyLsnr);		
+		searchAdresa .addKeyListener (searchKeyLsnr);		
+		searchCnp .addKeyListener (searchKeyLsnr);			
+		searchEtnie.addKeyListener (searchKeyLsnr);
+		searchNationalitate.addKeyListener (searchKeyLsnr);
+
+		tablePanel.add (tablePanelContent);	
+		
+		panel.add (tablePanel);				
+		/////////////////////////////////////////////////////////////////		
+		return panel;
+
+	}			
 
 
 	private JPanel createPanelAdaugaMedie ()
@@ -243,7 +598,11 @@ class AppView extends JFrame {
 				Vector <ClasaDataModel> clase = con.getClsElev (id_elev);
 
 				if (clase == null) {
-					clase_elv.setModel (null);
+					clase_elv.removeAllItems ();
+					ctr.removeAll ();
+					ctr.revalidate ();
+					ctr.repaint ();
+	
 
 				} else {	
 					clase_elv.setModel (
@@ -256,11 +615,6 @@ class AppView extends JFrame {
 					int id_clasa = selectedCls.getID ();
 					int id_profil = selectedCls.getIdProfil ();
 					int an_studiu = selectedCls.getAnStudiu ();
-							
-					System.out.println ("(elev)   #"  + id_elev  + " " + 
-									    "(clasa)  # " + id_clasa + " " +
-										"(profil) # " + id_profil + " " + 
-									 	"(an_stud)# " + an_studiu);
 
 					Vector <Vector <Object>> medii_sem =   
 						con.fetchMediCls (id_elev, id_clasa, id_profil, an_studiu);
@@ -288,35 +642,13 @@ class AppView extends JFrame {
 						public void actionPerformed (ActionEvent actEvt) {
 							TableCellListener tcl = 
 								(TableCellListener) actEvt.getSource ();
-
-							System.out.print (
-								" new value: " + tcl.getNewValue ()
-							);
-
-							System.out.print (
-								" row: " + tcl.getRow ()
-							);
-
-							System.out.print (
-								" col: " + tcl.getColumn ()
-							);
-
-							System.out.println (
-								" old val: " + tcl.getOldValue ()
-							);
-							
+						
 							if (displayConfirmation ("Change " +  tcl.getOldValue () + " to " +  tcl.getNewValue ()) != YES_OPTION) {
 								mdl.setValueAt (tcl.getOldValue (), tcl.getRow (), tcl.getColumn ());		
 							
 							} else {
 								/* update in database */
-		
-								System.out.println ("(elev)   #"  + id_elev  + " " + 
-								    "(clasa)  # " + id_clasa + " " +
-									"(profil) # " + id_profil + " " + 
-								 	"(an_stud)# " + an_studiu + " " + 
-									"SEM " + (tcl.getRow () + 1));
-
+	
 								int semestru = tcl.getRow () + 1;	
 								int medie = -1;
 								int id_materie = 
@@ -328,8 +660,7 @@ class AppView extends JFrame {
 									if (!(1 < medie && medie <= 10)) {
 										throw new Exception ("Media este invalida");
 									}
-									success = 
-									con.insertMedie (id_elev, id_clasa, id_materie, medie, semestru);
+									success = con.insertMedie (id_elev, id_clasa, id_materie, medie, semestru);
 									mdl.notifyListeners ();
 									
 								} catch (Exception e) {
@@ -352,6 +683,10 @@ class AppView extends JFrame {
 
 		clase_elv.addItemListener (evt -> {
 			ClasaDataModel selectedCls = (ClasaDataModel)clase_elv.getSelectedItem ();
+
+			if (selectedCls == null) {
+				return;
+			}
 
 			int id_clasa = selectedCls.getID ();
 			int id_profil = selectedCls.getIdProfil ();
@@ -393,14 +728,6 @@ class AppView extends JFrame {
 				public static final long serialVersionUID = 0xad1;
 				public void actionPerformed (ActionEvent actEvt) {
 				TableCellListener tcl = (TableCellListener) actEvt.getSource ();
-
-				System.out.print (" new value: " + tcl.getNewValue ());
-
-				System.out.print (" row: " + tcl.getRow ());
-
-				System.out.print (" col: " + tcl.getColumn ());
-
-				System.out.println (" old val: " + tcl.getOldValue ());
 							
 				if (displayConfirmation ("Change " +  tcl.getOldValue () + " to " +  tcl.getNewValue ()) != YES_OPTION) {
 					
@@ -600,7 +927,6 @@ class AppView extends JFrame {
 					if (!model.contains (m)) {		
 						model.addElement (m);
 					}
-					System.out.println (m);
 				}
 			});
 
@@ -803,7 +1129,7 @@ class AppView extends JFrame {
 		
 		insertPanel.setLayout (new BorderLayout ());
 				
-		JPanel north = new JPanel (new GridLayout (2, 2));
+		JPanel north = new JPanel (new GridLayout (2, 1));
 
 		north.add (new JLabel ("Materie"));
 		nume_materie = new JTextField (10);
@@ -879,6 +1205,7 @@ class AppView extends JFrame {
 					
 		table_materie = createTable (materie_table_model) ;
 
+
 		table_materie.getSelectionModel ().addListSelectionListener (e -> {
 			if (table_materie.getSelectedRow () != -1) {
 				delete_materie.setEnabled (true);
@@ -895,7 +1222,31 @@ class AppView extends JFrame {
 		);
 
 		table.add (scrollPane, BorderLayout.CENTER);
-		
+
+		table_materie.getColumnModel ()
+					.getColumn (0)
+					.setPreferredWidth (35);	
+	
+		table_materie.setAutoResizeMode (JTable.AUTO_RESIZE_NEXT_COLUMN);
+
+		/*
+		JPanel pnl = new JPanel (new GridLayout (1, 1));
+
+		table.add (pnl, BorderLayout.CENTER);
+		System.out.println ("@ " + pnl.getWidth ());
+
+		ceplm.add (scrollPane);
+		table_materie.getColumnModel ()
+					.getColumn (0)
+					.setPreferredWidth (35);	
+	
+		table_materie.getColumnModel ()
+					.getColumn (1)
+					.setPreferredWidth (scrollPane.getViewport ()
+											.getSize ()
+											.width - 35);
+		*/
+			
 		//////////////////////////////////////////////////////////
 		JTextField searchID = new JTextField (10);			
 		JTextField searchName = new JTextField (10);			
@@ -969,7 +1320,7 @@ class AppView extends JFrame {
 		);
 		
 		JPanel insertPanel = new JPanel ();	
-		insertPanel.setLayout (new GridLayout (7, 2, 5, 5));
+		insertPanel.setLayout (new GridLayout (7, 1));
 
 		JPanel wrapper = null;	
 
@@ -982,7 +1333,6 @@ class AppView extends JFrame {
 		wrapper = new JPanel ();
 		wrapper.add (nume_elev);
 		insertPanel.add (wrapper);
-
 
 		JLabel lbl_prenume_elev = new JLabel ("Prenume");		
 		wrapper = new JPanel ();
@@ -1004,7 +1354,6 @@ class AppView extends JFrame {
 		wrapper.add (cnp_elev);
 		insertPanel. add (wrapper);
 
-
 		JLabel lbl_etnie = new JLabel ("Etnie");
 		wrapper = new JPanel ();
 		wrapper.add (lbl_etnie);
@@ -1014,7 +1363,6 @@ class AppView extends JFrame {
 		wrapper = new JPanel ();
 		wrapper.add (etnie_elev);
 		insertPanel. add (wrapper);
-
 
 		JLabel lbl_nationalitate = new JLabel ("Nationalitate");
 		wrapper = new JPanel ();
@@ -1035,16 +1383,24 @@ class AppView extends JFrame {
 		adresa = new JTextArea ();
 		insertPanel. add (new JScrollPane (adresa));
 	
-		JLabel lbl_clasa = new JLabel ("Clasa");
+		JLabel lbl_clasa = new JLabel ("Data nasterii");
 		wrapper = new JPanel ();
 		wrapper.add (lbl_clasa);
 		insertPanel.add (wrapper);
 
+		/*
 		clase = new JComboBox <ClasaDataModel> ();
 		clasaVector = con.fetchTableClasaObjData ();
 		clase.setModel (new DefaultComboBoxModel <> (clasaVector));	
+		*/
+	
 		wrapper = new JPanel ();
-		wrapper.add (clase);
+//		wrapper.add (clase);
+		
+		dataNasterii = new JDateChooser ();
+		wrapper.add (dataNasterii);
+		
+
 		insertPanel.add (wrapper);
 			
 		insertPanelWrapper.add (insertPanel, BorderLayout.CENTER);				
@@ -1107,6 +1463,9 @@ class AppView extends JFrame {
         elev_table_model.setData (data);
 
 		table_elev = createTable (elev_table_model) ;
+
+		TableColumn c1 = table_elev.getColumnModel ().getColumn (0);
+		c1.setPreferredWidth (35);	
 		
         TableRowSorter <AbstractTableModel> trs =
 			new TableRowSorter <> (elev_table_model);
@@ -1133,24 +1492,19 @@ class AppView extends JFrame {
 				} else {
 					/* update in database */
 
-					System.out.println ("We must perform some check");
 					int col = tcl.getColumn ();
 					String newValue = (String) tcl.getNewValue ();
 	
 					try {
 						if (col == 1) {
-					 		System.out.println ("===> check name");				
 							ElevDataModel.checkNume (newValue);
 						} else if (col == 2) {
-					 		System.out.println ("===> check prename");										   ElevDataModel.checkPrenume (newValue);
+					 		ElevDataModel.checkPrenume (newValue);
 						} else if (col == 3) {
-						 	System.out.println ("===> check adresa");			
 							ElevDataModel.checkAdresa (newValue);
-						} else if (col == 5) {
-						 	System.out.println ("===> check etnie");			
-							ElevDataModel.checkEtnie (newValue);
 						} else if (col == 6) {
-						 	System.out.println ("===> check nationalitate");
+							ElevDataModel.checkEtnie (newValue);
+						} else if (col == 7) {
 							ElevDataModel.checkNationalitate (newValue);
 						}
 
@@ -1299,30 +1653,24 @@ class AppView extends JFrame {
 		profiluri.setModel (new DefaultComboBoxModel<> (prof));
 		profiluri .setBounds (120, 20, 200, 20);
 
-		JLabel lbl_an_scolar = new JLabel ("An");
-		lbl_an_scolar.setBounds (10, 50, 100, 20);
-		an_scolar = new JTextField ();				
-		an_scolar.setBounds (120, 50, 200, 20);	
 	
 		JLabel lbl_cod = new JLabel ("Cod");
-		lbl_cod.setBounds (10, 80, 100, 20);
+		lbl_cod.setBounds (10, 50, 100, 20);
 		cod = new JTextField ();
-		cod.setBounds (120, 80, 200, 20);
+		cod.setBounds (120, 50, 200, 20);
 
 		JLabel lbl_clasa = new JLabel ("An studiu");
-		lbl_clasa.setBounds (10, 110, 100, 20);
-		cbAnStudiu.setBounds (120, 110, 200, 20);
+		lbl_clasa.setBounds (10, 80, 100, 20);
+		cbAnStudiu.setBounds (120, 80, 200, 20);
 
 		insert_clasa = new JButton ("INSERT");
-		insert_clasa.setBounds (100, 150, 100, 30);
+		insert_clasa.setBounds (100, 110, 100, 30);
 
 		insertPanel.add (lbl_clasa_profil);					
-		insertPanel.add (lbl_an_scolar);					
 		insertPanel.add (lbl_cod);					
 		insertPanel.add (lbl_clasa);				
 	
 		insertPanel.add (cod);					
-		insertPanel.add (an_scolar);					
 		insertPanel.add (cbAnStudiu);					
 		insertPanel.add (insert_clasa);					
 	
@@ -1580,15 +1928,21 @@ class AppView extends JFrame {
 	}
 
 
+	public java.util.Date getDataNasterii ()
+	{
+		return 	dataNasterii.getDate ();
+	}
+
+
 	public int getClasaComboBoxSelectedID ()
 	{
 		return ((ClasaDataModel) clase.getSelectedItem ()).getID ();
 	}
 
 
-	public String getAnScolar ()
+	public int getAnScolar ()
 	{
-		return an_scolar.getText ().trim ();
+		return java.util.Calendar.getInstance ().get(java.util.Calendar.YEAR);
 	} 
 
 	

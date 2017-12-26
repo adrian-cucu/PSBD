@@ -44,7 +44,6 @@ class MyConnection {
 			resSet1 = prepStm1.executeQuery ();
 
 			if (resSet1.next ()) {
-				System.out.println ("UPDATE");
 				prepStm2 = getPreparedStatement (prepQuery3);
 				prepStm2.setInt (1, medie);
 				prepStm2.setInt (2, id_elev);
@@ -55,7 +54,6 @@ class MyConnection {
 				ret = prepStm2.execute ();
 
 			} else {
-				System.out.println ("INSERT");
 				prepStm2 = getPreparedStatement (prepQuery2);
 				prepStm2.setInt (1, id_elev);
 				prepStm2.setInt (2, id_clasa);
@@ -68,7 +66,6 @@ class MyConnection {
 
 		} catch (SQLException e) {
 			/* ignore */
-			System.out.println (e.getMessage ());
 		
 		} finally {
 			closeQuietly (resSet1);

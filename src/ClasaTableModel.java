@@ -44,6 +44,12 @@ class ClasaTableModel extends AbstractTableModel {
 			listener.fireTableDataChanged ();
 	}
 
+
+
+	public ClasaDataModel get (int row) 
+	{
+		return ClasaDataModel.make (data.get (row));
+	}
 	
 
 	@Override

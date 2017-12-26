@@ -89,15 +89,9 @@ class MaterieTableModel extends AbstractTableModel {
 	public void removeRow (int row)
 	{
 		if (row < getRowCount ()) {
-		
-			System.out.println ("Linia a fost stearsa...");
 			data.remove (row);			
 			fireTableRowsDeleted (0, 0);
 		} 
-		else {
-	
-			System.out.println ("Nu");
-		}
 	}	
 		
 	

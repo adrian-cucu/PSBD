@@ -31,6 +31,7 @@ CREATE TABLE elev (
 	prenume 		VARCHAR2(50) NOT NULL,
 	adresa 			VARCHAR2(256) NOT NULL,
 	cnp				VARCHAR2(13) NOT NULL,
+	datan			DATE NOT NULL,
 	etnie 			VARCHAR2(30) NOT NULL,
 	nationalitate 	VARCHAR2(30) NOT NULL
 );
@@ -86,6 +87,7 @@ PRIMARY KEY (id_clasa);
 
 ALTER TABLE clasa 
 ADD CONSTRAINT clsa_fk_profil 
+FOREIGN KEY (id_profil) REFERENCES profil (id_profil);
 
 CREATE SEQUENCE clasa_seq;
 
@@ -221,7 +223,7 @@ INSERT INTO materie (nume_materie) VALUES ('Religie');
 INSERT INTO materie (nume_materie) VALUES ('Tehnologia informatiei');
 INSERT INTO materie (nume_materie) VALUES ('Fizica');
 INSERT INTO materie (nume_materie) VALUES ('Stiinte politice');
-------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------
 
 
 ------------------------------------------------------------------------------------
@@ -387,95 +389,365 @@ INSERT INTO profil_materie VALUES (3, 13, 12);
 
 
 -----------------------------------------------------------------------------------
-INSERT INTO elev(nume, prenume, adresa, cnp, etnie, nationalitate) 
-VALUES ('Cucu', 'Adrian', 'Str. Lalelelor nr. 1 bl. AK47, et -1', '1960212170071', 'romana','romana');	
+INSERT 
+INTO elev(nume, prenume, adresa, cnp, datan, etnie, nationalitate) 
+VALUES (
+	'Cucu', 
+	'Adrian', 
+	'Str. Lalelelor nr. 1 bl. AK47, et -1', 
+	'1960212170071', 
+	TO_DATE('2006/10/02 20:25:06', 'yyyy/mm/dd hh24:mi:ss'),
+	'romana',
+	'romana'
+);	
 
-INSERT INTO elev(nume, prenume, adresa, cnp, etnie, nationalitate) 
-VALUES ('Timofte', 'Marinel', 'Str. Dealului nr. 69 sat malu', '1900112170071', 'romana', 'romana');	
+INSERT 
+INTO elev(nume, prenume, adresa, cnp, datan, etnie, nationalitate) 
+VALUES (
+	'Timofte', 
+	'Marinel', 
+	'Str. Dealului nr. 69 sat malu', 
+	'1900112170071', 
+	TO_DATE('2006/10/02 20:25:06', 'yyyy/mm/dd hh24:mi:ss'),
+	'romana', 
+	'romana'
+);	
 
-INSERT INTO elev(nume, prenume, adresa, cnp, etnie, nationalitate)  
-VALUES ('Poteras', 'Bianca', 'Str. Dilimanilor nr. 3 Fantanele', '2960513170030', 'romana', 'romana');	
+INSERT 
+INTO elev(nume, prenume, adresa, cnp, datan, etnie, nationalitate) 
+VALUES (
+	'Poteras', 
+	'Bianca', 
+	'Str. Dilimanilor nr. 3 Fantanele', 
+	'2960513170030', 
+	TO_DATE('2006/10/02 20:25:06', 'yyyy/mm/dd hh24:mi:ss'),
+	'romana', 
+	'romana'
+);	
 
-INSERT INTO elev (nume, prenume, adresa, cnp, etnie, nationalitate) 
-VALUES ('Popovici', 'Paula', 'Str. Tiglina 1. Galati', '2970429170029', 'romana', 'romana');	
+INSERT 
+INTO elev(nume, prenume, adresa, cnp, datan, etnie, nationalitate) 
+VALUES (
+	'Popovici', 
+	'Paula', 
+	'Str. Tiglina 1. Galati', 
+	'2970429170029', 
+	TO_DATE('2006/10/02 20:25:06', 'yyyy/mm/dd hh24:mi:ss'),
+	'romana', 
+	'romana'
+);	
 
-INSERT INTO elev(nume, prenume, adresa, cnp, etnie, nationalitate)  
-VALUES ('Pecheanu', 'Margareta Bianca', 'Str. Voievozinor nr. 69', '2960308170055', 'romana', 'romana');	
+INSERT 
+INTO elev(nume, prenume, adresa, cnp, datan, etnie, nationalitate) 
+VALUES (
+	'Pecheanu', 
+	'Margareta Bianca', 
+	'Str. Voievozinor nr. 69', 
+	'2960308170055', 
+	TO_DATE('2006/10/02 20:25:06', 'yyyy/mm/dd hh24:mi:ss'),
+	'romana', 
+	'romana'
+);	
 
-INSERT INTO elev(nume, prenume, adresa, cnp, etnie, nationalitate) 
-VALUES ('Ungureanu', 'Irinel', 'Str. Strazilor nr. 111 Hunedoara', '1980319170072', 'romana', 'romana');	
+INSERT 
+INTO elev(nume, prenume, adresa, cnp, datan, etnie, nationalitate) 
+VALUES (
+	'Ungureanu', 
+	'Irinel', 
+	'Str. Strazilor nr. 111 Hunedoara', 
+	'1980319170072', 
+	TO_DATE('2006/10/02 20:25:06', 'yyyy/mm/dd hh24:mi:ss'),
+	'romana', 
+	'romana'
+);	
 
-INSERT INTO elev(nume, prenume, adresa, cnp, etnie, nationalitate)
-VALUES ('Iftode', 'Andrei', 'Str. Principala nr. 1 Smardan Galati', '1970110170071', 'romana', 'romana');	
+INSERT 
+INTO elev(nume, prenume, adresa, cnp, datan, etnie, nationalitate) 
+VALUES (
+	'Iftode', 
+	'Andrei', 
+	'Str. Principala nr. 1 Smardan Galati', 
+	'1970110170071', 
+	TO_DATE('2006/10/02 20:25:06', 'yyyy/mm/dd hh24:mi:ss'),
+	'romana', 
+	'romana'
+);	
 
-INSERT INTO elev (nume, prenume, adresa, cnp, etnie, nationalitate)
-VALUES ('Crihana', 'Cosmin', 'Str. Erorilor nr. 4 Galati', '1960522170031', 'romana', 'romana');	
+INSERT 
+INTO elev(nume, prenume, adresa, cnp, datan, etnie, nationalitate) 
+VALUES (
+	'Crihana', 
+	'Cosmin', 
+	'Str. Erorilor nr. 4 Galati', 
+	'1960522170031', 
+	TO_DATE('2006/10/02 20:25:06', 'yyyy/mm/dd hh24:mi:ss'),
+	'romana', 
+	'romana'
+);	
 
-INSERT INTO elev(nume, prenume, adresa, cnp, etnie, nationalitate)  
-VALUES ('Constantin', 'Catalin', 'Str. Ororilor nr. 78 sat Costi Galati', '1961129170021', 'romana', 'romana');	
+INSERT 
+INTO elev(nume, prenume, adresa, cnp, datan, etnie, nationalitate) 
+VALUES (
+	'Constantin', 
+	'Catalin', 
+	'Str. Ororilor nr. 78 sat Costi Galati', 
+	'1961129170021', 
+	TO_DATE('2006/10/02 20:25:06', 'yyyy/mm/dd hh24:mi:ss'),
+	'romana', 
+	'romana'
+);	
 
-INSERT INTO elev(nume, prenume, adresa, cnp, etnie, nationalitate)  
-VALUES ('Muratu', 'Viorica Daniela', 'Str. Aoleu nr. 999999', '2950421170042', 'romana', 'romana');	
+INSERT 
+INTO elev(nume, prenume, adresa, cnp, datan, etnie, nationalitate) 
+VALUES (
+	'Muratu', 
+	'Viorica Daniela', 
+	'Str. Aoleu nr. 999999', 
+	'2950421170042', 
+	TO_DATE('2006/10/02 20:25:06', 'yyyy/mm/dd hh24:mi:ss'),
+	'romana', 
+	'romana'
+);	
 
-INSERT INTO elev (nume, prenume, adresa, cnp, etnie, nationalitate) 
-VALUES ('Albu', 'Mihai', 'Str. Alba-Ca-Zapada nr. 12 Galati', '1961204170031', 'romana', 'romana');	
+INSERT 
+INTO elev(nume, prenume, adresa, cnp, datan, etnie, nationalitate) 
+VALUES (
+	'Albu', 
+	'Mihai', 
+	'Str. Alba-Ca-Zapada nr. 12 Galati', 
+	'1961204170031', 
+	TO_DATE('2006/10/02 20:25:06', 'yyyy/mm/dd hh24:mi:ss'),
+	'romana', 
+	'romana'
+);	
 
-INSERT INTO elev (nume, prenume, adresa, cnp, etnie, nationalitate) 
-VALUES ('Aurica', 'Florin', 'Str. nr. 2 Liesti', '1960601170075', 'romana', 'romana');	
+INSERT 
+INTO elev(nume, prenume, adresa, cnp, datan, etnie, nationalitate) 
+VALUES (
+	'Aurica', 
+	'Florin', 
+	'Str. nr. 2 Liesti', 
+	'1960601170075', 
+	TO_DATE('2006/10/02 20:25:06', 'yyyy/mm/dd hh24:mi:ss'),
+	'romana', 
+	'romana'
+);	
 
-INSERT INTO elev (nume, prenume, adresa, cnp, etnie, nationalitate)
-VALUES ('Leni', 'Petru', 'Str. Cahul Moldova', '1960414000', 'moldova', 'moldova');	
+INSERT 
+INTO elev(nume, prenume, adresa, cnp, datan, etnie, nationalitate) 
+VALUES (
+	'Leni', 
+	'Petru', 
+	'Str. Cahul Moldova', 
+	'1960414000', 
+	TO_DATE('2006/10/02 20:25:06', 'yyyy/mm/dd hh24:mi:ss'),
+	'moldova', 
+	'moldova'
+);	
 
-INSERT INTO elev (nume, prenume, adresa, cnp, etnie, nationalitate)
-VALUES ('Cernov', 'Constantin', 'Str. Cahul Moldova', '1960522001', 'moldova', 'moldova');	
+INSERT 
+INTO elev(nume, prenume, adresa, cnp, datan, etnie, nationalitate) 
+VALUES (
+	'Cernov', 
+	'Constantin', 
+	'Str. Cahul Moldova', 
+	'1960522001', 
+	TO_DATE('2006/10/02 20:25:06', 'yyyy/mm/dd hh24:mi:ss'),
+	'moldova', 
+	'moldova'
+);	
 
-INSERT INTO elev (nume, prenume, adresa, cnp, etnie, nationalitate) 
-VALUES ('Cernobal', 'Tortosi', 'Str. Zorillor ce au apus', '1960112170', 'moldova', 'moldova');	
+INSERT 
+INTO elev(nume, prenume, adresa, cnp, datan, etnie, nationalitate) 
+VALUES (
+	'Cernobal', 
+	'Tortosi', 
+	'Str. Zorillor ce au apus', 
+	'1960112170', 
+	TO_DATE('2006/10/02 20:25:06', 'yyyy/mm/dd hh24:mi:ss'),
+	'moldova', 
+	'moldova'
+);	
 
-INSERT INTO elev (nume, prenume, adresa, cnp, etnie, nationalitate) 
-VALUES ('Odobasian', 'Romeo', 'Str. Vitei de vie nr. 1 Moldova', '1950213298', 'moldova', 'moldova');	
+INSERT 
+INTO elev(nume, prenume, adresa, cnp, datan, etnie, nationalitate) 
+VALUES (
+	'Odobasian', 
+	'Romeo', 
+	'Str. Vitei de vie nr. 1 Moldova', 
+	'1950213298', 
+	TO_DATE('2006/10/02 20:25:06', 'yyyy/mm/dd hh24:mi:ss'),
+	'moldova', 
+	'moldova'
+);	
 
-INSERT INTO elev (nume, prenume, adresa, cnp, etnie, nationalitate)
-VALUES ('Camenschi', 'Stela', 'Str. Dinamitei nr. 12 Moldova',   '2980134569', 'moldova', 'moldova');	
+INSERT 	
+INTO elev(nume, prenume, adresa, cnp, datan, etnie, nationalitate) 
+VALUES (
+	'Camenschi', 
+	'Stela', 
+	'Str. Dinamitei nr. 12 Moldova',   
+	'2980134569', 
+	TO_DATE('2006/10/02 20:25:06', 'yyyy/mm/dd hh24:mi:ss'),
+	'moldova', 
+	'moldova'
+);	
 
-INSERT INTO elev (nume, prenume, adresa, cnp, etnie, nationalitate)
-VALUES ('Leni', 'Felicia', 'Str. nr. 1 Cahul Moldova', '2960112170', 'moldova', 'moldova');
+INSERT 
+INTO elev(nume, prenume, adresa, cnp, datan, etnie, nationalitate) 
+VALUES (
+	'Leni', 
+	'Felicia', 
+	'Str. nr. 1 Cahul Moldova', 
+	'2960112170', 
+	TO_DATE('2006/10/02 20:25:06', 'yyyy/mm/dd hh24:mi:ss'),
+	'moldova', 
+	'moldova'
+);
 
-INSERT INTO elev (nume, prenume, adresa, cnp, etnie, nationalitate)
-VALUES ('Leni', 'Lucia', 'Str. nr. 1 Cahul Moldova', '2990707456', 'moldova', 'moldova');	
+INSERT 
+INTO elev(nume, prenume, adresa, cnp, datan, etnie, nationalitate) 
+VALUES (
+	'Leni', 
+	'Lucia', 
+	'Str. nr. 1 Cahul Moldova', 
+	'2990707456', 
+	TO_DATE('2006/10/02 20:25:06', 'yyyy/mm/dd hh24:mi:ss'),
+	'moldova', 
+	'moldova'
+);	
 
-INSERT INTO elev (nume, prenume, adresa, cnp, etnie, nationalitate) 
-VALUES ('Garajiu', 'Cruela', 'Str. nr. 1 Cahul Moldova', '2971122176', 'moldova', 'moldova');	
+INSERT 
+INTO elev(nume, prenume, adresa, cnp, datan, etnie, nationalitate) 
+VALUES (
+	'Garajiu', 
+	'Cruela', 
+	'Str. nr. 1 Cahul Moldova', 
+	'2971122176', 
+	TO_DATE('2006/10/02 20:25:06', 'yyyy/mm/dd hh24:mi:ss'),
+	'moldova', 
+	'moldova'
+);	
 
-INSERT INTO elev (nume, prenume, adresa, cnp, etnie, nationalitate)
-VALUES ('Zubucu', 'Janea', 'Str. nr. 44 Nisiporeni', '2941130000', 'moldova', 'moldova');	
+INSERT 
+INTO elev(nume, prenume, adresa, cnp, datan, etnie, nationalitate) 
+VALUES (
+	'Zubucu', 
+	'Janea', 
+	'Str. nr. 44 Nisiporeni', 
+	'2941130000', 
+	TO_DATE('2006/10/02 20:25:06', 'yyyy/mm/dd hh24:mi:ss'),
+	'moldova', 
+	'moldova'
+);	
 
-INSERT INTO elev (nume, prenume, adresa, cnp, etnie, nationalitate) 
-VALUES ('Suca', 'Bleat', 'Str. Mihai Viteazu nr. 3 Nisiporeni Moldova', '2960212888', 'moldova', 'moldova');	
+INSERT 
+INTO elev(nume, prenume, adresa, cnp, datan, etnie, nationalitate) 
+VALUES (
+	'Suca', 
+	'Bleat', 
+	'Str. Mihai Viteazu nr. 3 Nisiporeni Moldova', 
+	'2960212888',
+	TO_DATE('2006/10/02 20:25:06', 'yyyy/mm/dd hh24:mi:ss'),
+	 'moldova', 
+	'moldova'
+);	
 
-INSERT INTO elev (nume, prenume, adresa, cnp, etnie, nationalitate) 
-VALUES ('Salamandra', 'Catalin', 'Str. nr. 2 Zarafet Moldova', '1960214888', 'moldova', 'moldova');	
+INSERT 
+INTO elev(nume, prenume, adresa, cnp, datan, etnie, nationalitate) 
+VALUES (
+	'Salamandra', 
+	'Catalin', 
+	'Str. nr. 2 Zarafet Moldova', 
+	'1960214888', 
+	TO_DATE('2006/10/02 20:25:06', 'yyyy/mm/dd hh24:mi:ss'),
+	'moldova', 
+	'moldova'
+);	
 
-INSERT INTO elev (nume, prenume, adresa, cnp, etnie, nationalitate) 
-VALUES ('Maftei', 'Radu', 'Str. Carbidului Galati', '1960515170045', 'romana', 'romana');	
+INSERT 
+INTO elev(nume, prenume, adresa, cnp, datan, etnie, nationalitate) 
+VALUES (
+	'Maftei', 
+	'Radu', 
+	'Str. Carbidului Galati', 
+	'1960515170045', 
+	TO_DATE('2006/10/02 20:25:06', 'yyyy/mm/dd hh24:mi:ss'),
+	'romana', 
+	'romana'
+);	
 
-INSERT INTO elev (nume, prenume, adresa, cnp, etnie, nationalitate) 
-VALUES ('Maglavait', 'Catalin', 'Str. Exploziei nr. 4 Galati', '197060617967', 'romana', 'romana');	
+INSERT 
+INTO elev(nume, prenume, adresa, cnp, datan, etnie, nationalitate) 
+VALUES (
+	'Maglavait', 
+	'Catalin', 
+	'Str. Exploziei nr. 4 Galati', 
+	'197060617967', 
+	TO_DATE('2006/10/02 20:25:06', 'yyyy/mm/dd hh24:mi:ss'),
+	'romana', 
+	'romana'
+);	
 
-INSERT INTO elev (nume, prenume, adresa, cnp, etnie, nationalitate) 
-VALUES ('Zaiafet', 'Dumitru', 'Str. Super-Super Galati', '1960515170045', 'romana', 'romana');	
+INSERT 
+INTO elev(nume, prenume, adresa, cnp, datan, etnie, nationalitate) 
+VALUES (
+	'Zaiafet', 
+	'Dumitru', 
+	'Str. Super-Super Galati', 
+	'1960515170045', 
+	TO_DATE('2006/10/02 20:25:06', 'yyyy/mm/dd hh24:mi:ss'),
+	'romana', 
+	'romana'
+);	
 
-INSERT INTO elev (nume, prenume, adresa, cnp, etnie, nationalitate)  
-VALUES ('Vlase', 'Bogdan', 'Str. Victor Vilcovici nr. 44 Galati', '1970515170045', 'romana', 'romana');	
+INSERT 
+INTO elev(nume, prenume, adresa, cnp, datan, etnie, nationalitate) 
+VALUES (
+	'Vlase', 
+	'Bogdan', 
+	'Str. Victor Vilcovici nr. 44 Galati', 
+	'1970515170045', 
+	TO_DATE('2006/10/02 20:25:06', 'yyyy/mm/dd hh24:mi:ss'),
+	'romana', 
+	'romana'
+);	
 
-INSERT INTO elev (nume, prenume, adresa, cnp, etnie, nationalitate)  
-VALUES ('Ghisman', 'Irinel', 'Str. Saturn  nr. 13 Galati', '1960719170000', 'romana', 'romana');	
+INSERT 
+INTO elev(nume, prenume, adresa, cnp, datan, etnie, nationalitate) 
+VALUES (
+	'Ghisman', 
+	'Irinel', 
+	'Str. Saturn  nr. 13 Galati', 
+	'1960719170000', 
+	TO_DATE('2006/10/02 20:25:06', 'yyyy/mm/dd hh24:mi:ss'),
+	'romana', 
+	'romana'
+);	
 
-INSERT INTO elev (nume, prenume, adresa, cnp, etnie, nationalitate) 
-VALUES ('Vivianu', 'Marius', 'Str. Schela Galati', '1960123170099', 'romana', 'romana');	
+INSERT 
+INTO elev(nume, prenume, adresa, cnp, datan, etnie, nationalitate) 
+VALUES (
+	'Vivianu', 
+	'Marius', 
+	'Str. Schela Galati', 
+	'1960123170099', 
+	TO_DATE('2006/10/02 20:25:06', 'yyyy/mm/dd hh24:mi:ss'),
+	'romana', 
+	'romana'
+);	
 
-INSERT INTO elev (nume, prenume, adresa, cnp, etnie, nationalitate) 
-VALUES ('Vianu', 'Tudor', 'Str. Furnalului Galati', '1960910170044', 'romana', 'romana');	
+INSERT 
+INTO elev(nume, prenume, adresa, cnp, datan, etnie, nationalitate) 
+VALUES (
+	'Vianu', 
+	'Tudor', 
+	'Str. Furnalului Galati', 
+	'1960910170044', 
+	TO_DATE('2006/10/02 20:25:06', 'yyyy/mm/dd hh24:mi:ss'),
+	'romana', 
+	'romana'
+);	
 -----------------------------------------------------------------------------------
 
 
