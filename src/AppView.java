@@ -70,8 +70,12 @@ class AppView extends JFrame {
 	/* elev */
 
 	/* bursa */
-	private JComboBox <String> bursa = null;
-	/* bursa */
+	private JComboBox <BursaDataModel> bursa = null;
+	private JPanel bursaTablePanel;	
+	private JTextField anStudiuBursa;
+	private JTextField nrBurse;
+	private JButton bursaFilter;
+	/* bursa */	
 
 	private final JPanel status_panel;
 	private final JLabel status_label;	
@@ -80,7 +84,6 @@ class AppView extends JFrame {
 	private HashMap <String, JPanel> goPanels = new HashMap<>();
 	
 	private java.util.Vector <java.util.Vector <Object>> data = null;
-
 
 	private MyConnection con = null;
 
@@ -144,10 +147,15 @@ class AppView extends JFrame {
 		status_panel.add (status_label);		
 	}	
 
+	
+	private JPanel bursaPanel ()
+	{
+		return null;
+	}
+
 
 	private JPanel createBursaPanel ()
 	{
-
 		JPanel panel = new JPanel (new GridLayout (1, 2, 5, 0));	
 		//////////////////////////////////////////////////////////////////		
 		///////////////////////// insert panel ///////////////////////////
@@ -157,31 +165,42 @@ class AppView extends JFrame {
 		);
 		
 		JPanel northWrapper = new JPanel ();
-		bursa = new JComboBox <> ();
+		bursa = new JComboBox <BursaDataModel> (con.fetchTableBursaObjData ());
 		northWrapper.add (bursa);
 
-		insertPanelWrapper.add (northWrapper, BorderLayout.NORTH);		
+		JPanel centerWrapper = new JPanel (new GridLayout (10, 1, 5, 5));
 
-		//insertPanelWrapper.add (northWrapper, BorderLayout.NORTH);		
-		//insertPanelWrapper.add (centerWrapper, BorderLayout.CENTER);		
+		JLabel lbl1 = new JLabel ("An studiu");
+		centerWrapper.add (new JPanel ().add (lbl1));
+
+		anStudiuBursa = new JTextField (10);
+		centerWrapper.add (new JPanel ().add (anStudiuBursa));		
+
+		JLabel lbl2 = new JLabel ("Numar maxim de burse");
+		centerWrapper.add (new JPanel ().add (lbl2));
+
+		nrBurse = new JTextField (10);
+		centerWrapper.add (new JPanel ().add (nrBurse));			
+		
+		bursaFilter = new JButton ("Filter");
+		obs.put ("bursa-filter", bursaFilter);
+
+		insertPanelWrapper.add (northWrapper, BorderLayout.NORTH);			
+		insertPanelWrapper.add (centerWrapper, BorderLayout.CENTER);		
+		insertPanelWrapper.add (bursaFilter, BorderLayout.SOUTH);		
 		panel.add (insertPanelWrapper);				
 		/////////////////////////////////////////////////////////////////
-		//////////////////////// table panel ////////////////////////////
-		JPanel tablePanel = new JPanel (new GridLayout (1, 1));				
-		tablePanel.setBorder (
+		//////////////////////// table panel ////////////////////////////	
+		bursaTablePanel = new JPanel (new GridLayout (1, 1));						
+		bursaTablePanel.setBorder (
 			new TitledBorder (new EtchedBorder (), "Table")
 		);
-			
-		//////////////////////// table panel - content //////////////////		
-		JPanel tablePanelContent = new JPanel (new BorderLayout ());
-
-
-		tablePanel.add (tablePanelContent);	
 		
-		panel.add (tablePanel);				
+
+
+		panel.add (bursaTablePanel);				
 		/////////////////////////////////////////////////////////////////		
 		return panel;
-
 	}
 	
 
@@ -1374,7 +1393,6 @@ class AppView extends JFrame {
 		wrapper.add (nationalitate_elev);
 		insertPanel. add (wrapper);
 
-		
 		JLabel lbl_adresa = new JLabel ("Adresa");
 		wrapper = new JPanel ();
 		wrapper.add (lbl_adresa);
@@ -1399,7 +1417,6 @@ class AppView extends JFrame {
 		
 		dataNasterii = new JDateChooser ();
 		wrapper.add (dataNasterii);
-		
 
 		insertPanel.add (wrapper);
 			
@@ -1413,7 +1430,6 @@ class AppView extends JFrame {
 		insertButtonPanel.add (insert_elev);
 
 		insertPanelWrapper.add (insertButtonPanel, BorderLayout.SOUTH);				
-
 		panel.add (insertPanelWrapper);				
 		/////////////////////////////////////////////////////////////////
 		//////////////////////// table panel ////////////////////////////
@@ -1528,7 +1544,6 @@ class AppView extends JFrame {
 						displayInformation ("Succefully update!");		
 					}
 				}
-
 			}
 		};
 	
@@ -1861,6 +1876,30 @@ class AppView extends JFrame {
 		query_panel.add (north_wrapper, BorderLayout.NORTH);
 		query_panel.add (query_result_panel, BorderLayout.CENTER);	
   		return query_panel;
+	}
+
+
+	public int getNrBurse () 
+	{
+		int nr = -1;	
+		nr = Integer.parseInt (nrBurse.getText ().trim ());
+		return  nr;
+	}
+
+	public int getAnScolarBursa () 
+	{
+		int anStudiu = -1;
+		anStudiu = Integer.parseInt (anStudiuBursa.getText ().trim ());
+		return anStudiu;
+	}
+
+	
+	public void addFilterBursaResult (JTable table)
+	{
+		bursaTablePanel.removeAll ();
+		bursaTablePanel.revalidate ();
+		bursaTablePanel.repaint ();
+		bursaTablePanel.add (new JScrollPane (table));
 	}
 
 
@@ -2242,6 +2281,13 @@ class AppView extends JFrame {
 		}	
 		return selectedIDs;
 	}
+	
+	public int getBursaID ()
+	{
+		BursaDataModel mdl = (BursaDataModel) bursa.getSelectedItem ();
+		return mdl.getID ();
+	}
+
 
 
 	public void displayError (String errorMsg)
@@ -2286,6 +2332,8 @@ class AppView extends JFrame {
 		
 		insert_elev.addActionListener (lsnr);
 		delete_elev.addActionListener (lsnr);		
+
+		bursaFilter.addActionListener (lsnr);		
 	}
 	
 

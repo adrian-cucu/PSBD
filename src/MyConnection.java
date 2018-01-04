@@ -342,6 +342,71 @@ class MyConnection {
 	}
 
 
+	public Vector <BursaDataModel> fetchTableBursaObjData ()
+	{
+		Vector <BursaDataModel> fetchedData = null;	
+
+		ResultSet result_set = null;
+		Statement statement = null;	
+
+		try {
+			statement = getStatement ();
+			result_set = statement.executeQuery ("SELECT * FROM bursa");
+
+			while (result_set.next ()) {
+				if (fetchedData == null) {
+					fetchedData = new Vector <>();
+				}
+				fetchedData.add (new BursaDataModel (result_set));
+			}
+
+		} catch (SQLException e) {
+			/* ignore */
+	
+		} finally {
+			closeQuietly (result_set);
+			closeQuietly (statement);
+		}	
+
+		return fetchedData;
+	}
+
+
+
+	public Vector <Vector <Object>> fetchTableBursaRawData ()
+	{
+		Vector <Vector <Object>> fetchedData = null;
+	
+		ResultSet result_set = null;
+		Statement statement = null;	
+		Vector <Object> fetchedRow = null;
+
+		try {
+			statement = getStatement ();
+			result_set = statement.executeQuery ("SELECT * FROM bursa");
+
+			while (result_set.next ()) {
+				fetchedRow = BursaDataModel.make (result_set);
+				if (fetchedData == null) {
+					fetchedData = new  Vector <Vector <Object>> ();
+				}	
+				fetchedData.add (fetchedRow);
+			}
+
+		} catch (SQLException e) {
+			/* ignore */
+		
+		} finally {
+			closeQuietly (result_set);
+			closeQuietly (statement);
+		}
+
+		return fetchedData;
+	}
+
+
+
+
 	public Vector <Vector <Object>> fetchTableElevRawData ()
 	{	
 		Vector <Vector <Object>> fetchedData = null;	

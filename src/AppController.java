@@ -670,6 +670,102 @@ class AppController implements ActionListener, WindowListener {
 		}  
 	}
 
+	private void filter_bursa ()
+	{
+		String preparedQuery = 
+			"SELECT * " + 
+			"FROM (" + 
+			 "SELECT " +
+			 " e.nume||' '||e.prenume \"Nume elev\", " +
+			 " c.an_studiu||' '||c.cod \"Clasa\", " +
+			 " p.nume_profil \"Profil\", " + 
+			 " TO_CHAR (med.medie_anuala, 'FM99999.90') \"Medie\" " + 
+			 " FROM elev e " +
+			"JOIN (" + 
+			 " SELECT id_elev, id_clasa, AVG(med_sem) medie_anuala " + 
+			 " FROM medie " +
+			 " GROUP BY id_elev, id_clasa " + 
+			") med ON e.id_elev = med.id_elev " + 
+			"JOIN clasa c ON c.id_clasa = med.id_clasa " + 
+			"JOIN profil p ON p.id_profil = c.id_profil " + 
+			"WHERE c.an_scolar = ? " + 
+			"ORDER BY med.medie_anuala DESC " + 
+			") WHERE ROWNUM <= ? ";
+
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+        ResultSetMetaData rsmd = null;	
+		Vector <String> columns = null;
+		Vector <Vector<Object>> values = null;
+		Vector <Object> row = null;
+		int tip_bursa = app_view.getBursaID ();
+		long start = 0;
+		long stop = 0;
+		int m = 0;
+		int i;
+		int nr_burse = -1;
+		int an_scolar = -1;
+
+		if (1 == tip_bursa) {
+			try {
+            	ps = con.getPreparedStatement (preparedQuery);
+
+				nr_burse = app_view.getNrBurse ();
+				an_scolar = app_view.getAnScolarBursa ();
+
+				ps.setInt (1, an_scolar);
+				ps.setInt (2, nr_burse);
+
+				start = System.currentTimeMillis ();
+           		rs = ps.executeQuery ();
+				stop = System.currentTimeMillis ();	
+				stop -= start;		
+				app_view.updateStatus ("query took: " + 
+						(stop / 1000) + "." + 
+						(stop % 1000) + " s", AppView.SUCCESS);		
+
+           		rsmd = rs.getMetaData ();
+            	m = rsmd.getColumnCount ();
+				columns = new Vector <String> (m);
+
+           		for (i = 1; i <= m; ++ i) {
+                	columns.add (rsmd.getColumnLabel (i));
+            	}
+
+				values = new Vector <> ();	
+
+            	while (rs.next ()) {
+					row = new Vector <Object> (m);	
+                	for (i = 1; i <= m; ++ i) {
+                    	row.add (rs.getObject (i));
+                	}
+                	values.add(row);
+            	}
+			
+        		JTable table = new JTable (values, columns);
+			
+    	    	table.setFillsViewportHeight (true);	
+				table.setRowHeight (table.getRowHeight ());
+				table.setAutoCreateRowSorter (true);
+				table.setEnabled (false);
+				app_view.addFilterBursaResult (table);
+
+			} catch (SQLException sqlex) {
+				app_view.displayError (sqlex.getMessage ());
+				app_view.updateStatus ("--[FETCH]- fail", AppView.ERROR);	
+			
+			} catch (Exception ex) {
+				app_view.displayError (ex.getMessage ());
+				app_view.updateStatus ("--[FETCH]- fail", AppView.ERROR);		
+			
+			} finally {
+				MyConnection.closeQuietly (ps);
+				MyConnection.closeQuietly (rs);
+			}  
+
+		}
+	}
+
 
 	@Override	
 	public void actionPerformed (ActionEvent e)
@@ -720,7 +816,11 @@ class AppController implements ActionListener, WindowListener {
 			else if (evtSrc == app_view.getObs ().get ("update-materie") ) {	
 				System.out.println ("Update 000");
 				update_materie_btn ();
+			}	
+			else if (evtSrc == app_view.getObs ().get ("bursa-filter") ) {	
+				filter_bursa ();
 			}
+	
 		}
 	}
 
