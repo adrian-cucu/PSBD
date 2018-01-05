@@ -127,7 +127,6 @@ class AppView extends JFrame {
 			JMenuItem frame = new JMenuItem (name);
 
 			allPanels.add (goPanels.get (name), name);
-			System.out.println (goPanels.get (name));
 			frame.addActionListener (e -> {
 				CardLayout cl = (CardLayout) (allPanels.getLayout ());
 				cl.show (allPanels, ((JMenuItem) e.getSource ()).getText ());	
@@ -204,44 +203,6 @@ class AppView extends JFrame {
 	}
 	
 
-	public void updateStatus (String status, int sts)
-	{
-		switch (sts) {
-			case AppView.SUCCESS:
-				status_label.setForeground (new Color (0x05, 0x63, 0x0c));
-				break;
-			case AppView.ERROR:
-				status_label.setForeground (new Color (0xdf, 0x06, 0x06));
-				break;
-			default:
-				status_label.setForeground (Color.BLACK);		
-		}
-		status_label.setText (status);
-	}
-
-
-	public void updateStatus (String status)
-	{
-		status_label.setForeground (Color.BLACK);		
-		status_label.setText (status);
-	}
-
-
-	private JTable createTable (AbstractTableModel tableModel)
-	{
-		boolean multipleSelection = true;	
-		JTable table = new JTable (tableModel);
-		table.setAutoCreateRowSorter (true);
-		if (!multipleSelection) {
-			table.setSelectionMode (0);
-		}
-		table.setSelectionBackground (new Color (0xea, 0xee, 0xaf));
-		table.setSelectionForeground (new Color (0x22, 0x22, 0x22));
-        table.setRowHeight (table.getRowHeight () + 10);
-		return table;
-	}
-
-
 	private JPanel createPanelElevClasa ()
 	{
 		JPanel panel = new JPanel (new GridLayout (1, 2, 5, 0));	
@@ -284,28 +245,10 @@ class AppView extends JFrame {
 					return size;
 				}
 			};
-
-		DefaultListModel <ClasaDataModel> clasa_model2 = 
-			new DefaultListModel <ClasaDataModel> () {
-				public static final long serialVersionUID = 0xad1;
-				@Override
-				public ClasaDataModel getElementAt (int index) {
-					return cls_tbl_mdl2.get (index);
-				}
-				@Override
-				public int getSize () {
-					int size = cls_tbl_mdl2.getRowCount ();
-					fireContentsChanged (this, 0, size);
-					return size;
-				}
-			};
-	
 	
 		JList <ClasaDataModel> list1 = new JList <> (clasa_model1);	
-		JList <ClasaDataModel> list2 = new JList <> (clasa_model2);	
 
 		centerWrapper.add (new JScrollPane (list1));	
-		centerWrapper.add (new JScrollPane (list2));	
 
 		insertPanelWrapper.add (northWrapper, BorderLayout.NORTH);		
 		insertPanelWrapper.add (centerWrapper, BorderLayout.CENTER);		
@@ -2281,13 +2224,13 @@ class AppView extends JFrame {
 		}	
 		return selectedIDs;
 	}
+
 	
 	public int getBursaID ()
 	{
 		BursaDataModel mdl = (BursaDataModel) bursa.getSelectedItem ();
 		return mdl.getID ();
 	}
-
 
 
 	public void displayError (String errorMsg)
@@ -2335,7 +2278,45 @@ class AppView extends JFrame {
 
 		bursaFilter.addActionListener (lsnr);		
 	}
-	
+
+
+	public void updateStatus (String status, int sts)
+	{
+		switch (sts) {
+			case AppView.SUCCESS: 
+				status_label.setForeground (new Color (0x05, 0x63, 0x0c));
+				break;
+			case AppView.ERROR:
+				status_label.setForeground (new Color (0xdf, 0x06, 0x06));
+				break;
+			default:
+				status_label.setForeground (Color.BLACK);		
+		}
+		status_label.setText (status);
+	}
+
+
+	public void updateStatus (String status)
+	{
+		status_label.setForeground (Color.BLACK);		
+		status_label.setText (status);
+	}
+
+
+	private JTable createTable (AbstractTableModel tableModel)
+	{
+		boolean multipleSelection = true;	
+		JTable table = new JTable (tableModel);
+		table.setAutoCreateRowSorter (true);
+		if (!multipleSelection) {
+			table.setSelectionMode (0);
+		}
+		table.setSelectionBackground (new Color (0xea, 0xee, 0xaf));
+		table.setSelectionForeground (new Color (0x22, 0x22, 0x22));
+        table.setRowHeight (table.getRowHeight () + 10);
+		return table;
+	}
+
 
 	public void windowCloseListener (WindowListener lsnr)
 	{

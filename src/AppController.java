@@ -66,16 +66,18 @@ class AppController implements ActionListener, WindowListener {
 					 .replace (";", "");
 			
 		String op = query.split (" ")[0].toUpperCase();
+		Statement statement = null;
+		ResultSet result_set = null;
+		long start = 0, stop = 0;	
 		int rr = 0;
 
 		switch (op) {
 			case "SELECT":	
-				long start, stop;
-				Statement statement = null;
-				ResultSet result_set = null;
-
-				Vector <String> columns; 
-				Vector <Vector<Object>> values;	
+				Vector <String> columns = null; 
+				Vector <Object> row = null;
+				Vector <Vector<Object>> values = null;	
+				int columnCount;
+				int i;
 
      			try {
             		statement = con.getStatement ();
@@ -88,21 +90,21 @@ class AppController implements ActionListener, WindowListener {
 						(stop % 1000) + " s", AppView.SUCCESS);		
 
            			ResultSetMetaData rsmd = result_set.getMetaData ();
-            		int m = rsmd.getColumnCount ();
-					columns = new java.util.Vector<>(m);
+            		columnCount = rsmd.getColumnCount ();
+					columns = new Vector <> (columnCount);
 
-           			for (int i = 1; i <= m; ++ i) {
+           			for (i = 1; i <= columnCount; ++ i) {
                 		columns.add (rsmd.getColumnLabel (i));
             		}
 
-					values = new java.util.Vector<>();	
+					values = new Vector <Vector <Object>> ();	
 
             		while (result_set.next ()) {
-						Vector <Object> row_values = new Vector <>(m);	
-                		for (int i = 1; i <= m; ++ i) {
-                    		row_values.add (result_set.getObject (i));
+						row = new Vector <Object> (columnCount);	
+                		for (i = 1; i <= columnCount; ++ i) {
+                    		row.add (result_set.getObject (i));
                 		}
-                		values.add(row_values);
+                		values.add(row);
             		}
 			
         			JTable table = new JTable (values, columns);
@@ -114,14 +116,16 @@ class AppController implements ActionListener, WindowListener {
 					table.setAutoCreateRowSorter (true);
 					table.setEnabled (false);
 	 		   		app_view.addQueryResult (table);
-
-            		if (statement != null) 
-                		statement.close ();
        
         		} catch (SQLException sqlex) {
 					app_view.addQueryResult (sqlex.getMessage ());
 					app_view.updateStatus ("query error!", AppView.ERROR);
-				} 	
+
+				} finally {
+					MyConnection.closeQuietly (statement);
+					MyConnection.closeQuietly (result_set);
+				}
+
 				break;
 			case "INSERT":
 			case "UPDATE":
@@ -146,11 +150,6 @@ class AppController implements ActionListener, WindowListener {
 					} else {
 						app_view.addQueryResult (rr + " rows deleted.");
 					}
-								
-            		if (statement != null) {
-                		statement.close ();
-					}
-
 					app_view.refresh ();
 
         		} catch (SQLException sqlex) {
@@ -159,27 +158,47 @@ class AppController implements ActionListener, WindowListener {
 					err_msg = err_msg.substring (err_msg.indexOf (":") + 2);
 					app_view.addQueryResult (err_msg);
 					app_view.updateStatus ("query error!", AppView.ERROR);
-        		} 
+	
+        		} finally {
+					MyConnection.closeQuietly (statement);
+				}	
 				break;
 			default:
-					app_view.addQueryResult ("Unknown statement");	
+				app_view.addQueryResult ("Unknown statement");	
 				app_view.updateStatus ("Error!", AppView.ERROR);
-			}		
+		}		
 	}
 
 	
 	private void insert_elev_btn ()
 	{
 		String prepared = "INSERT INTO elev (nume, prenume, adresa, cnp, datan, etnie, nationalitate) VALUES (?, ?, ?, ?, ?, ?, ?)";
-	//	String prepared2 = "INSERT INTO elev_clasa (id_elev, id_clasa) VALUES (?, ?)";
-		PreparedStatement ps = null;
-	//	PreparedStatement ps2 = null;
+			
+		/* Asta in caz de vrei sa alegi si o clasa cand adaugi un elev nou
+		 	dar acest lucru se va rezolva in alt panel in care
+			adaugi un elev existent in baza de date la o anumita clasa
+		*/
+		/*
+		String prepared2 = 
+			"INSERT INTO elev_clasa (id_elev, id_clasa) VALUES (?, ?)";	
+		PreparedStatement ps2 = null;
 		ResultSet generatedKeys = null;			
+		*/
+
+		PreparedStatement ps = null;
 
 		try {
-			ps = con.getPreparedStatement (prepared, new String[]{"id_elev"});
-
-		
+			/* Asta in caz de vrei sa alegi si o clasa cand adaugi un elev nou
+				pentru ca trebuie retinut id-ul elevului adaugat
+				pentru a fi inserat in tabela elev_clasa
+				ID - ul elevului fiind generat de catre ORACLE cu ajutorul 
+				trigger-ului
+		 		dar acest lucru se va rezolva in alt panel in care
+				adaugi un elev existent in baza de date la o anumita clasa
+			*/
+			//ps = con.getPreparedStatement (prepared, new String[]{"id_elev"});
+			ps = con.getPreparedStatement (prepared);
+	
 			String nume = app_view.getNumeElev();
 			String prenume = app_view.getPrenumeElev();
 			String adresa = app_view.getAdresaElev();
@@ -206,6 +225,14 @@ class AppController implements ActionListener, WindowListener {
 
 			ps.executeUpdate ();
 
+			/* Asta in caz de vrei sa alegi si o clasa cand adaugi un elev nou
+				pentru ca trebuie retinut id-ul elevului adaugat
+				pentru a fi inserat in tabela elev_clasa
+				ID - ul elevului fiind generat de catre ORACLE cu ajutorul 
+				trigger-ului
+		 		dar acest lucru se va rezolva in alt panel in care
+				adaugi un elev existent in baza de date la o anumita clasa
+			*/
 			/*	
 			generatedKeys = ps.getGeneratedKeys ();
 
@@ -221,6 +248,7 @@ class AppController implements ActionListener, WindowListener {
 				ps2.executeUpdate ();
 			}
 			*/
+
 			ElevTableModel.refresh (con);			
 			app_view.displayInformation (ps.getUpdateCount () + " rows inserted.");
 			app_view.updateStatus ("-[INSERT]- success", AppView.SUCCESS);
@@ -234,7 +262,8 @@ class AppController implements ActionListener, WindowListener {
 			app_view.updateStatus ("--[INSERT]- fail", AppView.ERROR);	
 			
 		} finally {
-			MyConnection.closeQuietly (ps);
+			MyConnection.closeQuietly (ps);				
+			// MyConnection.closeQuietly (generatedKeys);
 		}		
 		
 	}
@@ -628,7 +657,6 @@ class AppController implements ActionListener, WindowListener {
 			ps2 = con.getPreparedStatement (prepared2);
 
 			for (int id : indices) {
-				out.print ("Pentru id: " + id);
 				
 				ps.setInt (1, id);
 				rs = ps.executeQuery ();
@@ -639,7 +667,6 @@ class AppController implements ActionListener, WindowListener {
 						ps2.setInt (1, id);
 						ps2.addBatch ();
 				}
-				out.println ();
 			}
 
 			ps2.executeBatch ();
