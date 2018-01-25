@@ -6,7 +6,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import java.sql.*;
 
-class AppController implements ActionListener, WindowListener {
+class AppController extends WindowAdapter implements ActionListener {
 
 	private LoginView login_view = null;
 	private AppView app_view = null;
@@ -458,8 +458,8 @@ class AppController implements ActionListener, WindowListener {
 			ps.setString (1, materie);
 			
 			ps.executeUpdate ();
+
 			MaterieTableModel.refresh (con);
-			app_view.refresh ();
 	
 			app_view.displayInformation (ps.getUpdateCount () + " rows inserted.");
 			app_view.updateStatus ("-[INSERT]- success", AppView.SUCCESS);
@@ -733,7 +733,7 @@ class AppController implements ActionListener, WindowListener {
 		int nr_burse = -1;
 		int an_scolar = -1;
 
-		if (1 == tip_bursa) {
+		if (2 == tip_bursa) {
 			try {
             	ps = con.getPreparedStatement (preparedQuery);
 
@@ -852,25 +852,12 @@ class AppController implements ActionListener, WindowListener {
 	}
 
 
-	@Override		
-	public void windowActivated (WindowEvent e) 
-	{
-		System.out.println (
-			Thread.currentThread ().getStackTrace ()[1].getMethodName ());
-	}
-
-
-	@Override	
-	public void windowClosed (WindowEvent e) 
-	{
-		System.out.println (
-		Thread.currentThread ().getStackTrace ()[1].getMethodName ());
-	}
-
-
 	@Override
 	public void windowClosing (WindowEvent e) 
 	{	
+		System.out.println (
+		Thread.currentThread ().getStackTrace ()[1].getMethodName ());
+	
 		String[] opt = {"YES", "NO"};
 
 		if (showOptionDialog (null, "Are you sure you want to exit?", "PSBD", 
@@ -892,37 +879,5 @@ class AppController implements ActionListener, WindowListener {
 					"Error while trying to close connection: " + sqlex.getMessage (),"ERROR ON EXIT", ERROR_MESSAGE);
 			}		
 		}
-	}
-
-
-	@Override 
-	public void windowDeactivated (WindowEvent e) 
-	{
-		System.out.println (
-			Thread.currentThread ().getStackTrace ()[1].getMethodName ());
-	}
-
-
-	@Override
-	public void windowDeiconified (WindowEvent e) 
-	{
-		System.out.println (
-			Thread.currentThread ().getStackTrace ()[1].getMethodName ());
-	}
-
-
-	@Override		
-	public void windowIconified (WindowEvent e) 
-	{
-		System.out.println (
-			Thread.currentThread ().getStackTrace ()[1].getMethodName ());
-	}
-
-
-	@Override	
-	public void windowOpened (WindowEvent e) 
-	{
-		System.out.println (
-			Thread.currentThread ().getStackTrace ()[1].getMethodName ());
 	}
 }	
